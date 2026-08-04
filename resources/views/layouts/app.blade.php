@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Rising Green Energy CRM</title>
+    <title>MBT Solar CRM</title>
 
     <!-- Google Fonts (Outfit)     -->
     <link rel="icon" type="image/png" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'images/template/crmfavicon.png') }}">
