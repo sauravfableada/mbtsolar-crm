@@ -1,0 +1,126 @@
+name: Build with Docker and Deploy to cPanel via FTP
+
+on:
+  push:
+    branches:
+      - main
+      - dev-raj
+
+jobs:
+  build-and-deploy: 
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        run: |
+          docker build -t my-app .
+
+      - name: Extract Build Files from Docker
+        run: |
+          docker create --name temp_container my-app
+          docker cp temp_container:/var/www/html ./build_output
+          docker rm temp_container
+
+      - name: Clean unwanted folders from build_output
+        run: |
+          rm -rf ./build_output/vendor
+          rm -rf ./build_output/vendor_old
+          rm -rf ./build_output/system
+          rm -rf ./build_output/node_modules
+          rm -rf ./build_output/.git
+          rm -f ./build_output/.gitignore
+          rm -f ./build_output/.gitattributes
+          # Keep storage/app/public for image uploads
+          # Only remove specific cache files
+          rm -rf ./build_output/storage/logs/*
+          rm -rf ./build_output/storage/framework/cache/*
+          rm -rf ./build_output/storage/framework/sessions/*
+          rm -rf ./build_output/storage/framework/views/*
+          # DO NOT DELETE: Keep existing uploads
+          # rm -rf ./build_output/public/upload
+          # rm -rf ./build_output/public/uploads
+          rm -rf ./build_output/public/assets/img/
+          # Ensure storage directories exist with proper structure
+          mkdir -p ./build_output/storage/app/public/makes
+          mkdir -p ./build_output/storage/app/public/categories
+          mkdir -p ./build_output/storage/app/public/products
+          mkdir -p ./build_output/storage/app/public/bom-products
+          mkdir -p ./build_output/storage/app/public/leads
+          mkdir -p ./build_output/storage/app/public/customers
+          mkdir -p ./build_output/storage/app/public/vendors
+          mkdir -p ./build_output/storage/app/public/users
+          mkdir -p ./build_output/storage/app/public/avatars
+          mkdir -p ./build_output/storage/app/public/company
+          mkdir -p ./build_output/storage/app/public/documents
+          mkdir -p ./build_output/storage/app/public/estimates
+
+      - name: Create post-deployment script
+        run: |
+          cat > ./build_output/post-deploy.php << 'EOF'
+          <?php
+          // Auto-run post-deployment fixes
+          
+          $link = __DIR__ . '/public/storage';
+          $target = __DIR__ . '/storage/app/public';
+          
+          // Remove existing link/directory if it exists
+          if (file_exists($link)) {
+              if (is_link($link)) {
+                  unlink($link);
+              } elseif (is_dir($link)) {
+                  $files = array_diff(scandir($link), ['.', '..']);
+                  if (empty($files)) {
+                      rmdir($link);
+                  }
+              }
+          }
+          
+          // Create symlink
+          if (!file_exists($link)) {
+              if (@symlink($target, $link)) {
+                  echo "Storage symlink created successfully\n";
+              } else {
+                  echo "Failed to create symlink, storage will use route fallback\n";
+              }
+          }
+          
+          // Run migration to update image paths
+          if (file_exists(__DIR__ . '/artisan')) {
+              exec('cd ' . __DIR__ . ' && php artisan migrate --force 2>&1', $output, $return_var);
+              if ($return_var === 0) {
+                  echo "Migrations completed successfully\n";
+              } else {
+                  echo "Migration failed: " . implode("\n", $output) . "\n";
+              }
+          }
+          EOF
+          
+          # Auto-execute the script during deployment
+          php ./build_output/post-deploy.php
+
+      - name: Deploy to cPanel via FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: 82.29.163.188
+          username: "u378554361.mbtftpusr"
+          password: "Mi&r9aM8?"
+          server-dir: /public_html/
+          local-dir: ./build_output/
+          protocol: ftp
+          port: 21
+          timeout: 600000
+          exclude: |
+            **/.git*
+            **/.env
+            **/vendor/**
+            **/vendor_old/**
+            **/system/**
+            **/node_modules/**
+            **/storage/app/public/**
+            **/public/storage/**
