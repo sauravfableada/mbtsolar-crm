@@ -330,10 +330,6 @@
                     linkWrap.classList.add("d-none");
                 }
             }
-            
-            if (document.getElementById(`${moduleKey}ShowDatasheet`)) {
-                document.getElementById(`${moduleKey}ShowDatasheet`).checked = true;
-            }
         }
 
         function openModal() {
@@ -381,10 +377,6 @@
                         link.href = item.datasheet_url;
                         linkWrap.classList.remove("d-none");
                     }
-                }
-                
-                if (document.getElementById(`${moduleKey}ShowDatasheet`)) {
-                    document.getElementById(`${moduleKey}ShowDatasheet`).checked = item?.show_datasheet !== false;
                 }
 
                 modal.show();

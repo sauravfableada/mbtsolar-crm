@@ -286,7 +286,6 @@ class EstimateController extends Controller
                     
                     $hasDatasheet = false;
                     foreach ($makes as $make) {
-                        if (isset($make->show_datasheet) && !$make->show_datasheet) continue;
                         
                         if (!empty($make->datasheet) && Storage::disk('public')->exists($make->datasheet)) {
                             $hasDatasheet = true;
@@ -319,7 +318,6 @@ class EstimateController extends Controller
                     }
                     
                     foreach ($makes as $make) {
-                        if (isset($make->show_datasheet) && !$make->show_datasheet) continue;
                         
                         if (!empty($make->datasheet) && Storage::disk('public')->exists($make->datasheet)) {
                             $filePath = Storage::disk('public')->path($make->datasheet);
