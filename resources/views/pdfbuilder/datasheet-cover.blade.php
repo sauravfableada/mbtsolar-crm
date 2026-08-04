@@ -32,13 +32,37 @@
 </head>
 <body>
     <div class="page">
+        @php
+            $logoBase64 = null;
+            $companySettings = \App\Models\Setting::pluck('value', 'key')->toArray();
+            if (!empty($companySettings['company_logo_path'])) {
+                $diskPath = storage_path('app/public/' . $companySettings['company_logo_path']);
+                if (file_exists($diskPath)) {
+                    $logoBase64 = 'data:image/' . pathinfo($diskPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($diskPath));
+                }
+            }
+            if (!$logoBase64) {
+                $userLogo = $estimate->user->company_logo ?? null;
+                if ($userLogo) {
+                    $legacyPath = public_path('assets/img/profile/' . $userLogo);
+                    if (file_exists($legacyPath)) {
+                        $logoBase64 = 'data:image/' . pathinfo($legacyPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($legacyPath));
+                    }
+                }
+            }
+        @endphp
     <!-- Header -->
     <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
         <tr>
-            <td width="100%" align="left" valign="top">
+            <td width="50%" align="left" valign="top">
                 <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                     {{ (float)($estimate->quantity ?? 0) }}kW Ongrid {{ $estimate->type ?? 'Proposal' }}
                 </div>
+            </td>
+            <td width="50%" align="right" valign="top">
+                @if($logoBase64)
+                    <img src="{{ $logoBase64 }}" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
+                @endif
             </td>
         </tr>
     </table>
