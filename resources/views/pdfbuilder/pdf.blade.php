@@ -1565,9 +1565,9 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     $happyDisplay = $happy !== '' ? esc($happy) . '+' : '30+';
     $citiesDisplay = $cities !== '' ? esc($cities) . '+' : '20+';
     
-    $img1 = !empty($companyInfo['image1']) ? normalize_pdf_image($companyInfo['image1']) : normalize_pdf_image('public/assets/img/seconpage_1.png');
-    $img2 = !empty($companyInfo['image2']) ? normalize_pdf_image($companyInfo['image2']) : normalize_pdf_image('public/assets/img/secondpage_2.png');
-    $img3 = !empty($companyInfo['image3']) ? normalize_pdf_image($companyInfo['image3']) : normalize_pdf_image('public/assets/img/secondpage_3.png');
+    $img1 = resolve_pdf_image_with_fallback($companyInfo['image1'] ?? '', 'public/assets/img/seconpage_1.png');
+    $img2 = resolve_pdf_image_with_fallback($companyInfo['image2'] ?? '', 'public/assets/img/secondpage_2.png');
+    $img3 = resolve_pdf_image_with_fallback($companyInfo['image3'] ?? '', 'public/assets/img/secondpage_3.png');
     
     $isResidentialIntro = ($estdata->type ?? '') === 'residential';
     $companyAboutLength = $isResidentialIntro ? 1200 : pdf_rich_html_plain_length($companyDescriptionRaw);
@@ -3701,10 +3701,10 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                         $footerActive = (int) ($footer['active'] ?? 1);
                         $footerTitle = trim((string) ($footer['title'] ?? ''));
                         $footerSubTitle = trim((string) ($footer['sub_title'] ?? ''));
-                        $footerImg = !empty($footer['image']) ? normalize_pdf_image($footer['image']) : normalize_pdf_image('public/assets/img/footer.png');
+                        $footerImg = resolve_pdf_image_with_fallback($footer['image'] ?? '', 'public/assets/img/footer.png');
                         ?>
                         <img src="<?= $footerImg ?>" alt="Solar Panels"
-                            style="max-width: 100%; height: auto; display: block; margin: 0 auto;">
+                            style="width: 100%; display: block; margin: 0 auto;">
                     </td>
                 </tr>
             </table>
