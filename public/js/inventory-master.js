@@ -260,6 +260,10 @@
                 document.getElementById(`${moduleKey}Image`)?.classList.remove("is-invalid");
                 document.getElementById(`${moduleKey}ImageError`).textContent = "";
             }
+            if (config.hasDatasheet) {
+                document.getElementById(`${moduleKey}Datasheet`)?.classList.remove("is-invalid");
+                document.getElementById(`${moduleKey}DatasheetError`).textContent = "";
+            }
         }
 
         function showErrors(errors) {
@@ -276,6 +280,9 @@
                 } else if (field === "image" && config.hasImage) {
                     input = document.getElementById(`${moduleKey}Image`);
                     errorDiv = document.getElementById(`${moduleKey}ImageError`);
+                } else if (field === "datasheet" && config.hasDatasheet) {
+                    input = document.getElementById(`${moduleKey}Datasheet`);
+                    errorDiv = document.getElementById(`${moduleKey}DatasheetError`);
                 }
 
                 if (input) input.classList.add("is-invalid");
@@ -312,6 +319,15 @@
                     previewWrap?.classList.remove("d-none");
                 } else {
                     previewWrap?.classList.add("d-none");
+                }
+            }
+
+            if (config.hasDatasheet) {
+                const linkWrap = document.getElementById(`${moduleKey}DatasheetLinkWrap`);
+                const link = document.getElementById(`${moduleKey}DatasheetLink`);
+                if (linkWrap && link) {
+                    link.href = "#";
+                    linkWrap.classList.add("d-none");
                 }
             }
         }
@@ -351,6 +367,15 @@
                             }
                             : null;
                         previewWrap?.classList.remove("d-none");
+                    }
+                }
+
+                if (config.hasDatasheet) {
+                    const linkWrap = document.getElementById(`${moduleKey}DatasheetLinkWrap`);
+                    const link = document.getElementById(`${moduleKey}DatasheetLink`);
+                    if (linkWrap && link && item?.datasheet_url) {
+                        link.href = item.datasheet_url;
+                        linkWrap.classList.remove("d-none");
                     }
                 }
 
