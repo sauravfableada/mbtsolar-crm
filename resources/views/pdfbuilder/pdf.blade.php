@@ -1414,7 +1414,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                         <tr>
                             <?php if (!empty($logoBase64)): ?>
                             <td width="40%" valign="top">
-                                <img src="<?= $logoBase64 ?>" style="max-width:200px; height:auto; object-fit:contain;">
+                                <img src="<?= $logoBase64 ?>" style="max-width:200px; height:auto; max-height: 80px; object-fit:contain;">
                             </td>
                             <?php endif; ?>
                         </tr>
@@ -1659,7 +1659,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                     </td>
                     <td width="50%" align="right" valign="top">
                         <?php if (!empty($logoBase64)): ?>
-                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; height: auto;">
+                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -1740,7 +1740,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                     </td>
                     <td width="50%" align="right" valign="top">
                         <?php if (!empty($logoBase64)): ?>
-                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; height: auto;">
+                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -1833,7 +1833,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                     </td>
                     <td align="right" valign="top">
                         <?php    if (!empty($logoBase64)): ?>
-                        <img src="<?= $logoBase64 ?>" style="max-width: 160px; height: auto;">
+                        <img src="<?= $logoBase64 ?>" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php    endif; ?>
 
                     </td>
@@ -2586,7 +2586,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                     </td>
                     <td width="50%" align="right" valign="top">
                         <?php if (!empty($logoBase64)): ?>
-                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; height: auto;">
+                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -2733,7 +2733,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 
                     <td width="50%" align="right" valign="top">
                         <?php    if (!empty($logoBase64)): ?>
-                        <img src="<?= $logoBase64 ?>" style="max-width:160px; margin-bottom:5px;">
+                        <img src="<?= $logoBase64 ?>" style="max-width:160px; max-height: 55px; height: auto; object-fit: contain; margin-bottom:5px;">
                         <?php    endif; ?>
                     </td>
                 </tr>
@@ -3277,7 +3277,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                         <?php if (!empty($logoBase64)): ?>
                         <div style="display:inline-block;text-align:right;">
                             <img src="<?= $logoBase64 ?>" alt="Company Logo"
-                                style="max-width:160px;height:auto;margin-bottom:5px;">
+                                style="max-width:160px; max-height: 55px; height: auto; object-fit: contain;margin-bottom:5px;">
                         </div>
                         <?php endif; ?>
                     </td>
@@ -3402,7 +3402,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                         <?php if (!empty($logoBase64)): ?>
                         <div style="display:inline-block;text-align:right;">
                             <img src="<?= $logoBase64 ?>" alt="Company Logo"
-                                style="max-width:160px;height:auto;margin-bottom:5px;">
+                                style="max-width:160px; max-height: 55px; height: auto; object-fit: contain;margin-bottom:5px;">
                         </div>
                         <?php endif; ?>
                     </td>
@@ -3543,7 +3543,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                     </td>
                     <td width="50%" align="right" valign="top">
                         <?php if (!empty($logoBase64)): ?>
-                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width:160px;height:auto;">
+                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width:160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -3682,7 +3682,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                         <?php    if (!empty($logoBase64)): ?>
                         <div style="display: inline-block; text-align: right;">
                             <img src="<?= $logoBase64 ?>" alt="Company Logo"
-                                style="max-width: 160px; height: auto; margin-bottom: 5px;">
+                                style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain; margin-bottom: 5px;">
                         </div>
                         <?php    endif; ?>
                     </td>

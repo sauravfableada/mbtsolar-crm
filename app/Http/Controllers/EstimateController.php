@@ -284,16 +284,19 @@ class EstimateController extends Controller
                         ->orWhereIn('name', $makeIdentifiers)
                         ->get();
                     
-                    $hasDatasheet = false;
+                    $hasPdfDatasheet = false;
                     foreach ($makes as $make) {
                         
                         if (!empty($make->datasheet) && Storage::disk('public')->exists($make->datasheet)) {
-                            $hasDatasheet = true;
-                            break;
+                            $ext = strtolower(pathinfo($make->datasheet, PATHINFO_EXTENSION));
+                            if ($ext === 'pdf') {
+                                $hasPdfDatasheet = true;
+                                break;
+                            }
                         }
                     }
                     
-                    if ($hasDatasheet) {
+                    if ($hasPdfDatasheet) {
                         try {
                             $currentPage = $mergedPdf->PageNo();
                             $coverPdf = \PDF::loadView('pdfbuilder.datasheet-cover', [
