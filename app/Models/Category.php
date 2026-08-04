@@ -17,7 +17,6 @@ class Category extends Model
         'name',
         'image',
         'datasheet',
-        'show_datasheet',
         'created_by',
         'updated_by',
         'deleted_by',
