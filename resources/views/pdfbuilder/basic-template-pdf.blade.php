@@ -501,7 +501,7 @@ if (!function_exists('normalize_pdf_image')) {
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>Component Type</th><th>Approved Brand / Make</th><th>Technical Specification</th><th>Warranty Terms</th>
+                        <th>Component Type</th><th>Approved Brand / Make</th><th>Technical Specification</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -517,7 +517,6 @@ if (!function_exists('normalize_pdf_image')) {
                             </td>
                             <td>{{ $component['make'] }}</td>
                             <td>{{ $component['spec'] }}</td>
-                            <td>{{ $component['warranty'] }}</td>
                         </tr>
                     @endforeach
                 </tbody>

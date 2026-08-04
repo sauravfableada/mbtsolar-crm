@@ -185,6 +185,7 @@ class MakeController extends ApiBaseController
             ],
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif,bmp,webp,avif,svg', 'max:2048'],
             'datasheet' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:5120'],
+            'show_datasheet' => ['nullable', 'boolean'],
         ];
     }
 
@@ -213,6 +214,7 @@ class MakeController extends ApiBaseController
             'datasheet_url' => $make->datasheet
                 ? route('makes.datasheet', ['make' => $make->id]) . '?v=' . (optional($make->updated_at)?->timestamp ?? time())
                 : null,
+            'show_datasheet' => (bool)$make->show_datasheet,
             'created_at' => optional($make->created_at)?->toIso8601String(),
             'updated_at' => optional($make->updated_at)?->toIso8601String(),
         ];

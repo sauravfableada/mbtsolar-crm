@@ -20,7 +20,7 @@
     .detail-view-card .document-summary-view td.summary-header-cell {
         background-color: #4b9349;
         color: #fff !important;
-        border: 1px solid #333;
+        border: 1px solid #ccc;
         padding: 5px 8px;
         font-size: 15px;
         font-weight: bold;
@@ -33,7 +33,7 @@
     }
 
     .document-summary-view .summary-cell {
-        border: 1px solid #333;
+        border: 1px solid #ccc;
         padding: 5px 8px;
         font-size: 15px;
         line-height: 1.25;
@@ -62,7 +62,7 @@
     .detail-view-card .document-summary-view th.summary-footer-header {
         background-color: #4b9349;
         color: #fff !important;
-        border: 1px solid #333;
+        border: 1px solid #ccc;
         padding: 4px 6px;
         font-size: 13px;
         font-weight: bold;
@@ -70,7 +70,7 @@
     }
 
     .document-summary-view .summary-footer-cell {
-        border: 1px solid #333;
+        border: 1px solid #ccc;
         padding: 4px 6px;
         font-size: 13px;
         line-height: 1.2;

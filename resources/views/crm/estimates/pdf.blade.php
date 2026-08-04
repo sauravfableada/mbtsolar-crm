@@ -243,7 +243,7 @@ if (!isset($estdata) && isset($estimate)) {
         .quotation-table td,
         .extra-info th,
         .extra-info td {
-            border: 1px solid #333;
+            border: 1px solid #ccc;
             padding: 4px 6px;
             text-align: left;
         }

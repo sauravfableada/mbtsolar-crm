@@ -19,6 +19,12 @@ use Illuminate\Support\Facades\Validator;
 
 class EstimateController extends Controller
 {
+    public function __construct()
+    {
+        if (!function_exists('send_admin_notification')) {
+            require_once app_path('Helpers/emailSendHelper.php');
+        }
+    }
     /**
      * Get paginated estimates list
      */
