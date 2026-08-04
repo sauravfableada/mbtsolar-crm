@@ -130,6 +130,7 @@ class EstimateController extends Controller
 
     public function generate_estimate_pdf(Estimate $estimate)
     {
+        set_time_limit(300);
         $this->authorize('view', $estimate);
         $estimate->load(['customer', 'product', 'creator']);
 
@@ -189,6 +190,36 @@ class EstimateController extends Controller
         if ($template) {
             $form_data = $template->form_data ?? [];
 
+            // Calculate datasheet count for proper pagination offset
+            $datasheetCount = 0;
+            $products = is_array($estimate->product_name) ? $estimate->product_name : json_decode($estimate->product_name ?? '[]', true);
+            if (is_array($products)) {
+                $makeIdentifiers = array_filter(array_unique(array_column($products, 'category_name')));
+                if (!empty($makeIdentifiers)) {
+                    $makes = \App\Models\Category::whereIn('id', $makeIdentifiers)
+                        ->orWhereIn('name', $makeIdentifiers)
+                        ->get();
+                    $hasPdfDatasheet = false;
+                    foreach ($makes as $make) {
+                        if (!empty($make->datasheet) && Storage::disk('public')->exists($make->datasheet)) {
+                            $ext = strtolower(pathinfo($make->datasheet, PATHINFO_EXTENSION));
+                            if ($ext === 'pdf') {
+                                $hasPdfDatasheet = true;
+                                try {
+                                    $fpdi = new \setasign\Fpdi\Fpdi();
+                                    $datasheetCount += $fpdi->setSourceFile(Storage::disk('public')->path($make->datasheet));
+                                } catch (\Exception $e) {}
+                            } elseif (in_array($ext, ['jpg', 'jpeg', 'png'])) {
+                                $datasheetCount += 1;
+                            }
+                        }
+                    }
+                    if ($hasPdfDatasheet) {
+                        $datasheetCount += 1; // cover page
+                    }
+                }
+            }
+
             // Prepare data for the new template wrapper
             $pdfData = [
                 'estimate' => $estimate,
@@ -200,6 +231,7 @@ class EstimateController extends Controller
                 'template_id' => $template->id,
                 'template_name' => $template->template_name,
                 'quotation_html' => $quotation_html,
+                'datasheetCount' => $datasheetCount,
                 'header_image' => !empty($template->first_img) ? asset($template->first_img) : 'https://solar-crm.fableadtech.com/public/assets/img/profile/1760436391_b4bc9a00389df8eac539.jpg',
                 'footer_image' => asset('/assets/pdfFooter.png'),
                 'generated_at' => now()->format('d M Y h:i A'),
@@ -242,13 +274,122 @@ class EstimateController extends Controller
         // Now merge with customer uploaded docs
         $mergedPdf = new \setasign\Fpdi\Fpdi();
 
+        // Helper closure to add make datasheets
+        $appendMakeDatasheets = function() use ($estimate, $mergedPdf) {
+            $products = is_array($estimate->product_name) ? $estimate->product_name : json_decode($estimate->product_name ?? '[]', true);
+            if (is_array($products)) {
+                $makeIdentifiers = array_filter(array_unique(array_column($products, 'category_name')));
+                if (!empty($makeIdentifiers)) {
+                    $makes = \App\Models\Category::whereIn('id', $makeIdentifiers)
+                        ->orWhereIn('name', $makeIdentifiers)
+                        ->get();
+                    
+                    $hasDatasheet = false;
+                    foreach ($makes as $make) {
+                        if (isset($make->show_datasheet) && !$make->show_datasheet) continue;
+                        
+                        if (!empty($make->datasheet) && Storage::disk('public')->exists($make->datasheet)) {
+                            $hasDatasheet = true;
+                            break;
+                        }
+                    }
+                    
+                    if ($hasDatasheet) {
+                        try {
+                            $currentPage = $mergedPdf->PageNo();
+                            $coverPdf = \PDF::loadView('pdfbuilder.datasheet-cover', [
+                                'estimate' => $estimate,
+                                'companyName' => $settings['company_name'] ?? 'Rising Green Energy',
+                                'pageNumber' => $currentPage + 1
+                            ]);
+                            $tmpCover = tempnam(sys_get_temp_dir(), 'cover_pdf_');
+                            file_put_contents($tmpCover, $coverPdf->output());
+                            
+                            $count = $mergedPdf->setSourceFile($tmpCover);
+                            for ($p = 1; $p <= $count; $p++) {
+                                $tpl = $mergedPdf->importPage($p);
+                                $size = $mergedPdf->getTemplateSize($tpl);
+                                $mergedPdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                                $mergedPdf->useTemplate($tpl);
+                            }
+                            @unlink($tmpCover);
+                        } catch (\Exception $e) {
+                            \Log::error("Failed to generate/merge datasheet cover page: " . $e->getMessage());
+                        }
+                    }
+                    
+                    foreach ($makes as $make) {
+                        if (isset($make->show_datasheet) && !$make->show_datasheet) continue;
+                        
+                        if (!empty($make->datasheet) && Storage::disk('public')->exists($make->datasheet)) {
+                            $filePath = Storage::disk('public')->path($make->datasheet);
+                            $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+                            
+                            if ($ext === 'pdf') {
+                                try {
+                                    $count = $mergedPdf->setSourceFile($filePath);
+                                    for ($p = 1; $p <= $count; $p++) {
+                                        $tpl = $mergedPdf->importPage($p);
+                                        $size = $mergedPdf->getTemplateSize($tpl);
+                                        $mergedPdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                                        $mergedPdf->useTemplate($tpl);
+                                    }
+                                } catch (\Exception $e) {
+                                    \Log::error("Failed to merge PDF datasheet {$make->datasheet}: " . $e->getMessage());
+                                }
+                            } elseif (in_array($ext, ['jpg', 'jpeg', 'png'])) {
+                                try {
+                                    $currentPage = $mergedPdf->PageNo();
+                                    $imagePdf = \PDF::loadView('pdfbuilder.datasheet-image-page', [
+                                        'imagePath' => $make->datasheet,
+                                        'estimate' => $estimate,
+                                        'companyName' => $settings['company_name'] ?? 'Rising Green Energy',
+                                        'pageNumber' => $currentPage + 1
+                                    ]);
+                                    $tmpImage = tempnam(sys_get_temp_dir(), 'image_pdf_');
+                                    file_put_contents($tmpImage, $imagePdf->output());
+                                    
+                                    $count = $mergedPdf->setSourceFile($tmpImage);
+                                    for ($p = 1; $p <= $count; $p++) {
+                                        $tpl = $mergedPdf->importPage($p);
+                                        $size = $mergedPdf->getTemplateSize($tpl);
+                                        $mergedPdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                                        $mergedPdf->useTemplate($tpl);
+                                    }
+                                    @unlink($tmpImage);
+                                } catch (\Exception $e) {
+                                    \Log::error("Failed to merge image datasheet {$make->datasheet}: " . $e->getMessage());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
         // Add Dompdf file
         $pageCount = $mergedPdf->setSourceFile($tmpMain);
+        $datasheetsAppended = false;
+        
         for ($page = 1; $page <= $pageCount; $page++) {
             $tpl = $mergedPdf->importPage($page);
             $size = $mergedPdf->getTemplateSize($tpl);
             $mergedPdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
             $mergedPdf->useTemplate($tpl);
+            
+            // Insert datasheets right after page 4
+            if ($page == 4) {
+                $appendMakeDatasheets();
+                $datasheetsAppended = true;
+                // Re-set the main file as source so the rest of the pages can be imported
+                $mergedPdf->setSourceFile($tmpMain);
+            }
+        }
+        
+        // If the document had less than 4 pages, append them at the end
+        if (!$datasheetsAppended) {
+            $appendMakeDatasheets();
+            $mergedPdf->setSourceFile($tmpMain);
         }
 
         // Add each customer doc (if PDF/Image)

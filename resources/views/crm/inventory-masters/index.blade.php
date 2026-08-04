@@ -96,6 +96,14 @@
                                 </div>
                             </div>
                         @endif
+                        @if($hasShowDatasheet ?? false)
+                            <div class="mb-3 form-check form-switch">
+                                <input type="hidden" name="show_datasheet" value="0">
+                                <input class="form-check-input" type="checkbox" role="switch" name="show_datasheet" id="{{ $moduleKey }}ShowDatasheet" value="1" checked>
+                                <label class="form-check-label" for="{{ $moduleKey }}ShowDatasheet">Show Datasheet in PDF?</label>
+                                <div class="invalid-feedback d-block" id="{{ $moduleKey }}ShowDatasheetError"></div>
+                            </div>
+                        @endif
                     </div>
                     <div class="modal-footer border-0 pt-0 pb-3 px-4">
                         <button type="button" class="btn btn-outline-dark-blue px-4 rounded-3" data-bs-dismiss="modal">Cancel</button>

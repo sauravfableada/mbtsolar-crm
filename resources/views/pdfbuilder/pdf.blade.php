@@ -415,8 +415,13 @@ $_pageClass = static function (string $key) use ($__lastPageKey): string {
 };
 
 $__pdfPageCounter = 0;
-$_pdfPageNumber = static function () use (&$__pdfPageCounter): int {
-    return ++$__pdfPageCounter;
+$datasheetCount = $datasheetCount ?? 0;
+$_pdfPageNumber = static function () use (&$__pdfPageCounter, $datasheetCount): int {
+    $__pdfPageCounter++;
+    if ($__pdfPageCounter > 4) {
+        return $__pdfPageCounter + $datasheetCount;
+    }
+    return $__pdfPageCounter;
 };
 
 // Load estimate data if estimate_no is available

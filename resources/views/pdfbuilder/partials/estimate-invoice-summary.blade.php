@@ -54,10 +54,10 @@ if ($summaryGstAmount === null) {
     $summaryGstAmount = $summaryBomTotal * ($summaryGstRate / 100);
 }
 
-$summaryHeaderCellStyle = "background-color:#4b9349;color:#fff;border:1px solid #333;padding:5px 8px;font-size:15px;font-family:'Montserrat',sans-serif;font-weight:bold;line-height:1.25;";
-$summaryCellStyle = "border:1px solid #333;padding:5px 8px;font-size:15px;font-family:'Montserrat',sans-serif;color:#000;line-height:1.25;";
-$summaryFooterHeaderCellStyle = "background-color:#4b9349;color:#fff;border:1px solid #333;padding:4px 6px;font-size:13px;font-family:'Montserrat',sans-serif;font-weight:bold;line-height:1.2;";
-$summaryFooterCellStyle = "border:1px solid #333;padding:4px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;color:#000;line-height:1.2;vertical-align:top;";
+$summaryHeaderCellStyle = "background-color:#4b9349;color:#fff;border:1px solid #ccc;padding:5px 8px;font-size:15px;font-family:'Montserrat',sans-serif;font-weight:bold;line-height:1.25;";
+$summaryCellStyle = "border:1px solid #ccc;padding:5px 8px;font-size:15px;font-family:'Montserrat',sans-serif;color:#000;line-height:1.25;";
+$summaryFooterHeaderCellStyle = "background-color:#4b9349;color:#fff;border:1px solid #ccc;padding:4px 6px;font-size:13px;font-family:'Montserrat',sans-serif;font-weight:bold;line-height:1.2;";
+$summaryFooterCellStyle = "border:1px solid #ccc;padding:4px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;color:#000;line-height:1.2;vertical-align:top;";
 $summaryRightCellStyle = $summaryCellStyle . 'text-align:right;';
 $summaryHighlightCellStyle = $summaryRightCellStyle . 'background-color:#4b9349;color:#fff;font-weight:bold;';
 $summaryHeaderTextStyle = "font-size:13.5px;font-family:'Montserrat',sans-serif;color:#000;line-height:1.45;";
