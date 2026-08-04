@@ -63,6 +63,10 @@ class MakeController extends ApiBaseController
             $data['image'] = $request->file('image')->store('makes', 'public');
         }
 
+        if ($request->hasFile('datasheet')) {
+            $data['datasheet'] = $request->file('datasheet')->store('makes/datasheets', 'public');
+        }
+
         $make = Category::create($data);
 
         return response()->json([
@@ -100,6 +104,14 @@ class MakeController extends ApiBaseController
             }
 
             $data['image'] = $request->file('image')->store('makes', 'public');
+        }
+
+        if ($request->hasFile('datasheet')) {
+            if ($make->datasheet) {
+                Storage::disk('public')->delete($make->datasheet);
+            }
+
+            $data['datasheet'] = $request->file('datasheet')->store('makes/datasheets', 'public');
         }
 
         $make->update($data);
@@ -141,6 +153,27 @@ class MakeController extends ApiBaseController
         return response()->file($imagePath);
     }
 
+    public function datasheet($id)
+    {
+        $category = Category::findOrFail($id);
+
+        if (!$category->datasheet) {
+            abort(404, 'Datasheet not found');
+        }
+
+        $storageDiskPath = Storage::disk('public')->path($category->datasheet);
+        if (is_file($storageDiskPath)) {
+            return response()->file($storageDiskPath);
+        }
+
+        $publicStoragePath = public_path('storage/' . $category->datasheet);
+        if (is_file($publicStoragePath)) {
+            return response()->file($publicStoragePath);
+        }
+
+        abort(404, 'Datasheet not found');
+    }
+
     private function rules(?Category $make = null): array
     {
         return [
@@ -151,6 +184,7 @@ class MakeController extends ApiBaseController
                 Rule::unique('category', 'name')->ignore($make?->id)->whereNull('deleted_at'),
             ],
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif,bmp,webp,avif,svg', 'max:2048'],
+            'datasheet' => ['nullable', 'file', 'mimes:pdf,doc,docx,jpg,jpeg,png', 'max:5120'],
         ];
     }
 
@@ -161,6 +195,8 @@ class MakeController extends ApiBaseController
             'name.unique' => 'This make name already exists.',
             'image.mimes' => 'Please select a valid image. Allowed types: AVIF, WEBP, JPG, JPEG, PNG, GIF, BMP, SVG.',
             'image.max' => 'Please select an image smaller than 2MB.',
+            'datasheet.mimes' => 'Please select a valid datasheet. Allowed types: PDF, DOC, DOCX, JPG, PNG.',
+            'datasheet.max' => 'Please select a datasheet smaller than 5MB.',
         ];
     }
 
@@ -172,6 +208,10 @@ class MakeController extends ApiBaseController
             'image' => $make->image,
             'image_url' => $make->image
                 ? route('makes.image', ['make' => $make->id]) . '?v=' . (optional($make->updated_at)?->timestamp ?? time())
+                : null,
+            'datasheet' => $make->datasheet,
+            'datasheet_url' => $make->datasheet
+                ? route('makes.datasheet', ['make' => $make->id]) . '?v=' . (optional($make->updated_at)?->timestamp ?? time())
                 : null,
             'created_at' => optional($make->created_at)?->toIso8601String(),
             'updated_at' => optional($make->updated_at)?->toIso8601String(),

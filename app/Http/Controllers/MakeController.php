@@ -25,6 +25,27 @@ class MakeController extends Controller
         return response()->file($imagePath);
     }
 
+    public function datasheet($id)
+    {
+        $category = Category::findOrFail($id);
+
+        if (!$category->datasheet) {
+            abort(404, 'Datasheet not found');
+        }
+
+        $storageDiskPath = Storage::disk('public')->path($category->datasheet);
+        if (is_file($storageDiskPath)) {
+            return response()->file($storageDiskPath);
+        }
+
+        $publicStoragePath = public_path('storage/' . $category->datasheet);
+        if (is_file($publicStoragePath)) {
+            return response()->file($publicStoragePath);
+        }
+
+        abort(404, 'Datasheet not found');
+    }
+
     private function resolveImagePath(?string $imagePath): ?string
     {
         if (!$imagePath) {

@@ -17,6 +17,7 @@
         'fieldLabel' => 'Name',
         'hasDescription' => false,
         'hasImage' => true,
+        'hasDatasheet' => true,
         'permissions' => [
             'view' => auth()->user()?->hasMatrixPermission('view_make'),
             'create' => auth()->user()?->hasMatrixPermission('create_make'),
@@ -36,6 +37,7 @@
         fieldLabel: 'Name',
         hasDescription: false,
         hasImage: true,
+        hasDatasheet: true,
         dummyImageUrl: @json(url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'assets/img/logos/crmfavicon.png')),
         indexUrl: @json(route('api.make.index')),
         storeUrl: @json(route('api.make.store')),

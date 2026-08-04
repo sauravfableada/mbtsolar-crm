@@ -76,13 +76,23 @@
                                 <div class="invalid-feedback" id="{{ $moduleKey }}DescriptionError"></div>
                             </div>
                         @endif
-                        @if($hasImage)
+                        @if($hasImage ?? false)
                             <div class="mb-3">
                                 <label class="form-label">Image</label>
                                 <input type="file" name="image" id="{{ $moduleKey }}Image" class="form-control" accept=".avif,.webp,.jpg,.jpeg,.png,.gif,.bmp,.svg,image/avif,image/webp,image/jpeg,image/png,image/gif,image/bmp,image/svg+xml">
                                 <div class="invalid-feedback d-block" id="{{ $moduleKey }}ImageError"></div>
                                 <div class="mt-3 d-none" id="{{ $moduleKey }}ImagePreviewWrap">
                                     <img src="" alt="Preview" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: contain;" id="{{ $moduleKey }}ImagePreview">
+                                </div>
+                            </div>
+                        @endif
+                        @if($hasDatasheet ?? false)
+                            <div class="mb-3">
+                                <label class="form-label">Datasheet</label>
+                                <input type="file" name="datasheet" id="{{ $moduleKey }}Datasheet" class="form-control" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                <div class="invalid-feedback d-block" id="{{ $moduleKey }}DatasheetError"></div>
+                                <div class="mt-2 d-none" id="{{ $moduleKey }}DatasheetLinkWrap">
+                                    <a href="#" target="_blank" id="{{ $moduleKey }}DatasheetLink" class="btn btn-sm btn-outline-primary"><i class="bi bi-file-earmark-text me-1"></i>View Current Datasheet</a>
                                 </div>
                             </div>
                         @endif
