@@ -951,3 +951,33 @@
     border-color: rgba(255, 255, 255, 0.08) rgba(255, 255, 255, 0.08) #1e293b !important;
     color: #f1f5f9 !important;
 }
+
+/* Soft Badges for tables and generic use */
+.badge.bg-primary { background-color: rgba(13, 110, 253, 0.15) !important; color: #0d6efd !important; border: 1px solid rgba(13, 110, 253, 0.05); }
+.badge.bg-secondary { background-color: rgba(108, 117, 125, 0.15) !important; color: #6c757d !important; border: 1px solid rgba(108, 117, 125, 0.05); }
+.badge.bg-success { background-color: rgba(25, 135, 84, 0.15) !important; color: #198754 !important; border: 1px solid rgba(25, 135, 84, 0.05); }
+.badge.bg-danger { background-color: rgba(220, 53, 69, 0.15) !important; color: #dc3545 !important; border: 1px solid rgba(220, 53, 69, 0.05); }
+.badge.bg-warning { background-color: rgba(255, 193, 7, 0.15) !important; color: #d39e00 !important; border: 1px solid rgba(255, 193, 7, 0.05); }
+.badge.bg-info { background-color: rgba(13, 202, 240, 0.15) !important; color: #087990 !important; border: 1px solid rgba(13, 202, 240, 0.05); }
+.badge.bg-dark { background-color: rgba(33, 37, 41, 0.15) !important; color: #212529 !important; border: 1px solid rgba(33, 37, 41, 0.05); }
+
+/* Force Pill shape and size on table badges to match leads */
+.table .badge {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 132px !important;
+    border-radius: 50rem !important;
+    padding: 0.5rem 0.9rem !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+}
+
+/* Soft Badges for Dark Theme */
+[data-theme="dark"] .badge.bg-primary { background-color: rgba(13, 110, 253, 0.2) !important; color: #93c5fd !important; border-color: rgba(13, 110, 253, 0.1) !important; }
+[data-theme="dark"] .badge.bg-secondary { background-color: rgba(148, 163, 184, 0.2) !important; color: #cbd5e1 !important; border-color: rgba(148, 163, 184, 0.1) !important; }
+[data-theme="dark"] .badge.bg-success { background-color: rgba(25, 135, 84, 0.2) !important; color: #86efac !important; border-color: rgba(25, 135, 84, 0.1) !important; }
+[data-theme="dark"] .badge.bg-danger { background-color: rgba(220, 53, 69, 0.2) !important; color: #fca5a5 !important; border-color: rgba(220, 53, 69, 0.1) !important; }
+[data-theme="dark"] .badge.bg-warning { background-color: rgba(251, 191, 36, 0.2) !important; color: #fde047 !important; border-color: rgba(251, 191, 36, 0.1) !important; }
+[data-theme="dark"] .badge.bg-info { background-color: rgba(13, 202, 240, 0.2) !important; color: #67e8f9 !important; border-color: rgba(13, 202, 240, 0.1) !important; }
+[data-theme="dark"] .badge.bg-dark { background-color: rgba(255, 255, 255, 0.1) !important; color: #f8fafc !important; border-color: rgba(255, 255, 255, 0.05) !important; }
