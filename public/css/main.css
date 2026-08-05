@@ -881,7 +881,7 @@
 }
 
 /* Dark Mode Badge */
-[data-theme="dark"] .badge {
+[data-theme="dark"] .badge:not([class*="bg-"]):not([class*="badge-"]) {
     background-color: #0f172a !important;
     color: #e2e8f0 !important;
 }

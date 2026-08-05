@@ -90,14 +90,14 @@
                             <div class="invalid-feedback" id="estimate_id-error"></div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label fw-semibold">Estimate Amount <span class="text-danger">*</span></label>
                             <input type="number" step="0.01" min="0" name="amount" id="amount" value="{{ old('amount') }}"
                                 class="form-control" placeholder="Enter estimate amount" required>
                             <div class="invalid-feedback" id="amount-error"></div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label fw-semibold">Time Line <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" min="1" name="timeline_value" id="timeline_value" value="{{ $defaultTimelineValue }}"
@@ -111,7 +111,7 @@
                             <div class="invalid-feedback d-block" id="timeline_unit-error"></div>
                         </div>
 
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label fw-semibold">Deal Status <span class="text-danger">*</span></label>
                             <select name="status_id" id="status_id" class="form-select" required>
                                 <option value="">Select Status</option>
