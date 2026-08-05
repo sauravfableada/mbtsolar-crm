@@ -372,6 +372,10 @@
     color: var(--crm-dark-blue) !important;
 }
 
+[data-theme="dark"] .text-dark-blue {
+    color: #e2e8f0 !important;
+}
+
 #usersTable thead th,
 #customerTable thead th {
     background-color: #f8fafc;

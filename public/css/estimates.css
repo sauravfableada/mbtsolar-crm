@@ -763,8 +763,62 @@ input:checked + .slider:before {
         flex-direction: column;
         width: 100%;
     }
-    .preview-buttons .btn {
-        width: 100%;
-        justify-content: center;
-    }
+}
+
+/* Dark Mode Overrides for Estimates */
+[data-theme="dark"] .invalid-feedback {
+    color: #ff6b6b !important;
+}
+
+[data-theme="dark"] .form-control.is-invalid,
+[data-theme="dark"] .form-select.is-invalid,
+[data-theme="dark"] .select2-container .select2-selection.is-invalid {
+    border-color: #ff6b6b !important;
+}
+
+[data-theme="dark"] .bg-white,
+[data-theme="dark"] .bg-light {
+    background-color: var(--crm-bg-card, #1e293b) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .totals-card,
+[data-theme="dark"] .bom-section,
+[data-theme="dark"] .bom-row {
+    background-color: var(--crm-bg-card, #1e293b) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .totals-row,
+[data-theme="dark"] .totals-row .text-dark {
+    color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .input-small {
+    background-color: #0f172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9 !important;
+}
+
+[data-theme="dark"] .estimate-price-mode-card {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .estimate-price-mode-title {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .estimate-price-mode-options {
+    background: #0f172a;
+}
+
+[data-theme="dark"] .estimate-price-mode-option {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .estimate-price-mode-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
 }

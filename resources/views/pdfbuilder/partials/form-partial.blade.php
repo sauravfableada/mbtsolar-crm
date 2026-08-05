@@ -97,12 +97,30 @@
         border-radius: 0 0 8px 8px !important;
     }
 
+    /* Dark Mode CKEditor Outer UI */
+    [data-theme="dark"] .cke_top,
+    [data-theme="dark"] .cke_bottom,
+    [data-theme="dark"] .cke_chrome {
+        background: #1e293b !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    [data-theme="dark"] .cke_toolgroup {
+        background: #334155 !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+    [data-theme="dark"] .cke_button_icon {
+        filter: invert(0.8) !important;
+    }
+    [data-theme="dark"] .cke_button:hover {
+        background: #475569 !important;
+    }
+
     /* Light border for form blocks */
     .block {
         border: 1px solid #e0e0e0;
         border-radius: 8px;
         padding: 18px 18px 0 18px;
-        background: #fff;
+        background: var(--crm-bg-card, #fff);
         margin-bottom: 1.5rem;
     }
 
@@ -110,36 +128,46 @@
         border: 1px solid #e0e0e0;
         border-radius: 8px;
         padding: 18px;
-        background: #fff;
+        background: var(--crm-bg-card, #fff);
         margin-bottom: 1.5rem;
     }
     .time-line-block {
         border: 1px solid #e0e0e0;
         border-radius: 8px;
         padding: 18px;
-        background: #fff;
+        background: var(--crm-bg-card, #fff);
         margin-bottom: 1.5rem;
     }
     .payment-terms-block{
         border: 1px solid #e0e0e0;
         border-radius: 8px;
         padding: 18px;
-        background: #fff;
+        background: var(--crm-bg-card, #fff);
         margin-bottom: 1.5rem;
     }
     .environment-impact-block{
         border: 1px solid #e0e0e0;
         border-radius: 8px;
         padding: 18px;
-        background: #fff;
+        background: var(--crm-bg-card, #fff);
         margin-bottom: 1.5rem;   
     }
     .footer-block{
         border: 1px solid #e0e0e0;
         border-radius: 8px;
         padding: 18px;
-        background: #fff;
+        background: var(--crm-bg-card, #fff);
         margin-bottom: 1.5rem;
+    }
+
+    [data-theme="dark"] .block,
+    [data-theme="dark"] .company-info-block,
+    [data-theme="dark"] .time-line-block,
+    [data-theme="dark"] .payment-terms-block,
+    [data-theme="dark"] .environment-impact-block,
+    [data-theme="dark"] .footer-block {
+        background: var(--crm-bg-card, #1e293b);
+        border-color: rgba(255, 255, 255, 0.08);
     }
 
     .addmore:focus {
@@ -260,7 +288,7 @@
 
 <div class="container-fluid p-0">
     <div class="card shadow-sm border-0 rounded-4 overflow-hidden pdfbuilder-form-card">
-        <div class="card-header bg-white border-bottom py-3 px-3 px-md-4">
+        <div class="card-header border-bottom py-3 px-3 px-md-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                 <div>
                     <h1 class="h4 mb-1 fw-semibold">Manage PDF Template</h1>

@@ -776,10 +776,8 @@
 /* [data-theme="dark"] .btn {
     color: inherit !important;
 } */
-
 [data-theme="dark"] .invalid-feedback {
     color: #f87171 !important;
-    display: block !important;
 }
 
 [data-theme="dark"] .is-invalid {
