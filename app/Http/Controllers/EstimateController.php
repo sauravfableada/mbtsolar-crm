@@ -146,6 +146,7 @@ class EstimateController extends Controller
             'company_logo_path',
             'company_qr_code_path',
             'phone',
+            'company_email',
             'email',
             'social_instagram',
             'social_facebook',

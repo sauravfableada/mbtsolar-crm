@@ -255,10 +255,12 @@ $summaryLendingCost = $summaryNetPayable;
         <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summaryBaseCost, 2) ?></td>
     </tr>
     <?php endif; ?>
+    <?php if (!$summaryUsesGlobalTax): ?>
     <tr>
         <td style="<?= $summaryCellStyle ?>">Bill of Materials (BOM)</td>
-        <td style="<?= $summaryRightCellStyle ?>"><?= $summaryUsesGlobalTax ? '--' : number_format($summaryBomTotal, 2) ?></td>
+        <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summaryBomTotal, 2) ?></td>
     </tr>
+    <?php endif; ?>
     <?php if ($summaryShowBomTaxes): ?>
     <tr>
         <td style="<?= $summaryCellStyle ?>"><strong><?= $summaryUsesGlobalTax ? 'Global Tax on Base Price' : 'Taxes on Bill of Materials (BOM Only)' ?></strong></td>

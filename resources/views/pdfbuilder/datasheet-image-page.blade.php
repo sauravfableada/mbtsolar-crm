@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -75,14 +75,14 @@
             }
         @endphp
         <!-- Header -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 0px;">
             <tr>
-                <td width="50%" align="left" valign="top">
+                <td width="50%" align="left" valign="bottom">
                     <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                         {{ (float)($estimate->quantity ?? 0) }}kW Ongrid {{ $estimate->type ?? 'Proposal' }}
                     </div>
                 </td>
-                <td width="50%" align="right" valign="top">
+                <td width="50%" align="right" valign="bottom">
                     @if($logoBase64)
                         <img src="{{ $logoBase64 }}" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                     @endif
@@ -132,3 +132,4 @@
     </div>
 </body>
 </html>
+
