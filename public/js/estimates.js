@@ -65,15 +65,15 @@
 
     function getDocumentPriceMode() {
         const mode = window.documentEstimatePriceMode || window.estimatePriceMode;
-        return mode === 'base' ? 'base' : 'bom';
+        return mode === 'bom' ? 'bom' : 'base';
     }
 
     function setDocumentPriceMode(mode) {
-        window.documentEstimatePriceMode = mode === 'base' ? 'base' : 'bom';
+        window.documentEstimatePriceMode = mode === 'bom' ? 'bom' : 'base';
     }
 
     function syncPriceModeButtons(scope, mode, optionSelector, helpSelector) {
-        const activeMode = mode === 'base' ? 'base' : 'bom';
+        const activeMode = mode === 'bom' ? 'bom' : 'base';
         const root = scope || document;
         root.querySelectorAll(optionSelector).forEach(function (button) {
             const buttonMode = button.dataset.priceModeOption || button.dataset.quickPriceModeOption || '';
@@ -918,7 +918,7 @@
             };
 
             const applyQuickEstimatePriceMode = function (mode) {
-                window.estimatePriceMode = mode === 'base' ? 'base' : 'bom';
+                window.estimatePriceMode = mode === 'bom' ? 'bom' : 'base';
                 const isBaseMode = window.estimatePriceMode === 'base';
                 const selector = document.getElementById('quick_estimate_price_mode');
                 if (selector) {
@@ -1331,7 +1331,7 @@
             const quickPriceModeSelector = document.getElementById('quick_estimate_price_mode');
             if (quickPriceModeSelector && quickPriceModeSelector.dataset.priceModeInit !== '1') {
                 quickPriceModeSelector.dataset.priceModeInit = '1';
-                quickPriceModeSelector.value = window.estimatePriceMode === 'base' ? 'base' : 'bom';
+                quickPriceModeSelector.value = window.estimatePriceMode === 'bom' ? 'bom' : 'base';
                 quickPriceModeSelector.addEventListener('change', function () {
                     applyQuickEstimatePriceMode(this.value);
                     clearQuickEstimateValidationState(form);
@@ -1569,7 +1569,7 @@
                 formData.set('type', estimateType);
                 formData.set('quantity', String(quantity));
                 formData.set('price', String(price));
-                formData.set('price_mode', window.estimatePriceMode === 'base' ? 'base' : 'bom');
+                formData.set('price_mode', window.estimatePriceMode === 'bom' ? 'bom' : 'base');
                 formData.set('template_id', templateId);
                 formData.set('solar_meter_charges', 'as_per_actual');
                 formData.set('estimate_date', new Date().toISOString().slice(0, 10));
