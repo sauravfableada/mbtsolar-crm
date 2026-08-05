@@ -24,6 +24,7 @@
             text-transform: uppercase;
             padding-bottom: 10px;
             margin-bottom: 20px;
+            margin-top: 20px;
         }
         .description {
             font-size: 14.5px;

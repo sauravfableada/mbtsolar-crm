@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 // âœ… Start the session here
 $session = session();
 $userId = $session->get('id');
@@ -1689,12 +1689,12 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                 cleanly power your property:
             </p>
             <ul style="padding-left: 20px; font-size: 13.5px; line-height: 1.5; margin-bottom: 25px;">
-                <li style="margin-bottom: 8px;"><strong>Step 1: How does residencial solar work? â€“</strong>
+                <li style="margin-bottom: 8px;"><strong>Step 1: How does residencial solar work? -</strong>
                     Solar panels convert sunlight into electricity, which powers your home. Any excess energy is sent to the grid or stored in a battery.</li>
-                <li style="margin-bottom: 8px;"><strong>Step 2: Will solar panels reduce my electricity bill? â€“</strong>
+                <li style="margin-bottom: 8px;"><strong>Step 2: Will solar panels reduce my electricity bill? -</strong>
                     Yes. Solar can significantly reduce or even eliminate your electricity bills, depending on your system size and consumption.</li>
-                <li style="margin-bottom: 8px;"><strong>Step 3: How much roof space is needed? â€“</strong> A typical 1 kW system needs around 100 sq. ft. The exact space depends on your energy needs and roof type.</li>
-                <li style="margin-bottom: 8px;"><strong>Step 4: What is the lifespan of a solar system? â€“</strong> Solar panels last 25+ years with minimal maintenance. Inverters usually last 8â€“10 years and may need replacement once during the systemâ€™s life.</li>
+                <li style="margin-bottom: 8px;"><strong>Step 3: How much roof space is needed? -</strong> A typical 1 kW system needs around 100 sq. ft. The exact space depends on your energy needs and roof type.</li>
+                <li style="margin-bottom: 8px;"><strong>Step 4: What is the lifespan of a solar system? -</strong> Solar panels last 25+ years with minimal maintenance. Inverters usually last 8-10 years and may need replacement once during the system's life.</li>
             </ul>
 HTML;
 
@@ -1705,14 +1705,14 @@ HTML;
             </div>
             <ul style="padding-left: 20px; font-size: 13.5px; line-height: 1.5; margin-bottom: 20px;">
                 <li style="margin-bottom: 8px;"><strong>Massive Utility Bill Reductions:</strong> Drastically slash
-                    your monthly energy spend by up to <strong>80% â€“ 90%</strong>.</li>
+                    your monthly energy spend by up to <strong>80% - 90%</strong>.</li>
                 <li style="margin-bottom: 8px;"><strong>High Return on Investment:</strong> Solar operates as a
-                    high-yielding financial asset that typical clears its payback period within <strong>3 â€“ 4</strong>
+                    high-yielding financial asset that typical clears its payback period within <strong>3 - 4</strong>
                     years, yielding completely free power for the remainder of its 25+ year lifecycle.</li>
                 <li style="margin-bottom: 8px;"><strong>Property Appreciation:</strong> Green-certified residential
                     buildings equipped with fixed solar infrastructure command higher market resale values.</li>
                 <li style="margin-bottom: 8px;"><strong>Extremely Low Maintenance:</strong> With zero moving parts, the
-                    entire system requires minimal operational upkeepâ€”restricted primarily to routine automated or
+                    entire system requires minimal operational upkeep-restricted primarily to routine automated or
                     manual panel washings.</li>
                 <li style="margin-bottom: 8px;"><strong>Environmental Stewardship:</strong> Directly mitigate carbon
                     footprints and actively combat localized climate change.</li>

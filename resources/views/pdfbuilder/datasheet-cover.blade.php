@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -22,6 +22,7 @@
             text-transform: uppercase;
             padding-bottom: 10px;
             margin-bottom: 30px;
+            margin-top: 20px;
         }
         .description {
             font-size: 14.5px;
