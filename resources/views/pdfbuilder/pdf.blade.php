@@ -3728,20 +3728,15 @@ HTML;
                         $footerSubTitle = trim((string) ($footer['sub_title'] ?? ''));
                         $footerImg = resolve_pdf_image_with_fallback($footer['image'] ?? '', 'public/assets/img/footer.png');
                         ?>
-                        <div style="width: 100%; height: 350px; overflow: hidden; text-align: center; border-radius: 20px;">
+                        <div style="width: 100%; overflow: hidden; text-align: center; border-radius: 20px;">
                             <img src="<?= $footerImg ?>" alt="Solar Panels"
-                                style="width: 100%; height: auto; display: block; margin: 0 auto;">
+                                style="max-width: 100%; max-height: 550px; height: auto; width: auto; display: block; margin: 0 auto;">
                         </div>
                         
                         <!-- Circular overlapping logo -->
                         <div style="text-align: center; margin-top: -40px; position: relative; z-index: 10;">
-                            <?php if (!empty($logoBase64)): ?>
-                            <img src="<?= $logoBase64 ?>" alt="Logo" 
-                                style="width: 45px; height: 45px; padding: 15px; border: 3px solid #4b9349; border-radius: 50px; background-color: #fff; display: inline-block; object-fit: contain;">
-                            <?php else: ?>
                             <img src="<?= normalize_pdf_image('public/logo/favicon.jpeg') ?>" alt="Logo" 
                                 style="width: 45px; height: 45px; padding: 15px; border: 3px solid #4b9349; border-radius: 50px; background-color: #fff; display: inline-block;">
-                            <?php endif; ?>
                         </div>
                     </td>
                 </tr>

@@ -38,11 +38,11 @@
         $warrantyValue = 'Standard OEM Warranty';
 
         if (!empty($component['description'])) {
-            $techSpecs[] = 'Description: ' . htmlspecialchars($component['description']);
+            $techSpecs[] = '<strong>Description:</strong> ' . htmlspecialchars($component['description']);
         }
 
         if ($qty !== '') {
-            $techSpecs[] = 'Qty: ' . $qty;
+            $techSpecs[] = '<strong>Qty:</strong> ' . $qty;
         }
 
         if (is_array($specs)) {
@@ -62,7 +62,7 @@
                 } elseif (strtolower($k) === 'warranty') {
                     $warrantyValue = $v;
                 } else {
-                    $techSpecs[] = htmlspecialchars($k) . ': ' . $v;
+                    $techSpecs[] = '<strong>' . htmlspecialchars($k) . ':</strong> ' . $v;
                 }
             }
         } else {
