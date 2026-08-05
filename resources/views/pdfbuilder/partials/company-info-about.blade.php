@@ -1,6 +1,6 @@
 <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px; border-collapse: collapse;">
     <tr>
-        <td style="padding: 20px 24px 18px 22px;">
+        <td style="padding: 0px 24px 18px 22px;">
             <div class="pdf-rich-content pdf-rich-content-spacious pdf-company-page-about">
                 <?php if (($estdata->type ?? '') === 'residential'): ?>
                     <p style="margin-bottom: 14px; font-size: 16px; font-weight: normal;">Dear <strong><?= esc($preparedForName) ?></strong>,</p>

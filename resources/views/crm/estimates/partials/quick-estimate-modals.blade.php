@@ -1,5 +1,5 @@
 @php
-    $estimatePriceMode = $estimatePriceMode ?? (\App\Models\Setting::where('key', 'estimate_price_mode')->value('value') === 'base' ? 'base' : 'bom');
+    $estimatePriceMode = $estimatePriceMode ?? (\App\Models\Setting::where('key', 'estimate_price_mode')->value('value') === 'bom' ? 'bom' : 'base');
     $bomTaxOptions = collect($gstTaxes ?? [])->map(function ($tax) {
         $taxName = strtoupper((string) $tax->name);
         $label = (string) $tax->name;

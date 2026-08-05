@@ -277,6 +277,10 @@
         if (stepNum === 1) {
             initCkeditorIfPresent('company_description');
         }
+        if (stepNum === 2) {
+            initCkeditorIfPresent('solar_system_works');
+            initCkeditorIfPresent('advantages_solar');
+        }
         if (stepNum === 3) {
             initCkeditorIfPresent('components_description');
             initCkeditorIfPresent('estimate_template_comment');
@@ -433,6 +437,8 @@
             initEditorsForPdfStep(1);
         } else {
             initCkeditorIfPresent('company_description');
+            initCkeditorIfPresent('solar_system_works');
+            initCkeditorIfPresent('advantages_solar');
             initCkeditorIfPresent('components_description');
             initCkeditorIfPresent('estimate_template_comment');
             initCkeditorIfPresent('environment_impact_content');

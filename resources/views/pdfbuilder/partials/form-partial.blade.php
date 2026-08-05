@@ -518,6 +518,60 @@
                         </div>
                         <hr class="my-4">
 
+                        <!-- How the Solar System Works -->
+                        <div class="time-line-block mt-4" id="block-solar-system-works">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <h5 class="text-primary mb-0"><i class="fas fa-sun"></i> How the Solar System Works</h5>
+                                <div class="form-check form-switch mb-0">
+                                    <input type="hidden" id="solar_system_works_active" name="solar_system_works_active" value="{{ (int)($formData['solar_system_works_active'] ?? 1) }}">
+                                    <input class="form-check-input block-toggle"
+                                           type="checkbox"
+                                           role="switch"
+                                           id="toggle-solar-system-works"
+                                           data-target="#block-solar-system-works-body"
+                                           data-active-input="#solar_system_works_active"
+                                           {{ ((int)($formData['solar_system_works_active'] ?? 1) === 1) ? 'checked' : '' }}>
+                                    <label class="form-check-label small" for="toggle-solar-system-works">Active/Inactive</label>
+                                </div>
+                            </div>
+                            <div id="block-solar-system-works-body" class="block-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label"><i class="fas fa-align-left"></i> Content</label>
+                                        <textarea class="form-control" id="solar_system_works" name="solar_system_works" rows="4" placeholder="Enter content...">{{ $formData['solar_system_works'] ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+
+                        <!-- Advantages of Solar Energy -->
+                        <div class="time-line-block mt-4" id="block-advantages-solar">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <h5 class="text-primary mb-0"><i class="fas fa-leaf"></i> Advantages of Solar Energy</h5>
+                                <div class="form-check form-switch mb-0">
+                                    <input type="hidden" id="advantages_solar_active" name="advantages_solar_active" value="{{ (int)($formData['advantages_solar_active'] ?? 1) }}">
+                                    <input class="form-check-input block-toggle"
+                                           type="checkbox"
+                                           role="switch"
+                                           id="toggle-advantages-solar"
+                                           data-target="#block-advantages-solar-body"
+                                           data-active-input="#advantages_solar_active"
+                                           {{ ((int)($formData['advantages_solar_active'] ?? 1) === 1) ? 'checked' : '' }}>
+                                    <label class="form-check-label small" for="toggle-advantages-solar">Active/Inactive</label>
+                                </div>
+                            </div>
+                            <div id="block-advantages-solar-body" class="block-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label"><i class="fas fa-align-left"></i> Content</label>
+                                        <textarea class="form-control" id="advantages_solar" name="advantages_solar" rows="4" placeholder="Enter content...">{{ $formData['advantages_solar'] ?? '' }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+
                         <!-- Time line section -->
                         <div class="time-line-block mt-4" id="block-timeline">
                             <div class="d-flex align-items-center justify-content-between mb-3">

@@ -462,6 +462,10 @@ class PdfbuilderController extends Controller
             'generation' => $generation,
             'ongrid_roi' => $ongrid_roi,
             'estimate_comment' => $estimateComment,
+            'solar_system_works_active' => (int) ($request->input('solar_system_works_active', $oldFormData['solar_system_works_active'] ?? 1)),
+            'solar_system_works' => (string) ($request->input('solar_system_works', $oldFormData['solar_system_works'] ?? '')),
+            'advantages_solar_active' => (int) ($request->input('advantages_solar_active', $oldFormData['advantages_solar_active'] ?? 1)),
+            'advantages_solar' => (string) ($request->input('advantages_solar', $oldFormData['advantages_solar'] ?? '')),
         ];
 
         $updateData = [
@@ -724,6 +728,10 @@ class PdfbuilderController extends Controller
             'generation' => $generation,
             'ongrid_roi' => $ongrid_roi,
             'estimate_comment' => $estimateComment,
+            'solar_system_works_active' => (int) ($request->input('solar_system_works_active', 1)),
+            'solar_system_works' => (string) ($request->input('solar_system_works', '')),
+            'advantages_solar_active' => (int) ($request->input('advantages_solar_active', 1)),
+            'advantages_solar' => (string) ($request->input('advantages_solar', '')),
         ];
 
         $firstImgPath = null;

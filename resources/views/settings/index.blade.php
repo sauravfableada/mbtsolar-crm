@@ -801,8 +801,8 @@
                                 <label for="estimate_price_mode" class="form-label fw-semibold">Pricing Method</label>
                                 <div class="text-muted small mb-2">Choose how the estimate total should be calculated.</div>
                                 <select name="estimate_price_mode" id="estimate_price_mode" class="form-select" style="max-width: 420px;">
-                                    <option value="base" @selected(($settings['estimate_price_mode']->value ?? 'bom') === 'base')>Show Base Price only</option>
-                                    <option value="bom" @selected(($settings['estimate_price_mode']->value ?? 'bom') === 'bom')>Show BOM Price only</option>
+                                    <option value="base" @selected(($settings['estimate_price_mode']->value ?? 'base') === 'base')>Show Base Price only</option>
+                                    <option value="bom" @selected(($settings['estimate_price_mode']->value ?? 'base') === 'bom')>Show BOM Price only</option>
                                 </select>
                             </div>
                             <div class="pricing-guide mb-4">
