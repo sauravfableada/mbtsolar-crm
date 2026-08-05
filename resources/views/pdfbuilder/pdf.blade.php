@@ -1582,7 +1582,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <?php if (!$companyInfoSinglePage): ?>
     <!-- Company about (continues on next page with stats + gallery) -->
     <div class="page page-break" style="position: relative; background: white;">
-        <div style="padding: 36px 40px 44px;">
+        <div style="padding: 20px 40px 44px;">
             @include('pdfbuilder.partials.pdf-page-header')
             <div
                 style="font-size: 40px; font-weight: bold; margin-bottom: 0px; line-height: 1.12; font-family: 'Montserrat', sans-serif; color: #000; border-left: 8px solid #4b9349; padding-left: 18px;">
@@ -1611,7 +1611,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <!-- Stats + gallery (same page; full company section when intro is short) -->
     <div class="<?= $companyInfoSinglePage ? $companyInfoPageClass : 'page page-break' ?>"
         style="position: relative; background: white;">
-        <div style="padding: 36px 40px 44px;">
+        <div style="padding: 20px 40px 44px;">
             @include('pdfbuilder.partials.pdf-page-header')
 
             <?php if ($companyInfoSinglePage): ?>
@@ -1649,8 +1649,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <div class="page page-break"
         style="position: relative; min-height: 842px; background: white; font-family:'Montserrat', sans-serif;">
         <!-- Header -->
-        <div style="padding: 40px;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+        <div style="padding: 20px 40px 40px 40px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
                 <tr>
                     <td width="50%" align="left" valign="top">
                         <div style="font-size: 18px; color: #333;">
@@ -1665,6 +1665,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                 </tr>
             </table>
 
+            <?php
+            $defaultSolarSystemWorks = <<<HTML
             <!-- Section 2: How the Solar System Works -->
             <div style="font-size: 26px; font-weight: bold; margin-bottom: 12px; padding-left:14px;">
                 2. How the Solar System Works
@@ -1681,7 +1683,9 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                 <li style="margin-bottom: 8px;"><strong>Step 3: How much roof space is needed? –</strong> A typical 1 kW system needs around 100 sq. ft. The exact space depends on your energy needs and roof type.</li>
                 <li style="margin-bottom: 8px;"><strong>Step 4: What is the lifespan of a solar system? –</strong> Solar panels last 25+ years with minimal maintenance. Inverters usually last 8–10 years and may need replacement once during the system’s life.</li>
             </ul>
+HTML;
 
+            $defaultAdvantagesSolar = <<<HTML
             <!-- Section 3: Advantages of Solar Energy -->
             <div style="font-size: 26px; font-weight: bold; margin-bottom: 12px; padding-left:14px; margin-top: 20px;">
                 3. Advantages of Solar Energy
@@ -1700,6 +1704,29 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                 <li style="margin-bottom: 8px;"><strong>Environmental Stewardship:</strong> Directly mitigate carbon
                     footprints and actively combat localized climate change.</li>
             </ul>
+HTML;
+
+            $solarSystemWorksHtml = $form_data['solar_system_works'] ?? null;
+            if (empty($solarSystemWorksHtml)) {
+                $solarSystemWorksHtml = $defaultSolarSystemWorks;
+            }
+
+            $advantagesSolarHtml = $form_data['advantages_solar'] ?? null;
+            if (empty($advantagesSolarHtml)) {
+                $advantagesSolarHtml = $defaultAdvantagesSolar;
+            }
+
+            $solarSystemWorksActive = (int)($form_data['solar_system_works_active'] ?? 1);
+            $advantagesSolarActive = (int)($form_data['advantages_solar_active'] ?? 1);
+            ?>
+
+            <?php if ($solarSystemWorksActive): ?>
+                <?= $solarSystemWorksHtml ?>
+            <?php endif; ?>
+
+            <?php if ($advantagesSolarActive): ?>
+                <?= $advantagesSolarHtml ?>
+            <?php endif; ?>
         </div>
 
         <!-- Footer -->
@@ -1724,8 +1751,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <div class="page page-break"
         style="position: relative; min-height: 842px; background: white; font-family:'Montserrat', sans-serif;">
         <!-- Header -->
-        <div style="padding: 40px;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+        <div style="padding: 20px 40px 40px 40px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
                 <tr>
                     <td width="50%" align="left" valign="top">
                         <div style="font-size: 18px; color: #333;">
@@ -1816,7 +1843,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                    
                     font-family:'Montserrat', sans-serif;">
         <!-- Slightly tighter padding so chart + summary fit on one Dompdf page -->
-        <div style="padding: 35px 45px 45px 45px;">
+        <div style="padding: 20px 45px 45px 45px;">
             <!-- ================= HEADER ================= -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
                 <tr>
@@ -2244,7 +2271,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         style="position:relative; min-height:842px;
                 background:#4b9349 !important;  /* image-like green */
                 font-family:'Montserrat', sans-serif;">
-        <div style="padding: 50px;">
+        <div style="padding: 20px 50px 50px 50px;">
             <!-- ================= HEADER ================= -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:30px;">
                 <tr>
@@ -2569,9 +2596,9 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <!-- ================= PAGE 4b : ROI & CARBON OFFSET ================= -->
     <div class="page page-break"
         style="position: relative; min-height: 842px; background: white; font-family:'Montserrat', sans-serif;">
-        <div style="padding: 40px;">
+        <div style="padding: 20px 40px 40px 40px;">
             <!-- Header -->
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
                 <tr>
                     <td width="50%" align="left" valign="top">
                         <div style="font-size: 18px; color: #333;">
@@ -2715,7 +2742,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             min-height: 842px;
             background: #ffffff;
             font-family: 'Montserrat', sans-serif;">
-        <div style="padding: 38px 42px 30px;">
+        <div style="padding: 20px 42px 30px;">
             <!-- ================= HEADER ================= -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14px;">
                 <tr>
@@ -3166,7 +3193,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 
     <!-- PAGE 6A: ESTIMATION / INVOICE -->
     <div class="page page-break" style="position: relative; background: white;">
-        <div style="padding: 32px 40px 36px;">
+        <div style="padding: 20px 40px 36px;">
             @include('pdfbuilder.partials.pdf-page-header')
             @include('pdfbuilder.partials.estimate-invoice-summary')
         </div>
@@ -3195,7 +3222,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         $componentsPageLayout = $componentsPage['layout'];
     ?>
     <div class="<?= $componentsChunkPageClass ?>" style="position: relative; background: white;">
-        <div style="padding: 40px; padding-bottom: 56px;">
+        <div style="padding: 20px 40px 56px 40px;">
             @include('pdfbuilder.partials.pdf-page-header')
             <?php if ($componentsPageLayout === 'intro_block'): ?>
             @include('pdfbuilder.partials.company-components-intro', ['componentsIntroExpanded' => false])
@@ -3259,7 +3286,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     $paymentTermsHeading = ($estdata->type ?? '') === 'residential' ? '12. Payment Terms' : ($paymentTermsTitle !== '' ? $paymentTermsTitle : 'PAYMENT TERMS');
     ?>
     <div class="<?= $_pageClass('p7') ?>" style="position: relative; min-height: 842px; background: white;">
-        <div style="padding: 38px 42px 30px;">
+        <div style="padding: 20px 42px 30px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
                 <tr>
                     <td width="50%" align="left" valign="top">
@@ -3384,7 +3411,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     ?>
     <?php if ($__environmentImpactActive): ?>
     <div class="<?= $_pageClass('p8') ?>" style="position:relative;min-height:842px;background:#fff;">
-        <div style="padding:38px 42px 34px;">
+        <div style="padding:20px 42px 34px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
                 <tr>
                     <td width="50%" align="left" valign="top">
@@ -3527,7 +3554,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <!-- ================= PAGE 8b : TERMS, DISCLAIMER & TESTIMONIALS (Residential templates) ================= -->
     <div class="<?= $_pageClass('p8b') ?>"
         style="position:relative;min-height:842px;background:#fff;font-family:'Montserrat',sans-serif;">
-        <div style="padding:38px 42px 34px;">
+        <div style="padding:20px 42px 34px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
                 <tr>
                     <td width="50%" align="left" valign="top">
@@ -3664,8 +3691,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <?php if ($__footerActive): ?>
     <div class="page" style="position: relative; min-height: 842px; background: white;">
         <!-- Header -->
-        <div style="padding: 50px;">
-            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+        <div style="padding: 20px 50px 50px 50px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
                 <tr>
                     <td width="50%" align="left" valign="top">
                         <div style="font-size: 18px;">
