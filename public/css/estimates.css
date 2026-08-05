@@ -822,3 +822,82 @@ input:checked + .slider:before {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
+
+/* Estimate Details View Dark Mode Fixes */
+[data-theme="dark"] .quotation-block,
+[data-theme="dark"] .document-summary-view {
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .quotation-box {
+    background-color: var(--crm-bg-card, #1e293b) !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .quotation-title {
+    color: #cbd5e1 !important;
+}
+
+/* Document Summary View Text Colors */
+[data-theme="dark"] .document-summary-view .summary-cell,
+[data-theme="dark"] .document-summary-view .summary-footer-cell {
+    color: #e2e8f0 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .document-summary-view .summary-bank-box td {
+    color: #cbd5e1 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .document-summary-view .summary-bank-box {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Override inline colors from DB/blade */
+[data-theme="dark"] .document-summary-view span[style*="color:#888"],
+[data-theme="dark"] .document-summary-view td[style*="color:#5a6b5a"],
+[data-theme="dark"] .document-summary-view td[style*="color:#1a1a1a"] {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .document-summary-view .summary-cell * {
+    color: #e2e8f0 !important;
+}
+
+/* Make sure highlights remain white (usually white on green background) */
+[data-theme="dark"] .document-summary-view .summary-highlight,
+[data-theme="dark"] .document-summary-view .summary-highlight * {
+    color: #fff !important;
+}
+
+/* Quotation Table Text Colors (BOM) */
+[data-theme="dark"] .quotation-table td {
+    color: #e2e8f0 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-theme="dark"] .quotation-table td span {
+    color: #cbd5e1 !important;
+}
+
+[data-theme="dark"] .quotation-table tfoot td {
+    color: #f1f5f9 !important;
+    background-color: transparent !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Div holding "No products added" */
+[data-theme="dark"] .quotation-table td[colspan="5"] {
+    color: #94a3b8 !important;
+}
+
+/* Borders for all tables in the view */
+[data-theme="dark"] .info-table th,
+[data-theme="dark"] .info-table td,
+[data-theme="dark"] .quotation-table th,
+[data-theme="dark"] .extra-info th,
+[data-theme="dark"] .extra-info td {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
