@@ -621,14 +621,20 @@ a {
 }
 
 .crm-user-trigger:hover,
-.crm-user-trigger:focus {
-    background: #F1F5F9;
-    color: var(--crm-text-dark);
-    box-shadow: none;
+.crm-user-trigger:focus,
+.crm-user-trigger.show {
+    background: #F1F5F9 !important;
+    color: var(--crm-text-dark) !important;
+    box-shadow: none !important;
+    border: none !important;
 }
 
-[data-theme="dark"] .crm-user-trigger:hover {
-    background: rgba(255, 255, 255, .07);
+[data-theme="dark"] .crm-user-trigger:hover,
+[data-theme="dark"] .crm-user-trigger:focus,
+[data-theme="dark"] .crm-user-trigger.show {
+    background: rgba(255, 255, 255, .07) !important;
+    color: #F1F5F9 !important;
+    border: none !important;
 }
 
 .crm-user-avatar {

@@ -270,6 +270,26 @@
         const editor = CKEDITOR.replace(textareaId);
         editor.on('instanceReady', function () {
             editor.setReadOnly(!!el.disabled);
+            
+            // Sync CKEditor iframe body with the current theme
+            const syncTheme = () => {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const body = editor.document.getBody();
+                if (body) {
+                    if (isDark) {
+                        body.setStyle('background-color', '#1e293b');
+                        body.setStyle('color', '#e2e8f0');
+                    } else {
+                        body.setStyle('background-color', '#ffffff');
+                        body.setStyle('color', '#000000');
+                    }
+                }
+            };
+            syncTheme();
+            
+            // Watch for theme changes
+            const observer = new MutationObserver(syncTheme);
+            observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
         });
     }
 
