@@ -81,7 +81,7 @@
 <body>
     @php
         $settings = \App\Models\Setting::pluck('value', 'key')->toArray();
-        $companyName = $settings['company_name'] ?? 'Rising Green Energy';
+        $companyName = $settings['company_name'] ?? 'MBT SOLAR';
         $companyAddress = $settings['company_address'] ?? '215 MAHER NAGAR OPP BAPS HOSPITAL ADAJAN SURAT (395009)';
         $companyPhone = $settings['phone'] ?? '';
         $companyEmail = $settings['email'] ?? '';

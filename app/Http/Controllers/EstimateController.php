@@ -302,7 +302,7 @@ class EstimateController extends Controller
                             $currentPage = $mergedPdf->PageNo();
                             $coverPdf = \PDF::loadView('pdfbuilder.datasheet-cover', [
                                 'estimate' => $estimate,
-                                'companyName' => $settings['company_name'] ?? 'Rising Green Energy',
+                                'companyName' => $settings['company_name'] ?? 'MBT SOLAR',
                                 'pageNumber' => $currentPage + 1
                             ]);
                             $tmpCover = tempnam(sys_get_temp_dir(), 'cover_pdf_');
@@ -345,7 +345,7 @@ class EstimateController extends Controller
                                     $imagePdf = \PDF::loadView('pdfbuilder.datasheet-image-page', [
                                         'imagePath' => $make->datasheet,
                                         'estimate' => $estimate,
-                                        'companyName' => $settings['company_name'] ?? 'Rising Green Energy',
+                                        'companyName' => $settings['company_name'] ?? 'MBT SOLAR',
                                         'pageNumber' => $currentPage + 1
                                     ]);
                                     $tmpImage = tempnam(sys_get_temp_dir(), 'image_pdf_');

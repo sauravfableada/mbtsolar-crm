@@ -24,7 +24,7 @@ class ProjectCompletedMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '🎉 Your Solar Project is Complete – Rising Green Energy',
+            subject: '🎉 Your Solar Project is Complete – MBT SOLAR',
         );
     }
 

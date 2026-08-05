@@ -1,16 +1,16 @@
 @extends('emails.layouts.base')
 
-@section('email_title', 'Welcome to Rising Green Energy – ' . $customerName)
+@section('email_title', 'Welcome to MBT SOLAR – ' . $customerName)
 
 @section('header_title')
-    Welcome to Rising Green Energy!
+    Welcome to MBT SOLAR!
 @endsection
 
 @section('email_body')
     <p class="greeting">Dear {{ $customerName }},</p>
 
     <p>
-        We are delighted to welcome you to Rising Green Energy — your partner for clean, 
+        We are delighted to welcome you to MBT SOLAR — your partner for clean, 
         sustainable solar energy solutions. Your customer account has been successfully created.
     </p>
 

@@ -15,7 +15,7 @@
                     </p>
                     <p style="margin-bottom: 0; font-size: 16px; line-height: 1.65; font-weight: normal;">
                         Best Regards,<br><br>
-                        <strong><?= e($profileUser->name ?? 'Rising Green Energy Team') ?></strong><br>
+                        <strong><?= e($profileUser->name ?? 'MBT SOLAR Team') ?></strong><br>
                         <?= esc($globalCompanyName) ?>
                     </p>
                 <?php else: ?>

@@ -12,7 +12,7 @@
     <p class="greeting">Hello {{ $staffName }},</p>
 
     <p>
-        A new lead has been assigned to you on the Rising Green Energy CRM.
+        A new lead has been assigned to you on the MBT SOLAR CRM.
         Please review the details below and follow up at the earliest.
     </p>
 

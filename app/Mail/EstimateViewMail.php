@@ -42,7 +42,7 @@ class EstimateViewMail extends Mailable implements ShouldQueue
                 'estimateType'  => $estimate->type ?? null,
                 'quantity'      => $estimate->quantity ?? null,
                 'totalAmount'   => $estimate->price ?? null,
-                'preparedBy'    => $estimate->creator?->name ?? 'Rising Green Energy Team',
+                'preparedBy'    => $estimate->creator?->name ?? 'MBT SOLAR Team',
                 'estimateDate'  => $estimate->estimate_date
                     ? \Carbon\Carbon::parse($estimate->estimate_date)->format('d M Y')
                     : now()->timezone('Asia/Kolkata')->format('d M Y'),

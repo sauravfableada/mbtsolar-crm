@@ -301,8 +301,8 @@
                 <div class="sidenav-header" style="padding: 0px 8px;">
                     <div class="profile-card brand-card">
                         <img src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'images/template/crmfavicon.png') }}"
-                            class="brand-logo-icon" alt="Rising Green Energy Logo">
-                        <span class="brand-logo-text capitalize" title="{{ $authUser?->name ?? 'Rising Green Energy' }}">{{ strtoupper($authUser?->name ?? 'Rising Green Energy') }}</span>
+                            class="brand-logo-icon" alt="MBT SOLAR Logo">
+                        <span class="brand-logo-text capitalize" title="{{ $authUser?->name ?? 'MBT SOLAR' }}">{{ strtoupper($authUser?->name ?? 'MBT SOLAR') }}</span>
                     </div>
                 </div>
 
