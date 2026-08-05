@@ -83,6 +83,7 @@ class PdfbuilderController extends Controller
             'company_tagline',
             'company_address',
             'company_tax_id',
+            'company_email',
             'company_logo_path',
             'company_qr_code_path',
             'social_instagram',

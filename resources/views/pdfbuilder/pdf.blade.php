@@ -1,5 +1,5 @@
 <?php
-// ✅ Start the session here
+// âœ… Start the session here
 $session = session();
 $userId = $session->get('id');
 
@@ -290,7 +290,7 @@ if (!function_exists('base_url')) {
     }
 }
 
-// ✅ Load the model here directly
+// âœ… Load the model here directly
 $model = new \App\Models\User(); // Change to your actual model name
 // $user = $model->where('id', $userId)->first();
 // $user = $model->where('role', 3)->first();
@@ -306,6 +306,10 @@ if (!isset($user) && isset($profileUser)) {
 if (!isset($user) || (!is_array($user) && !($user instanceof \ArrayAccess))) {
     $user = [];
 }
+
+// Normalize companySettings if passed as settings from legacy controllers
+$companySettings = $companySettings ?? ($settings ?? []);
+
 
 // Resolve company logo from settings table (company_logo_path)
 $logoBase64 = null;
@@ -494,8 +498,8 @@ if ($estdata) {
 
     // If quantity is still 0, auto-calculate kW from bill/rate (proposal-wise sizing)
     // Uses the same style of assumptions as the generation chart:
-    // monthly_units ≈ monthly_bill / unit_rate
-    // required_kW ≈ monthly_units / (avg_units_per_kw_per_day * 30 * (pr/100))
+    // monthly_units â‰ˆ monthly_bill / unit_rate
+    // required_kW â‰ˆ monthly_units / (avg_units_per_kw_per_day * 30 * (pr/100))
     if ($quantity == '0' && !empty($estdata->generation_data)) {
         $gd = json_decode($estdata->generation_data, true);
         if (json_last_error() === JSON_ERROR_NONE && is_array($gd)) {
@@ -527,8 +531,8 @@ $generatedDateTime = date('j, F Y | g:iA');
 // ================= ROI (Page 4) - Fixed assumptions (proposal-safe) =================
 // Inputs:
 // - Solar system size (kW): from estimate quantity (no default)
-// - Unit rate (₹/unit): generation_data.unit_rate (default 8)
-// - System cost (₹): use "Lending Cost Of Customer" = Customer Payable Amount - Subsidy
+// - Unit rate (â‚¹/unit): generation_data.unit_rate (default 8)
+// - System cost (â‚¹): use "Lending Cost Of Customer" = Customer Payable Amount - Subsidy
 //
 // Fixed assumptions:
 // - Average generation: 3.6 units per kW per day
@@ -549,7 +553,7 @@ if ($systemCapacity <= 0) {
     $systemCapacity = 0.0;
 }
 
-// Unit rate (₹/unit) from generation_data, default ₹8
+// Unit rate (â‚¹/unit) from generation_data, default â‚¹8
 $unitRate = 8.0;
 if ($estdata && !empty($estdata->generation_data)) {
     $gd = json_decode($estdata->generation_data, true);
@@ -620,7 +624,7 @@ $paybackPeriod = 0.0;
 $totalLifetimeSavings = 0.0;
 $netLifetimeProfit = 0.0;
 
-// Payback (as requested): Investment ÷ Year-1 savings (rounded to nearest whole year)
+// Payback (as requested): Investment Ã· Year-1 savings (rounded to nearest whole year)
 $paybackExact = $year1Savings > 0 ? $systemCost / $year1Savings : 0.0;
 $paybackRoundedYears = $paybackExact > 0 ? (int) round($paybackExact) : 0;
 
@@ -647,7 +651,7 @@ $paybackPeriod = $paybackExact;
 // If payback can't be computed (0/empty), show "1" as requested (display-only)
 $paybackPeriodDisplay = (string) max(1, (int) $paybackRoundedYears);
 
-// This template now always uses the fixed-assumptions ROI (Year 1–25).
+// This template now always uses the fixed-assumptions ROI (Year 1â€“25).
 // Keep the flag for compatibility with existing chart rendering code below.
 $useSimpleRoi = true;
 
@@ -655,7 +659,7 @@ $useSimpleRoi = true;
 $estimateAmountMin = null;
 $estimateAmountMax = null;
 
-// Format outputs (₹)
+// Format outputs (â‚¹)
 $yearlySavingsFormatted = number_format($yearlySavings, 0);
 $paybackPeriodFormatted = (string) $paybackRoundedYears;
 $totalLifetimeSavingsFormatted = number_format($totalLifetimeSavings, 0);
@@ -1044,7 +1048,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             width: 100%;
         }
 
-        /* ✅ apply break only where needed */
+        /* âœ… apply break only where needed */
         .page-break {
             page-break-after: always;
         }
@@ -1283,7 +1287,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             font-size: 15px
         }
 
-        /* ✅ Quotation styles (NO page-break) */
+        /* âœ… Quotation styles (NO page-break) */
         .quotation-page {
             padding: 0px !important;
         }
@@ -1394,7 +1398,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 
 <body>
 
-    <!-- ✅ FIRST PAGE -->
+    <!-- âœ… FIRST PAGE -->
     <div class="<?= $_pageClass('p1') ?>" style="position: relative; height: 100%; min-height: 842px; overflow: hidden;">
         <!-- Top Half: Header Image -->
         <div style="height: 62%; width: 100%; overflow: hidden; position: relative;">
@@ -1422,7 +1426,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 
                     <!-- Company Full Name -->
                     <div
-                        style="font-size:20px; color:#000; margin:25px 0; font-weight:400; font-family: 'Montserrat', sans-serif;">
+                        style="font-size:20px; color:#000; margin-top:25px; margin-bottom:8px; font-weight:400; font-family: 'Montserrat', sans-serif;">
                         <?php
                         $fullCompanyName = esc($globalCompanyName);
                         if (stripos($fullCompanyName, '') === false && stripos($fullCompanyName, 'pvt') === false) {
@@ -1431,6 +1435,15 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                         echo $fullCompanyName;
                         ?>
                     </div>
+
+                    <!-- Tax No -->
+                    <?php if (!empty($companySettings['company_tax_id'])): ?>
+                    <div style="font-size:18px; color:#000; font-weight:400; font-family: 'Montserrat', sans-serif; margin-bottom:15px;">
+                        GST NO : <?= esc($companySettings['company_tax_id']) ?>
+                    </div>
+                    <?php else: ?>
+                    <div style="margin-bottom: 17px;"></div>
+                    <?php endif; ?>
 
                     <!-- Proposal No -->
                     <div style="font-size:20px; color:#000; font-weight:400; font-family: 'Montserrat', sans-serif;">
@@ -1547,7 +1560,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 
     </div>
 
-    <!-- ✅ SECOND PAGE: Company Information & Gallery -->
+    <!-- âœ… SECOND PAGE: Company Information & Gallery -->
     <?php
     $__companyInfo = isset($companyInfo) && is_array($companyInfo) ? $companyInfo : [];
     $__companyInfoActive = $_isActive($__companyInfo);
@@ -1652,12 +1665,12 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         <div style="padding: 20px 40px 40px 40px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
                 <tr>
-                    <td width="50%" align="left" valign="top">
-                        <div style="font-size: 18px; color: #333;">
+                    <td width="50%" align="left" valign="bottom">
+                        <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                             <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
                         </div>
                     </td>
-                    <td width="50%" align="right" valign="top">
+                    <td width="50%" align="right" valign="bottom">
                         <?php if (!empty($logoBase64)): ?>
                         <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
@@ -1676,12 +1689,12 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                 cleanly power your property:
             </p>
             <ul style="padding-left: 20px; font-size: 13.5px; line-height: 1.5; margin-bottom: 25px;">
-                <li style="margin-bottom: 8px;"><strong>Step 1: How does residencial solar work? –</strong>
+                <li style="margin-bottom: 8px;"><strong>Step 1: How does residencial solar work? â€“</strong>
                     Solar panels convert sunlight into electricity, which powers your home. Any excess energy is sent to the grid or stored in a battery.</li>
-                <li style="margin-bottom: 8px;"><strong>Step 2: Will solar panels reduce my electricity bill? –</strong>
+                <li style="margin-bottom: 8px;"><strong>Step 2: Will solar panels reduce my electricity bill? â€“</strong>
                     Yes. Solar can significantly reduce or even eliminate your electricity bills, depending on your system size and consumption.</li>
-                <li style="margin-bottom: 8px;"><strong>Step 3: How much roof space is needed? –</strong> A typical 1 kW system needs around 100 sq. ft. The exact space depends on your energy needs and roof type.</li>
-                <li style="margin-bottom: 8px;"><strong>Step 4: What is the lifespan of a solar system? –</strong> Solar panels last 25+ years with minimal maintenance. Inverters usually last 8–10 years and may need replacement once during the system’s life.</li>
+                <li style="margin-bottom: 8px;"><strong>Step 3: How much roof space is needed? â€“</strong> A typical 1 kW system needs around 100 sq. ft. The exact space depends on your energy needs and roof type.</li>
+                <li style="margin-bottom: 8px;"><strong>Step 4: What is the lifespan of a solar system? â€“</strong> Solar panels last 25+ years with minimal maintenance. Inverters usually last 8â€“10 years and may need replacement once during the systemâ€™s life.</li>
             </ul>
 HTML;
 
@@ -1692,14 +1705,14 @@ HTML;
             </div>
             <ul style="padding-left: 20px; font-size: 13.5px; line-height: 1.5; margin-bottom: 20px;">
                 <li style="margin-bottom: 8px;"><strong>Massive Utility Bill Reductions:</strong> Drastically slash
-                    your monthly energy spend by up to <strong>80% – 90%</strong>.</li>
+                    your monthly energy spend by up to <strong>80% â€“ 90%</strong>.</li>
                 <li style="margin-bottom: 8px;"><strong>High Return on Investment:</strong> Solar operates as a
-                    high-yielding financial asset that typical clears its payback period within <strong>3 – 4</strong>
+                    high-yielding financial asset that typical clears its payback period within <strong>3 â€“ 4</strong>
                     years, yielding completely free power for the remainder of its 25+ year lifecycle.</li>
                 <li style="margin-bottom: 8px;"><strong>Property Appreciation:</strong> Green-certified residential
                     buildings equipped with fixed solar infrastructure command higher market resale values.</li>
                 <li style="margin-bottom: 8px;"><strong>Extremely Low Maintenance:</strong> With zero moving parts, the
-                    entire system requires minimal operational upkeep—restricted primarily to routine automated or
+                    entire system requires minimal operational upkeepâ€”restricted primarily to routine automated or
                     manual panel washings.</li>
                 <li style="margin-bottom: 8px;"><strong>Environmental Stewardship:</strong> Directly mitigate carbon
                     footprints and actively combat localized climate change.</li>
@@ -1754,12 +1767,12 @@ HTML;
         <div style="padding: 20px 40px 40px 40px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
                 <tr>
-                    <td width="50%" align="left" valign="top">
-                        <div style="font-size: 18px; color: #333;">
+                    <td width="50%" align="left" valign="bottom">
+                        <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                             <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
                         </div>
                     </td>
-                    <td width="50%" align="right" valign="top">
+                    <td width="50%" align="right" valign="bottom">
                         <?php if (!empty($logoBase64)): ?>
                         <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
@@ -1875,7 +1888,7 @@ HTML;
 
             <!-- ================= BAR CHART ================= -->
             <?php
-            // --------- Generation (Jan–Dec) from inputs ---------
+            // --------- Generation (Janâ€“Dec) from inputs ---------
             
             $systemCapacity = max(0.0, (float) $quantity);
             
@@ -1929,7 +1942,7 @@ HTML;
                             $avgUnitsPerKw = $monthlyUnits / ($systemCapacity * $days * ($pr / 100.0));
                         }
             
-                        // Case 3: Both missing → assume PR = 100 ONLY for derivation
+                        // Case 3: Both missing â†’ assume PR = 100 ONLY for derivation
                         elseif ($pr <= 0 && $avgUnitsPerKw <= 0) {
                             $pr = 100.0; // derivation-only
                             $avgUnitsPerKw = $monthlyUnits / ($systemCapacity * $days);
@@ -1948,10 +1961,10 @@ HTML;
             $avgUnitsPerKwDisp = rtrim(rtrim(number_format($avgUnitsPerKw, 2, '.', ''), '0'), '.'); // ex: 4.31
             
             // Seasonal adjustments:
-            // Feb–May: +12%
-            // Jun–Aug: -monsoonDip%
-            // Nov–Jan: -6%
-            // Sep–Oct: 0%
+            // Febâ€“May: +12%
+            // Junâ€“Aug: -monsoonDip%
+            // Novâ€“Jan: -6%
+            // Sepâ€“Oct: 0%
             $peakBoost = 0.12;
             $winterDip = 0.06;
             $monsoonFactor = max(0, (float) $monsoonDip) / 100.0;
@@ -2014,7 +2027,7 @@ HTML;
             
             $maxFromData = max((float) $maxPrimaryFromData, (float) $maxSecondaryFromData, 0);
             
-            // Choose a "nice" step (1/2/5 × 10^n)
+            // Choose a "nice" step (1/2/5 Ã— 10^n)
             $rawMax = max(1, $maxFromData);
             $rawStep = $rawMax / ($ticks - 1);
             $pow10 = pow(10, floor(log10($rawStep)));
@@ -2299,7 +2312,7 @@ HTML;
             // - Else -> keep legacy "last 10 calendar years" behavior
             $roiYears = $useSimpleRoi ? 25 : 10;
             
-            // Chart height (you changed this): keep as-is, but ensure it’s numeric
+            // Chart height (you changed this): keep as-is, but ensure itâ€™s numeric
             // $chartHeight = (int) ($chartHeight ?? 360);
             $chartHeight = 550;
             if ($chartHeight <= 0) {
@@ -2345,7 +2358,7 @@ HTML;
             
             $maxFromData = max($roiMaxFromData, (float) ($maxChartRoi ?? 0), 0);
             
-            // Choose a "nice" step (1/2/5 × 10^n)
+            // Choose a "nice" step (1/2/5 Ã— 10^n)
             $rawMax = max(1, $maxFromData);
             $rawStep = $rawMax / ($ticks - 1);
             $pow10 = pow(10, floor(log10($rawStep)));
@@ -2600,12 +2613,12 @@ HTML;
             <!-- Header -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
                 <tr>
-                    <td width="50%" align="left" valign="top">
-                        <div style="font-size: 18px; color: #333;">
+                    <td width="50%" align="left" valign="bottom">
+                        <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                             <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
                         </div>
                     </td>
-                    <td width="50%" align="right" valign="top">
+                    <td width="50%" align="right" valign="bottom">
                         <?php if (!empty($logoBase64)): ?>
                         <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
@@ -2661,7 +2674,7 @@ HTML;
                 solar PV, your property achieves highly significant environmental offset targets across its guaranteed
                 25-year operational lifecycle:</p>
             <ul style="padding-left: 20px; font-size: 13.5px; line-height: 1.5; margin-bottom: 25px;">
-                <li style="margin-bottom: 8px;"><strong>CO₂ Emissions Prevented:</strong>
+                <li style="margin-bottom: 8px;"><strong>COâ‚‚ Emissions Prevented:</strong>
                     <strong><?= $co2OffsetFormatted ?> Metric Tons</strong> of pure Carbon Dioxide stopped from entering
                     the atmosphere.</li>
                 <li style="margin-bottom: 8px;"><strong>Fossil Fuel Preservation:</strong> Equivalent to preventing the
@@ -2746,16 +2759,16 @@ HTML;
             <!-- ================= HEADER ================= -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 14px;">
                 <tr>
-                    <td width="50%" align="left" valign="top">
-                        <div style="font-size:14px;font-family: 'Montserrat', sans-serif;">
+                    <td width="50%" align="left" valign="bottom">
+                        <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                             <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
                         </div>
                     </td>
 
-                    <td width="50%" align="right" valign="top">
-                        <?php    if (!empty($logoBase64)): ?>
-                        <img src="<?= $logoBase64 ?>" style="max-width:160px; max-height: 55px; height: auto; object-fit: contain; margin-bottom:5px;">
-                        <?php    endif; ?>
+                    <td width="50%" align="right" valign="bottom">
+                        <?php if (!empty($logoBase64)): ?>
+                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
+                        <?php endif; ?>
                     </td>
                 </tr>
             </table>
@@ -3289,17 +3302,14 @@ HTML;
         <div style="padding: 20px 42px 30px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
                 <tr>
-                    <td width="50%" align="left" valign="top">
-                        <div style="font-size:18px; font-family:'Montserrat',sans-serif;">
+                    <td width="50%" align="left" valign="bottom">
+                        <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                             <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
                         </div>
                     </td>
-                    <td width="50%" align="right" valign="top">
+                    <td width="50%" align="right" valign="bottom">
                         <?php if (!empty($logoBase64)): ?>
-                        <div style="display:inline-block;text-align:right;">
-                            <img src="<?= $logoBase64 ?>" alt="Company Logo"
-                                style="max-width:160px; max-height: 55px; height: auto; object-fit: contain;margin-bottom:5px;">
-                        </div>
+                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -3414,17 +3424,14 @@ HTML;
         <div style="padding:20px 42px 34px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
                 <tr>
-                    <td width="50%" align="left" valign="top">
-                        <div style="font-size:14px;color:#000;font-family:'Montserrat',sans-serif;">
+                    <td width="50%" align="left" valign="bottom">
+                        <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                             <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
                         </div>
                     </td>
-                    <td width="50%" align="right" valign="top">
+                    <td width="50%" align="right" valign="bottom">
                         <?php if (!empty($logoBase64)): ?>
-                        <div style="display:inline-block;text-align:right;">
-                            <img src="<?= $logoBase64 ?>" alt="Company Logo"
-                                style="max-width:160px; max-height: 55px; height: auto; object-fit: contain;margin-bottom:5px;">
-                        </div>
+                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
                     </td>
                 </tr>
@@ -3557,12 +3564,12 @@ HTML;
         <div style="padding:20px 42px 34px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
                 <tr>
-                    <td width="50%" align="left" valign="top">
-                        <div style="font-size:14px;color:#111;">
+                    <td width="50%" align="left" valign="bottom">
+                        <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                             <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
                         </div>
                     </td>
-                    <td width="50%" align="right" valign="top">
+                    <td width="50%" align="right" valign="bottom">
                         <?php if (!empty($logoBase64)): ?>
                         <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width:160px; max-height: 55px; height: auto; object-fit: contain;">
                         <?php endif; ?>
@@ -3694,18 +3701,15 @@ HTML;
         <div style="padding: 20px 50px 50px 50px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 10px;">
                 <tr>
-                    <td width="50%" align="left" valign="top">
-                        <div style="font-size: 18px;">
+                    <td width="50%" align="left" valign="bottom">
+                        <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
                             <?= $quantity ?>kW Ongrid <?= $pdfTypeLabelMixed ?>
                         </div>
                     </td>
-                    <td width="50%" align="right" valign="top">
-                        <?php    if (!empty($logoBase64)): ?>
-                        <div style="display: inline-block; text-align: right;">
-                            <img src="<?= $logoBase64 ?>" alt="Company Logo"
-                                style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain; margin-bottom: 5px;">
-                        </div>
-                        <?php    endif; ?>
+                    <td width="50%" align="right" valign="bottom">
+                        <?php if (!empty($logoBase64)): ?>
+                        <img src="<?= $logoBase64 ?>" alt="Company Logo" style="max-width: 160px; max-height: 55px; height: auto; object-fit: contain;">
+                        <?php endif; ?>
                     </td>
                 </tr>
             </table>
@@ -3724,9 +3728,15 @@ HTML;
                         $footerSubTitle = trim((string) ($footer['sub_title'] ?? ''));
                         $footerImg = resolve_pdf_image_with_fallback($footer['image'] ?? '', 'public/assets/img/footer.png');
                         ?>
-                        <div style="width: 100%; height: 350px; overflow: hidden; text-align: center;">
+                        <div style="width: 100%; height: 350px; overflow: hidden; text-align: center; border-radius: 20px;">
                             <img src="<?= $footerImg ?>" alt="Solar Panels"
                                 style="width: 100%; height: auto; display: block; margin: 0 auto;">
+                        </div>
+                        
+                        <!-- Circular overlapping logo -->
+                        <div style="text-align: center; margin-top: -40px; position: relative; z-index: 10;">
+                            <img src="<?= normalize_pdf_image('public/logo/favicon.jpeg') ?>" alt="Logo" 
+                                style="width: 45px; height: 45px; padding: 15px; border: 3px solid #4b9349; border-radius: 50px; background-color: #fff; display: inline-block;">
                         </div>
                     </td>
                 </tr>
@@ -3735,102 +3745,139 @@ HTML;
             <!-- Thank You Section -->
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 20px;">
                 <tr>
-                    <td align="left" style="padding-bottom: 12px;">
-                        <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-                            <tr>
-                                <td align="center" valign="top"
-                                    style="font-size: 80px; color: #000; letter-spacing: 3px; font-family: 'Montserrat', sans-serif; line-height: 1.05; text-align: center;">
-                                    <?= $footerTitle !== '' ? esc($footerTitle) : 'THANK YOU' ?>
-                                </td>
-                            </tr>
-                        </table>
+                    <td align="center" style="padding-bottom: 12px;">
+                        <div style="font-size: 80px; font-weight: bold; letter-spacing: 3px; font-family: 'Montserrat', sans-serif; line-height: 1.05; text-align: center;">
+                            <?php
+                            $titleString = $footerTitle !== '' ? esc($footerTitle) : 'THANK YOU';
+                            $titleParts = explode(' ', $titleString);
+                            if (count($titleParts) > 1) {
+                                $lastWord = array_pop($titleParts);
+                                $firstPart = implode(' ', $titleParts);
+                            } else {
+                                $firstPart = $titleString;
+                                $lastWord = '';
+                            }
+                            ?>
+                            <span style="color: #2a2a2a;"><?= $firstPart ?></span>
+                            <?php if ($lastWord !== ''): ?>
+                            <span style="color: #4b9349;"> <?= $lastWord ?></span>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <!-- Dual color line -->
+                        <div style="margin: 20px auto; width: 60px; height: 3px;">
+                            <table cellpadding="0" cellspacing="0" width="100%" height="3">
+                                <tr>
+                                    <td width="50%" style="background-color: #4b9349; height: 3px;"></td>
+                                    <td width="50%" style="background-color: #f3c428; height: 3px;"></td>
+                                </tr>
+                            </table>
+                        </div>
                     </td>
                 </tr>
 
                 <tr>
-                    <td style="padding-left: 26px;">
-                        <table width="100%" cellpadding="0" cellspacing="0">
-                            <tr>
-                                <!-- Text -->
-                                <td align="left" style="font-size: 20px; font-family: 'Montserrat', sans-serif;">
-                                    <?php
-                                    $defaultSub = 'Looking forward to work and add value';
-                                    echo esc($footerActive === 1 && $footerSubTitle !== '' ? $footerSubTitle : $defaultSub);
-                                    ?>
-                                </td>
-
-                                <!-- Image -->
-                                <td align="right">
-                                    <img src="<?= normalize_pdf_image('public/assets/img/footer_arrow.png') ?>"
-                                        alt="Arrow" width="80" height="55">
-                                </td>
-                            </tr>
-                        </table>
+                    <td align="center">
+                        <div style="font-size: 20px; font-weight: 500; color: #333; font-family: 'Montserrat', sans-serif; text-align: center;">
+                            <?php
+                            $defaultSub = 'Looking forward to work and add value';
+                            echo esc($footerActive === 1 && $footerSubTitle !== '' ? $footerSubTitle : $defaultSub);
+                            ?>
+                        </div>
                     </td>
                 </tr>
             </table>
 
             <!-- Contact Information Footer (Black Box) -->
             <?php
-            $companySettings = $companySettings ?? [];
+            $companySettings = $companySettings ?? ($settings ?? []);
             $userPhone = $companySettings['phone'] ?? ($user['phone'] ?? ($user['whatsapp'] ?? ($user['contact'] ?? ($user['whatsapp_no'] ?? ($user['contact_phone'] ?? '')))));
-            $userEmail = $companySettings['email'] ?? ($user['email'] ?? ($user['contact_email'] ?? ''));
+            $userEmail = $companySettings['company_email'] ?? ($companySettings['company_email'] ?? ($user['email'] ?? ($user['contact_email'] ?? '')));
             $userWebsite = $companySettings['company_name'] ?? ($user['website'] ?? '');
             $userAddress = $companySettings['company_address'] ?? ($user['address'] ?? '');
             $company_name = $companySettings['company_name'] ?? ($user['company_name'] ?? '');
             ?>
-            <table width="100%" cellpadding="0" cellspacing="0"
-                style="background-color: #4b9349; color: #fff; padding: 20px; margin-top: 20px;">
-                <tr>
-                    <td width="50%" valign="top" style="padding-right: 20px;">
-                        <div style="margin-bottom: 25px;">
-                            <div
-                                style="font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; line-height: 1.4;">
-                                Phone:</div>
-                            <div
-                                style="font-size: 16px; color: #fff; font-family: 'Montserrat', sans-serif; line-height: 1.4;">
-                                <?= !empty($userPhone) ? esc($userPhone) : '--' ?>
-                            </div>
-                        </div>
-                        <div>
-                            <div
-                                style="font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; line-height: 1.4;">
-                                Email:</div>
-                            <div
-                                style="font-size: 16px; color: #fff; font-family: 'Montserrat', sans-serif; line-height: 1.4;">
-                                <?= !empty($userEmail) ? esc($userEmail) : '--' ?>
-                            </div>
-                        </div>
-                    </td>
-                    <td width="50%" valign="top" align="right" style="padding-left: 20px; text-align: right;">
-                        <div style="margin-bottom: 25px;">
-                            <div
-                                style="font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; line-height: 1.4;">
-                                Website:
-                            </div>
-                            <div
-                                style="font-size: 16px; color: #fff; font-family: 'Montserrat', sans-serif; line-height: 1.4;">
-                                <a href="<?= base_url() ?>"
-                                    style="color: #fff; text-decoration: none; font-family: 'Montserrat', sans-serif;"
-                                    target="_blank">
-                                    <?= !empty($company_name) ? esc($company_name) : '--' ?>
-                                </a>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div
-                                style="font-size: 20px; font-weight: bold; color: #fff; margin-bottom: 8px; font-family: 'Montserrat', sans-serif; line-height: 1.4;">
-                                Address:
-                            </div>
-                            <div
-                                style="font-size: 16px; color: #fff; font-family: 'Montserrat', sans-serif; line-height: 1.4;">
-                                <?= !empty($userAddress) ? esc($userAddress) : '--' ?>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
+            <div style="background: linear-gradient(to right, #4b9349, #235123); background-color: #3b743a; color: #fff; margin-top: 20px; border-radius: 16px; padding: 30px;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <!-- Top Left: Phone -->
+                        <td width="50%" valign="middle" style="padding-right: 20px; padding-bottom: 10px;">
+                            <table cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td width="55" valign="middle" align="left">
+                                        <img src="<?= normalize_pdf_image('public/assets/img/call-white.png') ?>" width="18" height="18" style="padding: 12px; border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; display: block;">
+                                    </td>
+                                    <td valign="middle">
+                                        <div style="font-size: 15px; font-weight: bold; margin-bottom: 4px; font-family: 'Montserrat', sans-serif;">Phone</div>
+                                        <div style="font-size: 13px; font-family: 'Montserrat', sans-serif; opacity: 0.9;"><?= !empty($userPhone) ? esc($userPhone) : '--' ?></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <!-- Top Right: Website -->
+                        <td width="50%" valign="middle" style="padding-left: 25px; padding-bottom: 10px;">
+                            <table cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td width="55" valign="middle" align="left">
+                                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIj48L2NpcmNsZT48bGluZSB4MT0iMiIgeTE9IjEyIiB4Mj0iMjIiIHkyPSIxMiI+PC9saW5lPjxwYXRoIGQ9Ik0xMiAyYTE1LjMgMTUuMyAwIDAgMSA0IDEwIDE1LjMgMTUuMyAwIDAgMS00IDEwIDE1LjMgMTUuMyAwIDAgMS00LTEwIDE1LjMgMTUuMyAwIDAgMSA0LTEweiI+PC9wYXRoPjwvc3ZnPg==" width="18" height="18" style="padding: 12px; border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; display: block;">
+                                    </td>
+                                    <td valign="middle">
+                                        <div style="font-size: 15px; font-weight: bold; margin-bottom: 4px; font-family: 'Montserrat', sans-serif;">Website</div>
+                                        <div style="font-size: 13px; font-family: 'Montserrat', sans-serif; opacity: 0.9;">
+                                            <a href="<?= base_url() ?>" style="color: #fff; text-decoration: none;" target="_blank">
+                                                <?= !empty($company_name) ? esc($company_name) : '--' ?>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <!-- Bottom Left: Email and Tax No -->
+                        <td width="50%" valign="top" style="padding-right: 20px; padding-top: 10px;">
+                            <table cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td width="55" valign="middle" align="left">
+                                        <img src="<?= normalize_pdf_image('public/assets/img/email-white.png') ?>" width="18" height="18" style="padding: 12px; border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; display: block;">
+                                    </td>
+                                    <td valign="middle">
+                                        <div style="font-size: 15px; font-weight: bold; margin-bottom: 4px; font-family: 'Montserrat', sans-serif;">Email</div>
+                                        <div style="font-size: 13px; font-family: 'Montserrat', sans-serif; opacity: 0.9;"><?= !empty($userEmail) ? esc($userEmail) : '--' ?></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <?php if (!empty($companySettings['company_tax_id'])): ?>
+                            <table cellpadding="0" cellspacing="0" width="100%" style="margin-top: 15px;">
+                                <tr>
+                                    <td width="55" valign="middle" align="left">
+                                        <div style="display:inline-block; border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; padding: 10px 14px; font-family: 'Montserrat', sans-serif; font-weight: bold; font-size: 18px; color: #fff;">%</div>
+                                    </td>
+                                    <td valign="middle">
+                                        <div style="font-size: 15px; font-weight: bold; margin-bottom: 4px; font-family: 'Montserrat', sans-serif;">GST NO</div>
+                                        <div style="font-size: 13px; font-family: 'Montserrat', sans-serif; opacity: 0.9;"><?= esc($companySettings['company_tax_id']) ?></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <?php endif; ?>
+                        </td>
+                        <!-- Bottom Right: Address -->
+                        <td width="50%" valign="top" style="padding-left: 25px; padding-top: 10px;">
+                            <table cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td width="55" valign="middle" align="left">
+                                        <img src="<?= normalize_pdf_image('public/assets/img/maps-and-flags-white.png') ?>" width="18" height="18" style="padding: 12px; border: 1px solid rgba(255,255,255,0.7); border-radius: 12px; display: block;">
+                                    </td>
+                                    <td valign="middle">
+                                        <div style="font-size: 15px; font-weight: bold; margin-bottom: 4px; font-family: 'Montserrat', sans-serif;">Address</div>
+                                        <div style="font-size: 13px; font-family: 'Montserrat', sans-serif; opacity: 0.9; line-height: 1.4;"><?= !empty($userAddress) ? esc($userAddress) : '--' ?></div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
         <!-- Footer -->
         <table width="100%" cellpadding="0" cellspacing="0"
@@ -3863,3 +3910,4 @@ HTML;
 </body>
 
 </html>
+
