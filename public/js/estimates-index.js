@@ -80,13 +80,14 @@
         }
 
         function getStatusBadge(status) {
+            const statusKey = String(status || '').toLowerCase();
             const statusMap = {
-                'pending': '<span class="badge bg-warning text-dark">Pending</span>',
+                'pending': '<span class="badge bg-warning">Pending</span>',
                 'approved': '<span class="badge bg-success">Approved</span>',
                 'rejected': '<span class="badge bg-danger">Rejected</span>',
                 'converted': '<span class="badge bg-info">Converted</span>',
             };
-            return statusMap[status] || `<span class="badge bg-secondary">${escapeHtml(status)}</span>`;
+            return statusMap[statusKey] || `<span class="badge bg-secondary">${escapeHtml(status)}</span>`;
         }
 
         function renderRows(items, meta) {

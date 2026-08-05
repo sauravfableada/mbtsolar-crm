@@ -355,14 +355,14 @@
         function getStatusBadge(status) {
             const normalized = String(status || '').toLowerCase();
             const classes = {
-                pending: 'btn-secondary',
-                approved: 'btn-success',
-                rejected: 'btn-danger',
-                converted: 'btn-info',
-                completed: 'btn-info',
+                pending: 'bg-warning',
+                approved: 'bg-success',
+                rejected: 'bg-danger',
+                converted: 'bg-info',
+                completed: 'bg-info',
             };
             const label = normalized ? normalized.charAt(0).toUpperCase() + normalized.slice(1) : '-';
-            return `<button type="button" class="btn btn-sm rounded-pill px-4 estimate-status-btn ${classes[normalized] || 'btn-secondary'}" data-status="${escapeHtml(normalized)}">${escapeHtml(label)}</button>`;
+            return `<span class="badge ${classes[normalized] || 'bg-secondary'} estimate-status-badge">${escapeHtml(label)}</span>`;
         }
 
         function bindDeleteButtons() {
