@@ -102,7 +102,7 @@ class InvoiceController extends ApiBaseController
             'solar_meter_charges' => 'required|in:as_per_actual,as_per_client_scope,included',
             'invoice_date' => 'nullable|date',
             'products' => 'nullable|json',
-            'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
+            'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
         ], [
             'customer_id.required' => 'Please select a customer',
             'invoice_name.required' => 'Please enter invoice name',
@@ -277,7 +277,7 @@ class InvoiceController extends ApiBaseController
             'solar_meter_charges' => 'required|in:as_per_actual,as_per_client_scope,included',
             'invoice_date' => 'nullable|date',
             'products' => 'nullable|json',
-            'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx',
+            'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
         ], [
             'customer_id.required' => 'Please select a customer',
             'invoice_name.required' => 'Please enter invoice name',
