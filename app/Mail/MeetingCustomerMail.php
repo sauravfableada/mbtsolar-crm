@@ -26,7 +26,7 @@ class MeetingCustomerMail extends Mailable implements ShouldQueue
         return new Envelope(
             subject: 'Your Meeting is Confirmed – ' . ($this->meeting->scheduled_at
                 ? $this->meeting->scheduled_at->timezone('Asia/Kolkata')->format('d M Y')
-                : 'Rising Green Energy'),
+                : 'MBT SOLAR'),
         );
     }
 

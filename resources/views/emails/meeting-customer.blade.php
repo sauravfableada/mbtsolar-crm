@@ -1,6 +1,6 @@
 @extends('emails.layouts.base')
 
-@section('email_title', 'Your Meeting is Scheduled – Rising Green Energy')
+@section('email_title', 'Your Meeting is Scheduled – MBT SOLAR')
 
 @section('header_title')
     Your Meeting is Confirmed!

@@ -91,7 +91,7 @@ if (!function_exists('normalize_pdf_image')) {
     $plainNumber = static function ($value, int $decimals = 0) {
         return rtrim(rtrim(number_format((float) $value, $decimals), '0'), '.');
     };
-    $companyName = $valueOr($companySettings['company_name'] ?? data_get($preparedUser, 'company') ?? data_get($preparedUser, 'company_name'), 'Rising Green Energy');
+    $companyName = $valueOr($companySettings['company_name'] ?? data_get($preparedUser, 'company') ?? data_get($preparedUser, 'company_name'), 'MBT SOLAR');
     $clientName = $valueOr($clientName, 'Valued Customer');
     $clientAddress = $valueOr($clientAddress, 'the project site');
     $preparedName = $valueOr(data_get($preparedUser, 'name'), $companyName . ' Team');
@@ -373,7 +373,7 @@ if (!function_exists('normalize_pdf_image')) {
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                     <td valign="middle">
-                        <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; font-weight: bold; color: #fff;">Rising Green Energy Proposal</h1>
+                        <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; font-weight: bold; color: #fff;">MBT SOLAR Proposal</h1>
                         <p style="margin: 5px 0 0 0; font-size: 12px; font-style: italic; color: #e0e0e0;">Clean Energy. Guaranteed Savings. Sustainable Future.</p>
                     </td>
                     @if (!empty($logoBase64))
@@ -398,7 +398,7 @@ if (!function_exists('normalize_pdf_image')) {
             <div style="position: absolute; bottom: 70px; left: 56px; color: #1b365d;">
                 <p style="margin-bottom: 5px;">Best Regards,</p>
                 <p><strong>Abhijeetsinh Solanki</strong><br>
-                Rising Green Energy | 9913545352 | rgesolar@gmail.com</p>
+                MBT SOLAR | 9913545352 | rgesolar@gmail.com</p>
             </div>
         </div>
         

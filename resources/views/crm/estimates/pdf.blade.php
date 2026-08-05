@@ -298,7 +298,7 @@ if (!isset($estdata) && isset($estimate)) {
                         <td class="quotation-title">
                             <div style="line-height:22px;color:#000">
                                 <strong
-                                    style="font-size:18px;color:#000"><?php echo htmlspecialchars($settings['company_name'] ?? ($user['company'] ?? 'Rising Green Energy')); ?></strong><br>
+                                    style="font-size:18px;color:#000"><?php echo htmlspecialchars($settings['company_name'] ?? ($user['company'] ?? 'MBT SOLAR')); ?></strong><br>
                                 <div style="max-width: 250px; display: inline-block; text-align: right; white-space: normal;">
                                     <?php echo htmlspecialchars($settings['company_address'] ?? ($user['address'] ?? '--')); ?>
                                 </div><br>

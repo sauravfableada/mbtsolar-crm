@@ -336,7 +336,7 @@ if (!$logoBase64 && !empty($user['company_logo'])) {
 }
 
 // Resolve company name from settings table (company_name)
-$globalCompanyName = !empty($companySettings['company_name']) ? $companySettings['company_name'] : (!empty($user['company_name']) ? $user['company_name'] : '--');
+$globalCompanyName = 'MBT SOLAR';
 
 // Section active helper (if "active" is missing, treat as active)
 $_isActive = static function ($section): bool {

@@ -1,6 +1,6 @@
 @extends('emails.layouts.base')
 
-@section('email_title', 'Your Solar Project is Complete – Rising Green Energy')
+@section('email_title', 'Your Solar Project is Complete – MBT SOLAR')
 
 @section('header_label', 'Project Status')
 
@@ -81,7 +81,7 @@
     <div class="divider"></div>
 
     <p style="font-size: 15px; font-weight: 600; color: #3730a3; text-align: center; margin-bottom: 8px;">
-        Thank You for Choosing Rising Green Energy!
+        Thank You for Choosing MBT SOLAR!
     </p>
     <p style="font-size: 13.5px; opacity: 0.7; text-align: center;">
         We truly appreciate your trust in us. Your satisfaction is our greatest achievement.

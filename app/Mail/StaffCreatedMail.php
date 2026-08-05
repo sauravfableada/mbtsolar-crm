@@ -26,7 +26,7 @@ class StaffCreatedMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Welcome to Rising Green Energy – Your Account is Ready',
+            subject: 'Welcome to MBT SOLAR – Your Account is Ready',
         );
     }
 

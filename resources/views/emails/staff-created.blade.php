@@ -1,6 +1,6 @@
 @extends('emails.layouts.base')
 
-@section('email_title', 'Welcome to Rising Green Energy')
+@section('email_title', 'Welcome to MBT SOLAR')
 
 @section('header_title')
     Welcome to the Team!
@@ -10,7 +10,7 @@
     <p class="greeting">Hello {{ $userName }},</p>
 
     <p>
-        Your staff account has been successfully created on the Rising Green Energy CRM.
+        Your staff account has been successfully created on the MBT SOLAR CRM.
         You can now log in and start managing leads, customers, estimates, and more.
     </p>
 
