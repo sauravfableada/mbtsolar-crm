@@ -77,7 +77,7 @@
         $componentRowIndex++;
     ?>
     <tr style="page-break-inside:avoid; background:<?= $rowBg ?>;">
-        <td style="padding:12px 14px; font-size:14px; color:#222; border:1px solid #dfe9df; font-family:'DejaVu Sans',sans-serif; vertical-align:top; text-align:left;">
+        <td style="padding:12px 14px; font-size:14px; color:#222; border:1px solid #dfe9df; font-family:'DejaVu Sans',sans-serif; vertical-align:top; text-align:center;">
             <?php if (!empty($productImagePath)): ?>
                 <div style="text-align: center; margin-bottom: 8px;">
                     <img src="<?= $productImagePath ?>" alt="<?= esc($component['name'] ?? 'Product') ?>" style="width:60px; height:60px; object-fit:contain; border:1px solid #d4e4d4; padding:4px; background:#fff; display: block; margin: 0 auto;">

@@ -546,7 +546,7 @@
                                 <label class="form-label fw-semibold">Design File</label>
                                 <input type="file" name="attach_file" id="attach_file"
                                     class="form-control @error('attach_file') is-invalid @enderror"
-                                    accept=".pdf,.doc,.docx,.xls,.xlsx">
+                                    accept=".pdf,.doc,.docx,.xls,.xlsx,image/png,image/jpeg,image/jpg">
                                 <div class="invalid-feedback">
                                     @error('attach_file')
                                         {{ $message }}

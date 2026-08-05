@@ -301,6 +301,36 @@ class InvoiceController extends Controller
             }
         }
 
+        // Add attach_file (Design File)
+        if (!empty($invoice->attach_file)) {
+            $attachPath = 'invoices/' . $invoice->attach_file;
+            if (Storage::disk('public')->exists($attachPath)) {
+                $filePath = Storage::disk('public')->path($attachPath);
+                $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+                if ($ext === 'pdf') {
+                    try {
+                        $count = $mergedPdf->setSourceFile($filePath);
+                        for ($p = 1; $p <= $count; $p++) {
+                            $tpl = $mergedPdf->importPage($p);
+                            $size = $mergedPdf->getTemplateSize($tpl);
+                            $mergedPdf->AddPage($size['orientation'], [$size['width'], $size['height']]);
+                            $mergedPdf->useTemplate($tpl);
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error("Failed to merge PDF attach_file {$attachPath}: " . $e->getMessage());
+                    }
+                } elseif (in_array($ext, ['jpg', 'jpeg', 'png'])) {
+                    try {
+                        $mergedPdf->AddPage();
+                        $mergedPdf->Image($filePath, 10, 10, 190, 270, strtoupper($ext === 'jpg' ? 'jpeg' : $ext));
+                    } catch (\Exception $e) {
+                        \Log::error("Failed to merge image attach_file {$attachPath}: " . $e->getMessage());
+                    }
+                }
+            }
+        }
+
         // Clean up temp file
         if (file_exists($tmpMain)) {
             @unlink($tmpMain);
