@@ -193,64 +193,9 @@ class InvoiceController extends Controller
             $warranty_map[$war->id] = $war->title;
         }
 
-        // Render the invoice details HTML
-        $quotation_html = view('crm.invoices.pdf', compact('invoice', 'user', 'settings', 'product_data', 'technology_map', 'warranty_map'))->render();
-
-        // Get the selected template or default to the first one (aligned with EstimateController)
-        $template = null;
-        if ($invoice->template_id) {
-            $template = PdfBuilderForm::find($invoice->template_id);
-        }
-        if (!$template) {
-            $template = PdfBuilderForm::first();
-        }
-
-        // Inject an alias for estimate_date so the template can render invoice_date instead of today's date
-        if ($invoice->invoice_date) {
-            $invoice->estimate_date = $invoice->invoice_date->format('Y-m-d');
-        }
-
-        if ($template) {
-            $form_data = $template->form_data ?? [];
-
-            // Prepare data for the new template wrapper
-            // Pass $invoice AS the 'estimate' key, and set 'estimate_no' as the invoice no so pdf.blade.php handles it correctly
-            $pdfData = [
-                'estimate' => $invoice,
-                'estimate_no' => $invoice->invoice_no,
-                'companySettings' => $settings,
-                'companyLogoPath' => ($settings['company_logo_path'] ?? null) ? Storage::disk('public')->path($settings['company_logo_path']) : null,
-                'companyQrCodePath' => ($settings['company_qr_code_path'] ?? null) ? Storage::disk('public')->path($settings['company_qr_code_path']) : null,
-                'profileUser' => $user,
-                'template_id' => $template->id,
-                'template_name' => $template->template_name,
-                'quotation_html' => $quotation_html,
-                'header_image' => !empty($template->first_img) ? asset($template->first_img) : 'https://solar-crm.fableadtech.com/public/assets/img/profile/1760436391_b4bc9a00389df8eac539.jpg',
-                'footer_image' => asset('/assets/pdfFooter.png'),
-                'generated_at' => now()->format('d M Y h:i A'),
-                'before_blocks' => $form_data['before_blocks'] ?? [],
-                'after_blocks' => $form_data['after_blocks'] ?? [],
-                'companyInfo' => $template->company_information ?? [],
-                'timeLine' => $template->time_line ?? [],
-                'components' => $template->components ?? ($form_data['components'] ?? []),
-                'payment_terms' => $template->payment_terms ?? ($form_data['payment_terms'] ?? []),
-                'environment_impact' => $template->environment_impact ?? ($form_data['environment_impact'] ?? []),
-                'environmentImpact' => $template->environment_impact ?? ($form_data['environment_impact'] ?? []),
-                'footer' => $template->footer ?? ($form_data['footer'] ?? []),
-                'generationSection' => $form_data['generation'] ?? [],
-                'ongridRoiSection' => $form_data['ongrid_roi'] ?? [],
-                'estimateCommentSection' => $form_data['estimate_comment'] ?? [],
-            ];
-
-            $pdfView = Str::lower(trim((string) $template->template_name)) === 'basic template'
-                ? 'pdfbuilder.basic-template-pdf'
-                : 'pdfbuilder.pdf';
-            $pdf = Pdf::loadView($pdfView, $pdfData);
-            $pdf->setPaper('A4', 'portrait');
-        } else {
-            $pdf = Pdf::loadView('crm.invoices.pdf', compact('invoice', 'user', 'settings', 'product_data', 'technology_map', 'warranty_map'));
-            $pdf->setPaper('A4', 'portrait');
-        }
+        // Just use the crm.invoices.pdf for all Invoices
+        $pdf = Pdf::loadView('crm.invoices.pdf', compact('invoice', 'user', 'settings', 'product_data', 'technology_map', 'warranty_map'));
+        $pdf->setPaper('A4', 'portrait');
 
         // Save Dompdf output as temp PDF
         $tmpMain = tempnam(sys_get_temp_dir(), 'main_pdf_');
