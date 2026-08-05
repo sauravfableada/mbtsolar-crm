@@ -607,7 +607,7 @@
                                     </button>
                                 </label>
                                 <input type="hidden" name="update_template_comment" id="update_template_comment" value="0">
-                                <textarea name="comment" id="comment" class="form-control @error('comment') is-invalid @enderror" rows="2"
+                                <textarea name="comment" id="comment" class="form-control @error('comment') is-invalid @enderror" rows="5"
                                     placeholder="Add any comments...">{{ old('comment', $estimate->comment) }}</textarea>
                                 <div class="invalid-feedback" id="comment-error">
                                     @error('comment')
