@@ -120,7 +120,12 @@
                                     <input type="text" name="company_tax_id" value="{{ old('company_tax_id', $settings['company_tax_id'] ?? '') }}" class="form-control @error('company_tax_id') is-invalid @enderror">
                                     @error('company_tax_id')<div class="profile-field-error">{{ $message }}</div>@enderror
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Company Email</label>
+                                    <input type="email" name="company_email" value="{{ old('company_email', $settings['company_email'] ?? '') }}" class="form-control @error('company_email') is-invalid @enderror">
+                                    @error('company_email')<div class="profile-field-error">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-md-6">
                                     <label class="form-label fw-semibold">Company Logo (Upload)</label>
                                     <input type="file" name="company_logo_path" id="company-logo-input" accept="image/jpeg,image/png,image/jpg" class="form-control @error('company_logo_path') is-invalid @enderror">
                                     @error('company_logo_path')<div class="profile-field-error">{{ $message }}</div>@enderror

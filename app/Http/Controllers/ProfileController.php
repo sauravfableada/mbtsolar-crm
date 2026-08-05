@@ -218,6 +218,7 @@ class ProfileController extends Controller
             'company_tagline' => ['nullable', 'string', 'max:255'],
             'company_address' => ['required', 'string', 'max:255'],
             'company_tax_id' => ['nullable', 'string', 'max:255'],
+            'company_email' => ['nullable', 'email', 'max:255'],
             'avatar' => ['nullable', 'file', $imageFileRule, 'max:51200'],
             'company_logo_path' => ['nullable', 'file', $imageFileRule, 'max:51200'],
             'company_qr_code_path' => ['nullable', 'file', $imageFileRule, 'max:51200'],
@@ -243,7 +244,7 @@ class ProfileController extends Controller
         }
 
         $userData = collect($data)->except([
-            'company_name', 'company_tagline', 'company_address', 'company_tax_id', 
+            'company_name', 'company_tagline', 'company_address', 'company_tax_id', 'company_email',
             'avatar', 'company_logo_path', 'company_qr_code_path',
             'social_instagram', 'social_facebook', 'social_linkedin'
         ])->all();
@@ -254,6 +255,7 @@ class ProfileController extends Controller
             'company_tagline' => $request->input('company_tagline'),
             'company_address' => $request->input('company_address'),
             'company_tax_id' => $request->input('company_tax_id'),
+            'company_email' => $request->input('company_email'),
             'social_instagram' => $request->input('social_instagram'),
             'social_facebook' => $request->input('social_facebook'),
             'social_linkedin' => $request->input('social_linkedin'),
@@ -302,6 +304,7 @@ class ProfileController extends Controller
             'company_tagline',
             'company_address',
             'company_tax_id',
+            'company_email',
             'company_logo_path',
             'company_qr_code_path',
             'social_instagram',
