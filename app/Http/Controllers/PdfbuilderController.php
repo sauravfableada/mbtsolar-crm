@@ -91,6 +91,7 @@ class PdfbuilderController extends Controller
             'social_linkedin',
             'phone',
             'email',
+            'website',
         ])->pluck('value', 'key');
     }
 

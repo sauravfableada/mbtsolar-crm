@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 // âœ… Start the session here
 $session = session();
 $userId = $session->get('id');
@@ -335,8 +335,11 @@ if (!$logoBase64 && !empty($user['company_logo'])) {
     }
 }
 
-// Resolve company name from settings table (company_name)
-$globalCompanyName = 'MBT SOLAR';
+// Resolve company name dynamically from settings table (company_name)
+$_rawCompanyName = trim((string) (is_object($companySettings) && method_exists($companySettings, 'get')
+    ? ($companySettings->get('company_name') ?? '')
+    : ($companySettings['company_name'] ?? '')));
+$globalCompanyName = $_rawCompanyName !== '' ? $_rawCompanyName : 'MBT SOLAR';
 
 // Section active helper (if "active" is missing, treat as active)
 $_isActive = static function ($section): bool {
@@ -985,20 +988,32 @@ if (isset($quotation_html)) {
     $quotation_html = $applyPlaceholders($quotation_html);
 }
 
-// Process before_blocks
+// Process before_blocks - apply placeholders to both 'content' and 'description' keys
 if (isset($before_blocks) && is_array($before_blocks)) {
     foreach ($before_blocks as $idx => $block) {
+        if (isset($block['content'])) {
+            $before_blocks[$idx]['content'] = $applyPlaceholders($block['content']);
+        }
         if (isset($block['description'])) {
             $before_blocks[$idx]['description'] = $applyPlaceholders($block['description']);
+        }
+        if (isset($block['title'])) {
+            $before_blocks[$idx]['title'] = $applyPlaceholders($block['title']);
         }
     }
 }
 
-// Process after_blocks
+// Process after_blocks - apply placeholders to both 'content' and 'description' keys
 if (isset($after_blocks) && is_array($after_blocks)) {
     foreach ($after_blocks as $idx => $block) {
+        if (isset($block['content'])) {
+            $after_blocks[$idx]['content'] = $applyPlaceholders($block['content']);
+        }
         if (isset($block['description'])) {
             $after_blocks[$idx]['description'] = $applyPlaceholders($block['description']);
+        }
+        if (isset($block['title'])) {
+            $after_blocks[$idx]['title'] = $applyPlaceholders($block['title']);
         }
     }
 }
@@ -1569,6 +1584,9 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <?php
     $companyInfo = isset($companyInfo) && is_array($companyInfo) ? $companyInfo : [];
     $companyDescriptionRaw = (string) ($companyInfo['company_description'] ?? '');
+    if (isset($applyPlaceholders) && is_callable($applyPlaceholders)) {
+        $companyDescriptionRaw = $applyPlaceholders($companyDescriptionRaw);
+    }
     $companyDescription = sanitize_pdf_rich_html($companyDescriptionRaw);
     $cap = trim((string) ($companyInfo['company_capacity_installed'] ?? ''));
     $happy = trim((string) ($companyInfo['happy_customers'] ?? ''));

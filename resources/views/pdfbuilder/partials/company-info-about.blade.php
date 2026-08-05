@@ -2,7 +2,9 @@
     <tr>
         <td style="padding: 0px 24px 18px 22px;">
             <div class="pdf-rich-content pdf-rich-content-spacious pdf-company-page-about">
-                <?php if (($estdata->type ?? '') === 'residential'): ?>
+                <?php if ($companyDescription !== ''): ?>
+                    <?= $companyDescription ?>
+                <?php elseif (($estdata->type ?? '') === 'residential'): ?>
                     <p style="margin-bottom: 14px; font-size: 16px; font-weight: normal;">Dear <strong><?= esc($preparedForName) ?></strong>,</p>
                     <p style="margin-bottom: 14px; font-size: 16px; text-align: justify; line-height: 1.65; font-weight: normal;">
                         Thank you for giving <strong><?= esc($globalCompanyName) ?></strong> the opportunity to present this customized solar energy proposal<?= !empty($hasClientAddress) ? ' for your property located at <strong>' . esc($clientAddress) . '</strong>' : '' ?>.
@@ -19,7 +21,7 @@
                         <?= esc($globalCompanyName) ?>
                     </p>
                 <?php else: ?>
-                    <?= $companyDescription !== '' ? $companyDescription : '<p>We are on a mission to deliver 10,000 world-class solar installations ensuring maximum performance, durability, and ROI for every project.</p>' ?>
+                    <p>We are on a mission to deliver 10,000 world-class solar installations ensuring maximum performance, durability, and ROI for every project.</p>
                 <?php endif; ?>
             </div>
         </td>
