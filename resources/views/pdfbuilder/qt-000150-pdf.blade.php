@@ -153,6 +153,10 @@ if (!function_exists('normalize_pdf_image')) {
     
     // Apply Placeholders for dynamic company description
     $companyDescriptionRaw = (string) ($companyInfo['company_description'] ?? '');
+    $companyDescriptionRaw = preg_replace_callback('/<img\s+([^>]+)>/i', function($matches) {
+        $attrs = preg_replace('/(width|height|style)="[^"]*"/i', '', $matches[1]);
+        return '<img ' . $attrs . ' width="100%" style="width: 100%;">';
+    }, $companyDescriptionRaw);
     $placeholders = [
         '{{client_name}}' => $clientName,
         '{{company_name}}' => $companyName,
@@ -241,6 +245,13 @@ if (!function_exists('normalize_pdf_image')) {
         }
         .content p {
             margin-bottom: 8px;
+        }
+        .company-desc-rich-text img {
+            max-width: 100% !important;
+            width: 100% !important;
+            height: auto !important;
+            display: block;
+            margin: 10px auto;
         }
         
         /* Quote Table */
@@ -407,7 +418,9 @@ if (!function_exists('normalize_pdf_image')) {
         
         <div class="content">
             @if(!empty($companyDescription))
-                {!! $companyDescription !!}
+                <div class="company-desc-rich-text">
+                    {!! $companyDescription !!}
+                </div>
             @else
                 <p>Dear <strong>{{ $clientName }}</strong>,</p>
                 <p>Thank you for giving <strong>{{ $companyName }}</strong> the opportunity to present this customized solar energy proposal for your property located at <strong>{{ $clientAddress }}</strong>.</p>

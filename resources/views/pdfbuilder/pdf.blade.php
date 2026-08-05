@@ -1168,6 +1168,14 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             line-height: 1.55;
             padding-left: 4px;
         }
+        
+        .pdf-rich-content img {
+            max-width: 100% !important;
+            width: 100% !important;
+            height: auto !important;
+            display: block;
+            margin: 10px auto;
+        }
 
         .pdf-company-page-about {
             font-size: 16px;
@@ -1584,6 +1592,13 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <?php
     $companyInfo = isset($companyInfo) && is_array($companyInfo) ? $companyInfo : [];
     $companyDescriptionRaw = (string) ($companyInfo['company_description'] ?? '');
+    
+    // Strip existing inline styles/widths and enforce 100% width on images for DomPDF
+    $companyDescriptionRaw = preg_replace_callback('/<img\s+([^>]+)>/i', function($matches) {
+        $attrs = preg_replace('/(width|height|style)="[^"]*"/i', '', $matches[1]);
+        return '<img ' . $attrs . ' width="100%" style="width: 100%;">';
+    }, $companyDescriptionRaw);
+
     if (isset($applyPlaceholders) && is_callable($applyPlaceholders)) {
         $companyDescriptionRaw = $applyPlaceholders($companyDescriptionRaw);
     }
