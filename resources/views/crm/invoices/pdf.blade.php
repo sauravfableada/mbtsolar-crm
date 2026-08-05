@@ -237,7 +237,7 @@ if (!function_exists('base_url')) {
         .info-table th,
         .quotation-table th,
         .extra-info th {
-            background-color: #3B5BDB;
+            background-color: #3d7a3b;
             color: #fff;
         }
 
@@ -280,7 +280,7 @@ if (!function_exists('base_url')) {
         }
 
         .highlight-bg {
-            background-color: #3B5BDB;
+            background-color: #3d7a3b;
             color: #fff;
         }
 
@@ -322,13 +322,13 @@ if (!function_exists('base_url')) {
                         @endif
                     </td>
                     <td class="quotation-title" style="width: 50%;">
-                        <div style="line-height:22px;color:#000">
+                        <div style="line-height:22px;color:#000; text-align: right;">
                             <strong
-                                style="font-size:18px;color:#000">{{ $user->company_name ?? 'Company Name' }}</strong><br>
-                            {{ $user->address ?? '--' }}<br>
-                            {{ $user->country ?? '--' }}, {{ $user->state ?? '--' }}, {{ $user->city ?? '--' }}
-                            {{ $user->pincode ?? '--' }}<br>
-                            {{ $user->contact ?? '--' }}
+                                style="font-size:18px;color:#000">{{ $settings['company_name'] ?? ($user->company_name ?? 'MBT SOLAR') }}</strong><br>
+                            <div style="max-width: 250px; display: inline-block; text-align: right; white-space: normal;">
+                                {{ $settings['company_address'] ?? ($user->address ?? '--') }}
+                            </div><br>
+                            {{ $settings['phone'] ?? ($user->contact ?? '--') }}
                         </div>
                     </td>
                 </tr>
@@ -370,11 +370,11 @@ if (!function_exists('base_url')) {
 
         <!-- Invoice Details Table -->
         <table class="quotation-table" style="border: 1px solid #333; border-collapse: collapse; width: 100%; font-family: sans-serif; margin-bottom: 20px;">
-            <thead style="background-color: #52866A; color: #fff;">
+            <thead style="background-color: #3d7a3b; color: #fff;">
                 <tr>
-                    <th style="padding: 10px 8px; font-weight: bold; font-size: 13px; border: 1px solid #333; text-align: left; background-color: #52866A !important; color: #ffffff !important;">Invoice Name</th>
-                    <th style="padding: 10px 8px; font-weight: bold; font-size: 13px; border: 1px solid #333; text-align: left; background-color: #52866A !important; color: #ffffff !important;">Quantity (kW)</th>
-                    <th style="padding: 10px 8px; font-weight: bold; font-size: 13px; border: 1px solid #333; text-align: left; background-color: #52866A !important; color: #ffffff !important;">Price</th>
+                    <th style="padding: 10px 8px; font-weight: bold; font-size: 13px; border: 1px solid #333; text-align: left; background-color: #3d7a3b !important; color: #ffffff !important;">Invoice Name</th>
+                    <th style="padding: 10px 8px; font-weight: bold; font-size: 13px; border: 1px solid #333; text-align: left; background-color: #3d7a3b !important; color: #ffffff !important;">Quantity (kW)</th>
+                    <th style="padding: 10px 8px; font-weight: bold; font-size: 13px; border: 1px solid #333; text-align: left; background-color: #3d7a3b !important; color: #ffffff !important;">Price</th>
                 </tr>
             </thead>
             <tbody>
@@ -430,7 +430,7 @@ if (!function_exists('base_url')) {
                 <tr>
                     <td style="border: 1px solid #333; background-color: #fff;"></td>
                     <td style="text-align: right; border: 1px solid #333; font-weight: bold; padding: 8px 12px; color: #333; font-family: sans-serif;">Customer Payable Amount</td>
-                    <td style="text-align: right; border: 1px solid #333; padding: 8px 12px; background-color: #52866A !important; color: #ffffff !important; font-weight: bold; font-family: sans-serif;">{{ number_format($totalPayable, 2) }}</td>
+                    <td style="text-align: right; border: 1px solid #333; padding: 8px 12px; background-color: #3d7a3b !important; color: #ffffff !important; font-weight: bold; font-family: sans-serif;">{{ number_format($totalPayable, 2) }}</td>
                 </tr>
                 @if($subsidy > 0)
                 <tr>
@@ -441,7 +441,7 @@ if (!function_exists('base_url')) {
                 <tr>
                     <td style="border: 1px solid #333; background-color: #fff;"></td>
                     <td style="text-align: right; border: 1px solid #333; font-weight: bold; padding: 8px 12px; color: #333; font-family: sans-serif;">Lending Cost Of Customer</td>
-                    <td style="text-align: right; border: 1px solid #333; padding: 8px 12px; background-color: #52866A !important; color: #ffffff !important; font-weight: bold; font-family: sans-serif;">{{ number_format($lendingCost, 2) }}</td>
+                    <td style="text-align: right; border: 1px solid #333; padding: 8px 12px; background-color: #3d7a3b !important; color: #ffffff !important; font-weight: bold; font-family: sans-serif;">{{ number_format($lendingCost, 2) }}</td>
                 </tr>
                 @endif
             </tfoot>
@@ -515,137 +515,6 @@ if (!function_exists('base_url')) {
             </tbody>
         </table>
 
-        <!-- Page Break for BOM -->
-        <div style="page-break-before: always;"></div>
-
-        <!-- BOM Section -->
-        <div style="margin-top: 20px;">
-            <h2 style="text-align: center; color: #19547B; margin-bottom: 30px; text-decoration: underline;">
-                BILL OF MATERIALS (BOM)
-            </h2>
-            <table class="quotation-table" style="border: 1px solid #333; border-collapse: collapse; width: 100%; font-family: sans-serif;">
-                <thead style="background-color: #52866A; color: #fff;">
-                    <tr>
-                        <th style="padding: 10px 8px; font-weight: bold; font-size: 13px; border: 1px solid #333; text-align: left; background-color: #52866A !important; color: #ffffff !important; width: 35%;">Product Name</th>
-                        <th style="padding: 10px 8px; font-weight: bold; font-size: 13px; border: 1px solid #333; text-align: left; background-color: #52866A !important; color: #ffffff !important; width: 65%;">Specifications</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        $allproduct = is_array($invoice->product_name) ? $invoice->product_name : json_decode($invoice->product_name, true);
-                    @endphp
-                    @if(is_array($allproduct) && !empty($allproduct))
-                        @foreach($allproduct as $item)
-                            @php
-                                $product_id = $item['product_id'] ?? null;
-                                $product_name_display = $item['name'] ?? '';
-                                $product_quantity = $item['quantity'] ?? 0;
-                                $product_category_makes = $item['category_name'] ?? '';
-
-                                // Find product details from master list
-                                $full_product_details = null;
-                                foreach ($product_data as $prod_detail) {
-                                    if ($prod_detail['id'] == $product_id) {
-                                        $full_product_details = $prod_detail;
-                                        break;
-                                    }
-                                }
-
-                                // Robust product name fallback
-                                if (empty(trim($product_name_display)) && $full_product_details) {
-                                    $product_name_display = $full_product_details['product_name'] ?? '';
-                                }
-                                if (empty(trim($product_name_display))) {
-                                    $product_name_display = 'Product name not found';
-                                }
-                                $product_name_display = ucwords(strtolower($product_name_display));
-
-                                // Robust Make (category) fallback
-                                if (empty(trim($product_category_makes)) && $full_product_details && !empty($full_product_details['categories'])) {
-                                    $firstCat = reset($full_product_details['categories']);
-                                    $product_category_makes = $firstCat['name'] ?? '';
-                                }
-
-                                $specifications = [];
-                                if (!empty($product_category_makes)) {
-                                    $specifications[] = '<strong>Make: </strong>' . e($product_category_makes);
-                                }
-                                if (!empty($product_quantity)) {
-                                    $specifications[] = '<strong>Quantity: </strong>' . e($product_quantity);
-                                }
-
-                                // Technology with fallback to legacy JSON and ID lookups
-                                $techVal = null;
-                                if ($full_product_details && !empty($full_product_details['technology_id'])) {
-                                    $techVal = $technology_map[$full_product_details['technology_id']] ?? null;
-                                } elseif ($full_product_details && !empty($full_product_details['technology'])) {
-                                    $techArray = json_decode($full_product_details['technology'], true);
-                                    if (!is_array($techArray)) {
-                                        $techArray = [$full_product_details['technology']];
-                                    }
-                                    $techArray = array_filter($techArray, fn($v) => trim((string) $v) !== '');
-                                    if (!empty($techArray)) {
-                                        $techNames = array_map(fn($id) => $technology_map[$id] ?? $id, $techArray);
-                                        $techVal = implode(', ', $techNames);
-                                    }
-                                }
-                                if ($techVal) {
-                                    $specifications[] = '<strong>Technology: </strong>' . e($techVal);
-                                }
-
-                                // Warranty with fallback to legacy JSON and ID lookups
-                                $warVal = null;
-                                if ($full_product_details && !empty($full_product_details['warranty_id'])) {
-                                    $warVal = $warranty_map[$full_product_details['warranty_id']] ?? null;
-                                } elseif ($full_product_details && !empty($full_product_details['warranty'])) {
-                                    $warArray = json_decode($full_product_details['warranty'], true);
-                                    if (!is_array($warArray)) {
-                                        $warArray = [$full_product_details['warranty']];
-                                    }
-                                    $warArray = array_filter($warArray, fn($v) => trim((string) $v) !== '');
-                                    if (!empty($warArray)) {
-                                        $warNames = array_map(fn($id) => $warranty_map[$id] ?? $id, $warArray);
-                                        $warVal = implode(', ', $warNames);
-                                    }
-                                }
-                                if ($warVal) {
-                                    $specifications[] = '<strong>Warranty: </strong>' . e($warVal);
-                                }
-
-                                if ($full_product_details && !empty($full_product_details['height'])) {
-                                    $specifications[] = '<strong>Height: </strong>' . e($full_product_details['height']);
-                                }
-                                if ($full_product_details && !empty($full_product_details['fitting_material'])) {
-                                    $specifications[] = '<strong>Fitting Material: </strong>' . e($full_product_details['fitting_material']);
-                                }
-                                if ($full_product_details && !empty($full_product_details['fitting_type'])) {
-                                    $specifications[] = '<strong>Fitting Type: </strong>' . e($full_product_details['fitting_type']);
-                                }
-                                if ($full_product_details && !empty($full_product_details['thickness'])) {
-                                    $specifications[] = '<strong>Thickness: </strong>' . e($full_product_details['thickness']);
-                                }
-                                if ($full_product_details && !empty($full_product_details['size_of_pipe'])) {
-                                    $specifications[] = '<strong>Size of Pipe: </strong>' . e($full_product_details['size_of_pipe']);
-                                }
-                                if ($full_product_details && !empty($full_product_details['capacity'])) {
-                                    $specifications[] = '<strong>Capacity: </strong>' . e($full_product_details['capacity']);
-                                }
-
-                                $specifications_html = implode('<br>', $specifications);
-                            @endphp
-                            <tr>
-                                <td style="padding: 10px 8px; border: 1px solid #333; color: #333; font-weight: bold; font-size: 13px; font-family: sans-serif; vertical-align: middle;">{{ $product_name_display }}</td>
-                                <td style="padding: 10px 8px; border: 1px solid #333; font-size: 13px; font-family: sans-serif; line-height: 1.5; vertical-align: middle;">{!! $specifications_html !!}</td>
-                            </tr>
-                        @endforeach
-                    @else
-                        <tr>
-                            <td colspan="2" style="text-align: center; color: #666; padding: 15px; border: 1px solid #333;">No products added to this invoice</td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
     </div>
 </body>
 

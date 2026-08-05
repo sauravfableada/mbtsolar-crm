@@ -1611,7 +1611,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 
     </div>
 
-    <!-- âœ… SECOND PAGE: Company Information & Gallery -->
+    <?php if (empty($is_invoice_only)): ?>
+    <!-- ✅ SECOND PAGE: Company Information & Gallery -->
     <?php
     $__companyInfo = isset($companyInfo) && is_array($companyInfo) ? $companyInfo : [];
     $__companyInfoActive = $_isActive($__companyInfo);
@@ -3913,6 +3914,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <!-- ================= END PAGE 9 ================= -->
     <?php endif; ?>
 
+    <?php endif; ?>
 </body>
 
 </html>

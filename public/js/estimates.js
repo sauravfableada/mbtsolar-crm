@@ -355,14 +355,14 @@
         function getStatusBadge(status) {
             const normalized = String(status || '').toLowerCase();
             const classes = {
-                pending: 'bg-warning',
-                approved: 'bg-success',
-                rejected: 'bg-danger',
-                converted: 'bg-info',
-                completed: 'bg-info',
+                pending: 'bg-warning-subtle text-warning-emphasis',
+                approved: 'bg-success-subtle text-success-emphasis',
+                rejected: 'bg-danger-subtle text-danger-emphasis',
+                converted: 'bg-info-subtle text-info-emphasis',
+                completed: 'bg-info-subtle text-info-emphasis',
             };
             const label = normalized ? normalized.charAt(0).toUpperCase() + normalized.slice(1) : '-';
-            return `<span class="badge ${classes[normalized] || 'bg-secondary'} estimate-status-badge">${escapeHtml(label)}</span>`;
+            return `<span class="badge ${classes[normalized] || 'bg-secondary'} estimate-status-badge estimate-status-btn rounded-pill px-3 py-2" style="cursor:pointer; font-weight: 500;" data-status="${normalized}">${escapeHtml(label)}</span>`;
         }
 
         function bindDeleteButtons() {
@@ -1857,7 +1857,7 @@
                 const statusValue = String(estimate.status || '').toLowerCase();
                 const statusBadge = permissions.edit
                     ? getStatusBadge(estimate.status).replace('data-status=', `data-id="${estimate.estimate_id}" data-status=`)
-                    : `<span class="badge ${statusValue === 'approved' ? 'bg-success' : 'bg-warning text-dark'}">${escapeHtml(String(estimate.status || '').charAt(0).toUpperCase() + String(estimate.status || '').slice(1))}</span>`;
+                    : `<span class="badge ${statusValue === 'approved' ? 'bg-success-subtle text-success-emphasis' : 'bg-warning-subtle text-warning-emphasis'} rounded-pill px-3 py-2" style="font-weight: 500;">${escapeHtml(String(estimate.status || '').charAt(0).toUpperCase() + String(estimate.status || '').slice(1))}</span>`;
                 const isApproved = statusValue === 'approved';
                 const editAction = permissions.edit
                     ? (isApproved
