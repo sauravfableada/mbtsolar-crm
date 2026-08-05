@@ -1448,8 +1448,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 </head>
 
 <body>
-
-    <!-- âœ… FIRST PAGE -->
+    <?php if (empty($is_invoice_only)): ?>
+    <!-- ✅ FIRST PAGE -->
     <div class="<?= $_pageClass('p1') ?>" style="position: relative; height: 100%; min-height: 842px; overflow: hidden;">
         <!-- Top Half: Header Image -->
         <div style="height: 62%; width: 100%; overflow: hidden; position: relative;">
@@ -1611,7 +1611,6 @@ if (isset($after_blocks) && is_array($after_blocks)) {
 
     </div>
 
-    <?php if (empty($is_invoice_only)): ?>
     <!-- ✅ SECOND PAGE: Company Information & Gallery -->
     <?php
     $__companyInfo = isset($companyInfo) && is_array($companyInfo) ? $companyInfo : [];
@@ -3165,6 +3164,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     ?>
     <?php endif; ?>
 
+    <?php endif; ?>
+
     <!-- PAGE 6A: ESTIMATION / INVOICE -->
     <div class="page page-break" style="position: relative; background: white;">
         <div style="padding: 20px 40px 36px;">
@@ -3188,6 +3189,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             </tr>
         </table>
     </div>
+
+    <?php if (empty($is_invoice_only)): ?>
 
     <?php if ($__componentsActive && isset($componentsPages)): ?>
     <?php foreach ($componentsPages as $componentsPageIndex => $componentsPage):
