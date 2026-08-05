@@ -3167,7 +3167,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
     <?php endif; ?>
 
     <!-- PAGE 6A: ESTIMATION / INVOICE -->
-    <div class="page page-break" style="position: relative; background: white;">
+    <div class="page <?= empty($is_invoice_only) ? 'page-break' : '' ?>" style="position: relative; background: white;">
         <div style="padding: 20px 40px 36px;">
             @include('pdfbuilder.partials.pdf-page-header')
             @include('pdfbuilder.partials.estimate-invoice-summary')
