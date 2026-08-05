@@ -3735,8 +3735,13 @@ HTML;
                         
                         <!-- Circular overlapping logo -->
                         <div style="text-align: center; margin-top: -40px; position: relative; z-index: 10;">
+                            <?php if (!empty($logoBase64)): ?>
+                            <img src="<?= $logoBase64 ?>" alt="Logo" 
+                                style="width: 45px; height: 45px; padding: 15px; border: 3px solid #4b9349; border-radius: 50px; background-color: #fff; display: inline-block; object-fit: contain;">
+                            <?php else: ?>
                             <img src="<?= normalize_pdf_image('public/logo/favicon.jpeg') ?>" alt="Logo" 
                                 style="width: 45px; height: 45px; padding: 15px; border: 3px solid #4b9349; border-radius: 50px; background-color: #fff; display: inline-block;">
+                            <?php endif; ?>
                         </div>
                     </td>
                 </tr>

@@ -78,7 +78,7 @@
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 0px;">
             <tr>
                 <td width="50%" align="left" valign="bottom">
-                    <div style="font-size: 18px; color: #333; font-family: 'Montserrat', sans-serif;">
+                    <div style="font-size: 18px; color: #000; font-family: 'Montserrat', sans-serif;">
                         {{ (float)($estimate->quantity ?? 0) }}kW Ongrid {{ $estimate->type ?? 'Proposal' }}
                     </div>
                 </td>
