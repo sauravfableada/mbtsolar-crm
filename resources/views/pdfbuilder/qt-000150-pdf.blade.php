@@ -150,6 +150,24 @@ if (!function_exists('normalize_pdf_image')) {
             $logoBase64 = normalize_pdf_image('public/assets/img/profile/' . $preparedUser['company_logo']);
         }
     }
+    
+    // Apply Placeholders for dynamic company description
+    $companyDescriptionRaw = (string) ($companyInfo['company_description'] ?? '');
+    $placeholders = [
+        '{{client_name}}' => $clientName,
+        '{{company_name}}' => $companyName,
+        '{{client_address}}' => $clientAddress,
+        '{{sales_person_name}}' => $preparedName,
+        '{{sales_person_designation}}' => $preparedTitle,
+        '{{company_contact}}' => $companyPhone,
+        '{{company_website}}' => $companyWebsite,
+        '{{system_capacity}}' => $capacity,
+    ];
+    $applyPlaceholders = function($text) use ($placeholders) {
+        if (empty($text) || !is_string($text)) return $text;
+        return str_replace(array_keys($placeholders), array_values($placeholders), $text);
+    };
+    $companyDescription = $applyPlaceholders($companyDescriptionRaw);
 @endphp
 <!DOCTYPE html>
 <html>
@@ -373,7 +391,7 @@ if (!function_exists('normalize_pdf_image')) {
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
                     <td valign="middle">
-                        <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; font-weight: bold; color: #fff;">MBT SOLAR Proposal</h1>
+                        <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; font-weight: bold; color: #fff;">{{ $companyName }} Proposal</h1>
                         <p style="margin: 5px 0 0 0; font-size: 12px; font-style: italic; color: #e0e0e0;">Clean Energy. Guaranteed Savings. Sustainable Future.</p>
                     </td>
                     @if (!empty($logoBase64))
@@ -388,18 +406,24 @@ if (!function_exists('normalize_pdf_image')) {
         <div class="section-title">1. Introduction Page</div>
         
         <div class="content">
-            <p>Dear <strong>{{ $clientName }}</strong>,</p>
-            <p>Thank you for giving <strong>{{ $companyName }}</strong> the opportunity to present this customized solar energy proposal for your property located at <strong>{{ $clientAddress }}</strong>.</p>
-            <p>With electricity tariffs rising consistently year after year, switching to solar is no longer just an environmental choice-it is one of the smartest and safest financial investments available today. At <strong>{{ $companyName }}</strong>, we combine premium Tier-1 components, precise engineering, and seamless multi-stage execution to ensure your transition to clean energy is entirely effortless and highly profitable.</p>
-            <p>Enclosed, you will find a comprehensive breakdown of your custom tailored solar solution, expected annual generation metrics, long-term financial returns, and an end-to-end implementation roadmap.</p>
-            <p>As energy costs continue to rise and environmental sustainability becomes a growing priority, rooftop solar photovoltaic (PV) systems offer an efficient, reliable, and cost-effective solution for meeting electricity demands. By harnessing clean and renewable solar energy, organizations and homeowners can significantly reduce electricity expenses, decrease dependence on conventional power sources, and contribute to a greener future.</p>
-            <p>This proposal presents a comprehensive rooftop solar solution designed to maximize energy generation based on the available roof area and site conditions. The proposed system incorporates high-quality solar modules, advanced inverters, and industry-standard installation practices to ensure optimal performance, safety, and long-term reliability.</p>
-            <p>In addition to reducing operational costs, the installation of a rooftop solar system supports environmental responsibility by lowering carbon emissions and promoting the use of renewable energy. With minimal maintenance requirements and a long service life, the proposed solar power system represents a sustainable investment that delivers both economic and environmental benefits for years to come.</p>
-            <div style="position: absolute; bottom: 70px; left: 56px; color: #1b365d;">
-                <p style="margin-bottom: 5px;">Best Regards,</p>
-                <p><strong>Abhijeetsinh Solanki</strong><br>
-                MBT SOLAR | 9913545352 | rgesolar@gmail.com</p>
-            </div>
+            @if(!empty($companyDescription))
+                {!! $companyDescription !!}
+            @else
+                <p>Dear <strong>{{ $clientName }}</strong>,</p>
+                <p>Thank you for giving <strong>{{ $companyName }}</strong> the opportunity to present this customized solar energy proposal for your property located at <strong>{{ $clientAddress }}</strong>.</p>
+                <p>With electricity tariffs rising consistently year after year, switching to solar is no longer just an environmental choice-it is one of the smartest and safest financial investments available today. At <strong>{{ $companyName }}</strong>, we combine premium Tier-1 components, precise engineering, and seamless multi-stage execution to ensure your transition to clean energy is entirely effortless and highly profitable.</p>
+                <p>Enclosed, you will find a comprehensive breakdown of your custom tailored solar solution, expected annual generation metrics, long-term financial returns, and an end-to-end implementation roadmap.</p>
+                <p>As energy costs continue to rise and environmental sustainability becomes a growing priority, rooftop solar photovoltaic (PV) systems offer an efficient, reliable, and cost-effective solution for meeting electricity demands. By harnessing clean and renewable solar energy, organizations and homeowners can significantly reduce electricity expenses, decrease dependence on conventional power sources, and contribute to a greener future.</p>
+                <p>This proposal presents a comprehensive rooftop solar solution designed to maximize energy generation based on the available roof area and site conditions. The proposed system incorporates high-quality solar modules, advanced inverters, and industry-standard installation practices to ensure optimal performance, safety, and long-term reliability.</p>
+                <p>In addition to reducing operational costs, the installation of a rooftop solar system supports environmental responsibility by lowering carbon emissions and promoting the use of renewable energy. With minimal maintenance requirements and a long service life, the proposed solar power system represents a sustainable investment that delivers both economic and environmental benefits for years to come.</p>
+                <div style="position: absolute; bottom: 70px; left: 56px; color: #1b365d;">
+                    <p style="margin-bottom: 5px;">Best Regards,</p>
+                    <p>
+                        <strong>{{ $preparedName }}</strong>@if($preparedTitle && $preparedTitle !== $companyName) <span style="font-weight:normal;">| {{ $preparedTitle }}</span>@endif<br>
+                        {{ $companyName }}@if($companyPhone) | {{ $companyPhone }}@endif@if($companyEmail) | {{ $companyEmail }}@endif
+                    </p>
+                </div>
+            @endif
         </div>
         
         <div class="prop-footer">

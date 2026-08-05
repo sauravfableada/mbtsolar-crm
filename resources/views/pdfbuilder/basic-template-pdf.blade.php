@@ -238,6 +238,25 @@ if (!function_exists('normalize_pdf_image')) {
             $logoBase64 = normalize_pdf_image('public/assets/img/profile/' . $preparedUser['company_logo']);
         }
     }
+    
+    // Apply Placeholders for dynamic company description
+    $companyDescriptionRaw = (string) ($companyInfo['company_description'] ?? '');
+    $capacity = $capacityValue > 0 ? $plainNumber($capacityValue, 1) . ' kWp' : 'as proposed';
+    $placeholders = [
+        '{{client_name}}' => $clientName,
+        '{{company_name}}' => $companyName,
+        '{{client_address}}' => $clientAddress,
+        '{{sales_person_name}}' => $preparedName,
+        '{{sales_person_designation}}' => $preparedTitle,
+        '{{company_contact}}' => $contactInfo,
+        '{{company_website}}' => $websiteInfo,
+        '{{system_capacity}}' => $capacity,
+    ];
+    $applyPlaceholders = function($text) use ($placeholders) {
+        if (empty($text) || !is_string($text)) return $text;
+        return str_replace(array_keys($placeholders), array_values($placeholders), $text);
+    };
+    $companyDescription = $applyPlaceholders($companyDescriptionRaw);
 @endphp
 <!doctype html>
 <html>
@@ -391,12 +410,16 @@ if (!function_exists('normalize_pdf_image')) {
 
         <div class="section">
             <h2 class="section-title">1. Introduction Page</h2>
-            <p>Dear <strong>{{ $clientName }}</strong>,</p>
-            <p>Thank you for giving <strong>{{ $companyName }}</strong> the opportunity to present this customized solar energy proposal for your property located at <strong>{{ $clientAddress }}</strong>.</p>
-            <p>With electricity tariffs rising consistently year after year, switching to solar is no longer just an environmental choice-it is one of the smartest and safest financial investments available today. At <strong>{{ $companyName }}</strong>, we combine premium Tier-1 components, precise engineering, and seamless multi-stage execution to ensure your transition to clean energy is entirely effortless and highly profitable.</p>
-            <p>Enclosed, you will find a comprehensive breakdown of your custom tailored solar solution, expected annual generation metrics, long-term financial returns, and an end-to-end implementation roadmap.</p>
-            <p>Best Regards,</p>
-            <p><strong>{{ $preparedName }} / {{ $preparedTitle }}</strong><br>{{ $companyName }} | {{ $contactInfo }} | {{ $websiteInfo }}</p>
+            @if(!empty($companyDescription))
+                {!! $companyDescription !!}
+            @else
+                <p>Dear <strong>{{ $clientName }}</strong>,</p>
+                <p>Thank you for giving <strong>{{ $companyName }}</strong> the opportunity to present this customized solar energy proposal for your property located at <strong>{{ $clientAddress }}</strong>.</p>
+                <p>With electricity tariffs rising consistently year after year, switching to solar is no longer just an environmental choice-it is one of the smartest and safest financial investments available today. At <strong>{{ $companyName }}</strong>, we combine premium Tier-1 components, precise engineering, and seamless multi-stage execution to ensure your transition to clean energy is entirely effortless and highly profitable.</p>
+                <p>Enclosed, you will find a comprehensive breakdown of your custom tailored solar solution, expected annual generation metrics, long-term financial returns, and an end-to-end implementation roadmap.</p>
+                <p>Best Regards,</p>
+                <p><strong>{{ $preparedName }} / {{ $preparedTitle }}</strong><br>{{ $companyName }} | {{ $contactInfo }} | {{ $websiteInfo }}</p>
+            @endif
         </div>
 
         <div class="section">
