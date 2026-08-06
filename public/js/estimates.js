@@ -1272,6 +1272,7 @@
 
                 resetQuickBomRows();
                 applyQuickEstimatePriceMode(window.estimatePriceMode);
+            ensureQuickEstimateDate();
 
                 const discountField = document.getElementById('quick_discount');
                 const subsidyField = document.getElementById('quick_subsidy_amount');
@@ -1299,13 +1300,65 @@
                 document.getElementById('quick_gst').value = '0';
             };
 
+
+            const getLocalDateInputValue = function () {
+                const now = new Date();
+                const offsetDate = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+                return offsetDate.toISOString().slice(0, 10);
+            };
+
+            const ensureQuickEstimateDate = function () {
+                const dateField = document.getElementById('quick_estimate_date');
+                if (dateField && !dateField.value) {
+                    dateField.value = getLocalDateInputValue();
+                }
+            };
+
+            const normalizeQuickTemplateName = function (value) {
+                return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g, '').trim();
+            };
+
+            const syncQuickTemplateToType = function () {
+                const typeSelect = document.getElementById('quick_estimate_type');
+                const templateSelect = document.getElementById('quick_template_id');
+                if (!typeSelect || !templateSelect || !typeSelect.value) {
+                    return;
+                }
+
+                const selectedTypeLabel = typeSelect.options[typeSelect.selectedIndex]?.textContent || typeSelect.value;
+                const typeKey = normalizeQuickTemplateName(selectedTypeLabel);
+                const typeValueKey = normalizeQuickTemplateName(typeSelect.value);
+                const match = Array.from(templateSelect.options).find(function (option) {
+                    if (!option.value) {
+                        return false;
+                    }
+                    const optionTextKey = normalizeQuickTemplateName(option.textContent);
+                    const optionValueKey = normalizeQuickTemplateName(option.value);
+                    return optionTextKey === typeKey || optionTextKey === typeValueKey || optionValueKey === typeValueKey;
+                });
+
+                const nextValue = match ? match.value : '';
+                if (templateSelect.value === nextValue) {
+                    return;
+                }
+
+                templateSelect.value = nextValue;
+                templateSelect.dataset.userSelected = '';
+                templateSelect.dispatchEvent(new Event('change', { bubbles: true }));
+                if (window.jQuery && window.jQuery.fn.select2) {
+                    window.jQuery(templateSelect).val(nextValue).trigger('change.select2');
+                }
+            };
             const runQuickSubsidyCalculation = function () {
                 autoCalculateSubsidy(quickSubsidyOptions);
             };
 
             const quickTypeField = document.getElementById('quick_estimate_type');
             if (quickTypeField) {
-                quickTypeField.addEventListener('change', runQuickSubsidyCalculation);
+                quickTypeField.addEventListener('change', function () {
+                    runQuickSubsidyCalculation();
+                    syncQuickTemplateToType();
+                });
             }
 
             const quickQuantityField = document.getElementById('quick_quantity');
@@ -1360,6 +1413,7 @@
                 }
             }
             applyQuickEstimatePriceMode(window.estimatePriceMode);
+            ensureQuickEstimateDate();
 
             const fillQuickCommentFromTemplate = function (overwrite) {
                 const templateSelect = document.getElementById('quick_template_id');
@@ -1454,6 +1508,9 @@
 
             if (window.jQuery) {
                 window.jQuery(form).on('change', '#quick_estimate_customer_id, #quick_estimate_type, #quick_template_id', function () {
+                    if (this.id === 'quick_estimate_type') {
+                        syncQuickTemplateToType();
+                    }
                     if (getQuickSelectValue(this)) {
                         markQuickEstimateFieldInvalid(this, false);
                     }
@@ -1572,7 +1629,7 @@
                 formData.set('price_mode', window.estimatePriceMode === 'bom' ? 'bom' : 'base');
                 formData.set('template_id', templateId);
                 formData.set('solar_meter_charges', 'as_per_actual');
-                formData.set('estimate_date', new Date().toISOString().slice(0, 10));
+                formData.set('estimate_date', document.getElementById('quick_estimate_date')?.value || getLocalDateInputValue());
                 formData.set('products', JSON.stringify(products));
                 formData.set('global_tax_rate', document.getElementById('quick_global_tax_rate')?.value || '0');
                 formData.set('apply_gst', applyGst ? '1' : '0');

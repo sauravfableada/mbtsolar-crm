@@ -89,19 +89,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-12 col-md-8 quick-step-1 active-step">
-                            <div class="row g-2">
-                                <div class="col-6 quick-step-field-col">
-                                    <label class="form-label fw-semibold">Quantity (kW) <span class="text-danger">*</span></label>
-                                    <input type="number" min="1" step="1" class="form-control" name="quantity" id="quick_quantity" placeholder="Enter kW" required>
-                                    <div class="invalid-feedback" id="quick_quantity-error">Please enter quantity.</div>
-                                </div>
-                                <div class="col-6 quick-step-field-col quick-base-price-col {{ $estimatePriceMode === 'bom' ? 'd-none' : '' }}">
-                                    <label class="form-label fw-semibold">Price <span class="text-danger">*</span></label>
-                                    <input type="number" min="0" step="1" class="form-control" name="price" id="quick_price" value="{{ $estimatePriceMode === 'bom' ? 0 : '' }}" placeholder="Enter price" @required($estimatePriceMode === 'base')>
-                                    <div class="invalid-feedback" id="quick_price-error">Please enter price.</div>
-                                </div>
-                            </div>
+                        <div class="col-12 col-md-4 quick-step-1 active-step quick-step-field-col">
+                            <label class="form-label fw-semibold">Quantity (kW) <span class="text-danger">*</span></label>
+                            <input type="number" min="1" step="1" class="form-control" name="quantity" id="quick_quantity" placeholder="Enter kW" required>
+                            <div class="invalid-feedback" id="quick_quantity-error">Please enter quantity.</div>
+                        </div>
+                        <div class="col-12 col-md-4 quick-step-1 active-step quick-base-price-col {{ $estimatePriceMode === 'bom' ? 'd-none' : '' }}">
+                            <label class="form-label fw-semibold">Price <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="1" class="form-control" name="price" id="quick_price" value="{{ $estimatePriceMode === 'bom' ? 0 : '' }}" placeholder="Enter price" @required($estimatePriceMode === 'base')>
+                            <div class="invalid-feedback" id="quick_price-error">Please enter price.</div>
                         </div>
                         <div class="col-12 col-md-4 quick-step-1 active-step quick-template-select-wrap" id="quick_template_wrapper">
                             <label class="form-label fw-semibold">Quotation Template <span class="text-danger">*</span></label>
@@ -112,6 +108,10 @@
                                 @endforeach
                             </select>
                             <div class="invalid-feedback" id="quick_template_id-error">Please select template.</div>
+                        </div>
+                        <div class="col-12 col-md-4 quick-step-1 active-step quick-step-field-col">
+                            <label class="form-label fw-semibold">Created At</label>
+                            <input type="date" class="form-control" name="estimate_date" id="quick_estimate_date" value="{{ now()->format('Y-m-d') }}">
                         </div>
                             <div class="col-12 col-md-4 quick-step-1 active-step quick-global-tax-col {{ $estimatePriceMode === 'base' ? '' : 'd-none' }}">
                                 <label class="form-label fw-semibold">Tax Rate (Global)</label>
@@ -180,7 +180,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="col-6 col-md-1">
+                                            <div class="col-12 col-md-1 quick-bom-remove-col">
                                                 <button type="button" class="btn btn-outline-danger w-100 quick-remove-bom-row" style="display:none;">
                                                     <i class="bi bi-trash"></i>
                                                 </button>

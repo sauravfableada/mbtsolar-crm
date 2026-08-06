@@ -352,6 +352,35 @@
         enhanceFormLabels();
     }
 
+
+    function initCopyPhoneToWhatsapp() {
+        document.addEventListener("click", function (event) {
+            const button = event.target.closest("[data-copy-phone-to-whatsapp]");
+            if (!button) {
+                return;
+            }
+
+            const form = button.closest("form") || document;
+            const phoneInput = form.querySelector('[name="phone"]');
+            const whatsappInput = form.querySelector('[name="whatsapp"]');
+            const phoneValue = phoneInput ? phoneInput.value.trim() : "";
+
+            if (!phoneValue) {
+                if (typeof window.showToast === "function") {
+                    window.showToast("Please enter phone number first.", "warning");
+                }
+                phoneInput?.focus();
+                return;
+            }
+
+            if (whatsappInput) {
+                whatsappInput.value = phoneValue;
+                whatsappInput.dispatchEvent(new Event("input", { bubbles: true }));
+                whatsappInput.dispatchEvent(new Event("change", { bubbles: true }));
+                whatsappInput.focus();
+            }
+        });
+    }
     function initRemoteSelects() {
         if (!window.TomSelect) {
             return;
@@ -388,5 +417,6 @@
     document.addEventListener("DOMContentLoaded", function () {
         initPageChrome();
         initRemoteSelects();
+        initCopyPhoneToWhatsapp();
     });
 })();

@@ -62,8 +62,11 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">WhatsApp no.</label>
-                                <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp') }}"
-                                    placeholder="WhatsApp Number">
+                                <div class="input-group">
+                                    <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp') }}"
+                                        placeholder="WhatsApp Number">
+                                    <button type="button" class="btn btn-outline-dark-blue" data-copy-phone-to-whatsapp>Copy Phone</button>
+                                </div>
                             </div>
                             <div class="col-12">
                                 <label class="form-label fw-semibold">Address</label>

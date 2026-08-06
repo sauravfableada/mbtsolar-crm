@@ -67,8 +67,11 @@
 
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">WhatsApp</label>
-                            <input type="text" name="whatsapp" id="whatsapp" value="{{ old('whatsapp') }}"
-                                class="form-control @error('whatsapp') is-invalid @enderror" placeholder="WhatsApp Number">
+                            <div class="input-group">
+                                <input type="text" name="whatsapp" id="whatsapp" value="{{ old('whatsapp') }}"
+                                    class="form-control @error('whatsapp') is-invalid @enderror" placeholder="WhatsApp Number">
+                                <button type="button" class="btn btn-outline-dark-blue" data-copy-phone-to-whatsapp>Copy Phone</button>
+                            </div>
                             <div class="invalid-feedback" id="whatsapp-error">@error('whatsapp') {{ $message }} @enderror
                             </div>
                         </div>

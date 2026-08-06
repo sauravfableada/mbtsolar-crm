@@ -240,9 +240,20 @@
             max-width: 32%;
         }
 
+        #quickEstimateModal .quick-bom-row .quick-bom-money-col {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        #quickEstimateModal .quick-bom-row .quick-bom-remove-col {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
         #quickEstimateModal .quick-bom-row .quick-bom-make-col .select2-container,
         #quickEstimateModal .quick-bom-row .quick-bom-make-col .form-select,
-        #quickEstimateModal .quick-bom-row .quick-bom-qty-col .form-control {
+        #quickEstimateModal .quick-bom-row .quick-bom-qty-col .form-control,
+        #quickEstimateModal .quick-bom-row .quick-bom-money-col .form-control {
             width: 100% !important;
             max-width: 100% !important;
         }
