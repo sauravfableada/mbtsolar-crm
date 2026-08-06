@@ -782,7 +782,7 @@
                                         <li>
                                                 <button type="button" class="dropdown-item"
                                                     data-bs-toggle="modal" data-bs-target="#quickEstimateModal">
-                                                    <i class="bi bi-lightning-charge"></i>
+                                                    <i class="bi bi-plus-lg"></i>
                                                     <span>Quick Estimate</span>
                                                 </button>
                                             </li>
@@ -872,7 +872,7 @@
                                     class="notification-btn quick-estimate-header-btn d-lg-none"
                                     data-bs-toggle="modal" data-bs-target="#quickEstimateModal"
                                     title="Quick Estimate" aria-label="Quick Estimate">
-                                    <i class="bi bi-lightning-charge"></i>
+                                    <i class="bi bi-plus-lg"></i>
                                 </button>
                             @endif
                             </div>
@@ -1010,10 +1010,10 @@
                         </a>
                     @endif
 
-                    @if (auth()->user()?->hasMatrixPermission('view_deals'))
-                        <a href="{{ route('deals.index') }}" class="mobile-nav-item {{ request()->routeIs('deals.*') ? 'active' : '' }}">
-                            <i class="fa-solid fa-handshake"></i>
-                            <span>Deals</span>
+                    @if (auth()->user()?->hasMatrixPermission('view_estimates'))
+                        <a href="{{ route('estimates.index') }}" class="mobile-nav-item {{ request()->routeIs('estimates.*') ? 'active' : '' }}">
+                            <i class="fa-solid fa-file-lines"></i>
+                            <span>Estimate</span>
                         </a>
                     @endif
 

@@ -1,5 +1,5 @@
 @php
-    $estimatePriceMode = $estimatePriceMode ?? (\App\Models\Setting::where('key', 'estimate_price_mode')->value('value') === 'bom' ? 'bom' : 'base');
+    $estimatePriceMode = $estimatePriceMode ?? 'base';
     $bomTaxOptions = collect($gstTaxes ?? [])->map(function ($tax) {
         $taxName = strtoupper((string) $tax->name);
         $label = (string) $tax->name;
@@ -18,12 +18,12 @@
 <div class="modal fade {{ $estimatePriceMode === 'base' ? 'quick-estimate-base-price-mode' : '' }}" id="quickEstimateModal" aria-hidden="true" data-bs-focus="false">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <form id="quickEstimateForm" novalidate class="modal-content border-0 rounded-4 shadow">
-            <div class="modal-header border-0 py-3 px-4" style="background-color: #121a33;">
-                <div>
+            <div class="modal-header quick-estimate-modal-header border-0 py-3 px-4" style="background-color: #121a33;">
+                <div class="quick-estimate-modal-title">
                     <h5 class="modal-title fw-bold mb-0 text-white"><i class="bi bi-lightning-charge-fill me-2 text-white" aria-hidden="true"></i>Quick Estimate</h5>
                     <p class="small text-white-50 mb-0">Create a basic estimate with default/static settings.</p>
                 </div>
-                <div class="d-flex align-items-start gap-3 ms-auto">
+                <div class="quick-estimate-modal-actions d-flex align-items-start gap-3 ms-auto">
                     <div class="quick-price-mode-card">
                         <span class="quick-price-mode-title">Pricing Method</span>
                         <div class="quick-price-mode-options" role="group" aria-label="Quick estimate pricing method">

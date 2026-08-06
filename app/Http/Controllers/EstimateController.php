@@ -29,7 +29,7 @@ class EstimateController extends Controller
         $gstTaxes = Tax::active()->orderBy('name')->orderBy('rate')->get();
         $gstRate = (float) $gstTaxes->sum('rate');
         $subsidies = Subsidy::active()->get();
-        $estimatePriceMode = Setting::where('key', 'estimate_price_mode')->value('value') === 'bom' ? 'bom' : 'base';
+        $estimatePriceMode = 'base';
 
         return view('crm.estimates.index', compact('customers', 'templates', 'bomProducts', 'categories', 'gstTaxes', 'gstRate', 'subsidies', 'estimatePriceMode'));
     }
@@ -52,7 +52,7 @@ class EstimateController extends Controller
         if ($gstRate <= 0) {
             $gstRate = 18;
         }
-        $estimatePriceMode = Setting::where('key', 'estimate_price_mode')->value('value') === 'bom' ? 'bom' : 'base';
+        $estimatePriceMode = 'base';
 
         return view('crm.estimates.create', compact('customers', 'users', 'templates', 'bomProducts', 'categories', 'subsidies', 'gstRate', 'gstTaxes', 'estimatePriceMode'));
     }

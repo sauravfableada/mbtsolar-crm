@@ -430,6 +430,23 @@
         flex: 0 0 100%;
         max-width: 100%;
     }
+
+    #quickEstimateModal .quick-bom-row .quick-bom-make-col {
+        flex: 0 0 68%;
+        max-width: 68%;
+    }
+
+    #quickEstimateModal .quick-bom-row .quick-bom-qty-col {
+        flex: 0 0 32%;
+        max-width: 32%;
+    }
+
+    #quickEstimateModal .quick-bom-row .quick-bom-make-col .select2-container,
+    #quickEstimateModal .quick-bom-row .quick-bom-make-col .form-select,
+    #quickEstimateModal .quick-bom-row .quick-bom-qty-col .form-control {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
 }
 
 @media (min-width: 768px) {

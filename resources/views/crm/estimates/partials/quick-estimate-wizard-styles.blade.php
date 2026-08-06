@@ -94,6 +94,17 @@
         height: 1px;
     }
 
+    #quickEstimateModal .quick-estimate-modal-title {
+        min-width: 0;
+    }
+
+    #quickEstimateModal .quick-estimate-modal-title .modal-title {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        line-height: 1.15;
+    }
+
     @media (min-width: 768px) {
         #quickEstimateModal .quick-comment-col,
         #quickEstimateModal .quick-totals-col {
@@ -159,13 +170,81 @@
             overflow-x: clip;
         }
 
-        #quickEstimateModal .modal-header {
-            align-items: flex-start;
-            gap: .75rem;
+        #quickEstimateModal .quick-estimate-modal-header {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 0.75rem;
+            padding: 0.85rem 0.75rem !important;
+        }
+
+        #quickEstimateModal .quick-estimate-modal-title {
+            padding-right: 2.25rem;
+        }
+
+        #quickEstimateModal .quick-estimate-modal-title .modal-title {
+            font-size: 1rem;
+        }
+
+        #quickEstimateModal .quick-estimate-modal-title p {
+            display: none;
+        }
+
+        #quickEstimateModal .quick-estimate-modal-actions {
+            width: 100%;
+            margin-left: 0 !important;
+            padding-right: 2.25rem;
+        }
+
+        #quickEstimateModal .quick-estimate-modal-actions .btn-close {
+            position: absolute;
+            top: 0.85rem;
+            right: 0.75rem;
+            margin: 0 !important;
         }
 
         #quickEstimateModal .quick-price-mode-card {
-            min-width: 100%;
+            width: 100%;
+            min-width: 0;
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem;
+        }
+
+        #quickEstimateModal .quick-price-mode-title {
+            font-size: 0.625rem;
+            margin-right: 0;
+        }
+
+        #quickEstimateModal .quick-price-mode-options {
+            width: 100%;
+        }
+
+        #quickEstimateModal .quick-price-mode-option {
+            flex: 1 1 0;
+            min-width: 0;
+            padding: 0.35rem 0.25rem;
+            font-size: 0.625rem;
+            gap: 0.25rem;
+        }
+
+        #quickEstimateModal .quick-bom-row .quick-bom-make-col {
+            flex: 0 0 68%;
+            max-width: 68%;
+        }
+
+        #quickEstimateModal .quick-bom-row .quick-bom-qty-col {
+            flex: 0 0 32%;
+            max-width: 32%;
+        }
+
+        #quickEstimateModal .quick-bom-row .quick-bom-make-col .select2-container,
+        #quickEstimateModal .quick-bom-row .quick-bom-make-col .form-select,
+        #quickEstimateModal .quick-bom-row .quick-bom-qty-col .form-control {
+            width: 100% !important;
+            max-width: 100% !important;
         }
 
         #quickEstimateModal .quick-totals-card .totals-row > .input-small {
