@@ -7,6 +7,8 @@ use App\Models\Customer;
 use App\Models\Booking;
 use App\Models\Deal;
 use App\Models\Estimate;
+use App\Models\Meeting;
+use App\Models\Invoice;
 use App\Models\Stage;
 use App\Models\SubscriptionPlan;
 use App\Models\Task;
@@ -42,6 +44,8 @@ class DashboardController extends Controller
         return view('dashboard.index', [
             'stats' => $this->buildStats(),
             'estimateStats' => $this->buildEstimateStats(),
+            'invoiceSnapshot' => $this->buildInvoiceSnapshot(),
+            'actionSnapshot' => $this->buildActionSnapshot(),
             'upcomingFollowUps' => $this->buildUpcomingFollowUps(),
             'leadConversionSnapshot' => $this->buildLeadConversionSnapshot(),
             'stages' => $stages,
@@ -181,23 +185,28 @@ class DashboardController extends Controller
 
     public function apiCustomerReport(Request $request): JsonResponse
     {
-        if (!Customer::query()->visibleToUser(auth()->user())->exists()) {
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'year' => (int) ($request->get('year') ?: now()->year),
-                    'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    'series' => collect(range(1, 12))->map(fn() => 0)->values(),
-                ],
-            ]);
-        }
-
+        $user = auth()->user();
         $year = (int) ($request->get('year') ?: now()->year);
         $labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        $emptySeries = collect(range(1, 12))->map(fn() => 0)->values();
+        $customersQuery = Customer::query()->visibleToUser($user);
+        $canCustomers = (clone $customersQuery)->exists();
+        $canLeads = $user?->hasMatrixPermission('view_leads') ?? false;
+        $canFollowups = $user?->hasMatrixPermission('view_followups') ?? false;
+        $canMeetings = $user?->hasMatrixPermission('view_meetings') ?? false;
 
-        $series = collect(range(1, 12))->map(function (int $month) use ($year) {
+        $countByMonth = function (string $modelClass) use ($year) {
+            return collect(range(1, 12))->map(function (int $month) use ($modelClass, $year) {
+                return $modelClass::query()
+                    ->whereYear('created_at', $year)
+                    ->whereMonth('created_at', $month)
+                    ->count();
+            })->values();
+        };
+
+        $customerSeries = collect(range(1, 12))->map(function (int $month) use ($year, $user) {
             return Customer::query()
-                ->visibleToUser(auth()->user())
+                ->visibleToUser($user)
                 ->whereYear('created_at', $year)
                 ->whereMonth('created_at', $month)
                 ->count();
@@ -208,11 +217,15 @@ class DashboardController extends Controller
             'data' => [
                 'year' => $year,
                 'labels' => $labels,
-                'series' => $series,
+                'datasets' => [
+                    'customers' => $canCustomers ? $customerSeries : $emptySeries,
+                    'leads' => $canLeads ? $countByMonth(Lead::class) : $emptySeries,
+                    'followups' => $canFollowups ? $countByMonth(FollowUp::class) : $emptySeries,
+                    'meetings' => $canMeetings ? $countByMonth(Meeting::class) : $emptySeries,
+                ],
             ],
         ]);
     }
-
     public function apiDealsWidget(): JsonResponse
     {
         if (!auth()->user()?->hasMatrixPermission('view_deals')) {
@@ -257,6 +270,7 @@ class DashboardController extends Controller
         $canFollowups = $user?->hasMatrixPermission('view_followups') ?? false;
         $canLeads = $user?->hasMatrixPermission('view_leads') ?? false;
         $canDeals = $user?->hasMatrixPermission('view_deals') ?? false;
+        $canEstimates = $user?->hasMatrixPermission('view_estimates') ?? false;
         $canBookings = $user?->hasMatrixPermission('view_bookings') ?? false;
 
         $customers = (clone $customersQuery)->count();
@@ -268,6 +282,7 @@ class DashboardController extends Controller
         $leads = $canLeads ? Lead::query()->count() : 0;
         $activeLeads = $canLeads ? Lead::query()->whereNotIn('status', ['won', 'lost'])->count() : 0;
         $deals = $canDeals ? Deal::count() : 0;
+        $estimates = $canEstimates ? Estimate::query()->count() : 0;
         $confirmedBookings = $canBookings ? Booking::where('status', 'confirmed')->count() : 0;
         $totalLeads = $leads;
 
@@ -276,6 +291,7 @@ class DashboardController extends Controller
             'follow_ups' => $followUps,
             'leads' => $leads,
             'deals' => $deals,
+            'estimates' => $estimates,
             'new_customers_today' => (clone $customersQuery)->whereDate('created_at', today())->count(),
             'new_leads_today' => $canLeads ? Lead::query()->whereDate('created_at', today())->count() : 0,
             'pending_followups' => $pendingFollowUps,
@@ -393,6 +409,141 @@ class DashboardController extends Controller
             'estimates_created' => $estimatesCreated,
             'approved_estimates' => $approvedEstimates,
             'conversion_rate' => $totalLeads > 0 ? round(($approvedEstimates / $totalLeads) * 100) : 0,
+        ];
+    }
+
+    private function buildInvoiceSnapshot(): array
+    {
+        $user = auth()->user();
+        $canInvoices = $user?->hasMatrixPermission('view_invoices') ?? false;
+
+        if (!$canInvoices) {
+            return [
+                'can_view' => false,
+                'total' => 0,
+                'paid' => 0,
+                'unpaid' => 0,
+                'overdue' => 0,
+                'total_value' => 0,
+                'latest' => collect(),
+            ];
+        }
+
+        $invoiceQuery = Invoice::query();
+        $monthlyInvoiceChart = collect(range(5, 0))->map(function (int $offset) use ($invoiceQuery) {
+            $month = now()->subMonths($offset);
+
+            return [
+                'label' => $month->format('M'),
+                'value' => (float) (clone $invoiceQuery)
+                    ->whereBetween('created_at', [$month->copy()->startOfMonth(), $month->copy()->endOfMonth()])
+                    ->sum('amount'),
+            ];
+        });
+
+        return [
+            'can_view' => true,
+            'total' => (clone $invoiceQuery)->count(),
+            'paid' => (clone $invoiceQuery)->where('status', 'paid')->count(),
+            'unpaid' => (clone $invoiceQuery)->where('status', 'unpaid')->count(),
+            'overdue' => (clone $invoiceQuery)
+                ->whereDate('due_date', '<', today())
+                ->whereNotIn('status', ['paid', 'cancelled'])
+                ->count(),
+            'total_value' => (float) (clone $invoiceQuery)->sum('amount'),
+            'chart_labels' => $monthlyInvoiceChart->pluck('label')->values(),
+            'chart_series' => $monthlyInvoiceChart->pluck('value')->values(),
+            'latest' => (clone $invoiceQuery)
+                ->with('customer:id,name')
+                ->latest()
+                ->take(4)
+                ->get(['id', 'invoice_no', 'invoice_name', 'customer_id', 'status', 'amount', 'due_date']),
+        ];
+    }
+
+    private function buildActionSnapshot(): array
+    {
+        $user = auth()->user();
+        $canLeads = $user?->hasMatrixPermission('view_leads') ?? false;
+        $canFollowups = $user?->hasMatrixPermission('view_followups') ?? false;
+        $canMeetings = $user?->hasMatrixPermission('view_meetings') ?? false;
+
+        $leadItems = $canLeads
+            ? Lead::query()
+                ->with('assignedUser:id,name')
+                ->whereDoesntHave('statusHistories')
+                ->where(function ($query) {
+                    $query->whereNull('is_converted')->orWhere('is_converted', false);
+                })
+                ->latest()
+                ->take(3)
+                ->get(['id', 'name', 'status', 'assigned_user_id', 'created_at'])
+                ->map(fn (Lead $lead) => [
+                    'type' => 'Lead',
+                    'title' => $lead->name ?: 'Untitled Lead',
+                    'meta' => 'Status not changed',
+                    'status' => $lead->status ?: 'new',
+                    'owner' => $lead->assignedUser?->name ?? 'Unassigned',
+                    'age' => optional($lead->created_at)->diffForHumans(),
+                    'url' => route('leads.show', $lead),
+                ])
+            : collect();
+
+        $followUpItems = $canFollowups
+            ? FollowUp::query()
+                ->with(['lead:id,name', 'assignedUser:id,name'])
+                ->whereDoesntHave('statusHistories')
+                ->where(function ($query) {
+                    $query->whereNull('comment')->orWhere('comment', '');
+                })
+                ->whereNotIn('status', ['completed', 'cancelled', 'canceled'])
+                ->latest()
+                ->take(3)
+                ->get(['id', 'lead_id', 'assigned_user_id', 'purpose', 'status', 'comment', 'created_at'])
+                ->map(fn (FollowUp $followUp) => [
+                    'type' => 'Follow-up',
+                    'title' => $followUp->purpose ?: ($followUp->lead?->name ?: 'Follow-up'),
+                    'meta' => 'No comment or status activity',
+                    'status' => $followUp->status ?: 'pending',
+                    'owner' => $followUp->assignedUser?->name ?? 'Unassigned',
+                    'age' => optional($followUp->created_at)->diffForHumans(),
+                    'url' => route('followups.show', $followUp),
+                ])
+            : collect();
+
+        $meetingItems = $canMeetings
+            ? Meeting::query()
+                ->with(['customer:id,name', 'assignedUser:id,name'])
+                ->whereDoesntHave('statusHistories')
+                ->whereNotIn('status', ['completed', 'cancelled', 'canceled'])
+                ->latest()
+                ->take(3)
+                ->get(['id', 'title', 'customer_id', 'assigned_user_id', 'status', 'created_at'])
+                ->map(fn (Meeting $meeting) => [
+                    'type' => 'Meeting',
+                    'title' => $meeting->title ?: ($meeting->customer?->name ?: 'Meeting'),
+                    'meta' => 'Status not updated',
+                    'status' => $meeting->status ?: 'scheduled',
+                    'owner' => $meeting->assignedUser?->name ?? 'Unassigned',
+                    'age' => optional($meeting->created_at)->diffForHumans(),
+                    'url' => route('meetings.show', $meeting),
+                ])
+            : collect();
+
+        $items = $leadItems
+            ->merge($followUpItems)
+            ->merge($meetingItems)
+            ->sortByDesc(fn (array $item) => $item['created_at'] ?? null)
+            ->take(6)
+            ->values();
+
+        return [
+            'can_view' => $canLeads || $canFollowups || $canMeetings,
+            'leads' => $leadItems->count(),
+            'followups' => $followUpItems->count(),
+            'meetings' => $meetingItems->count(),
+            'total' => $items->count(),
+            'items' => $items,
         ];
     }
 

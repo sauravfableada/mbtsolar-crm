@@ -209,6 +209,15 @@
             padding: 16px 0 !important;
         }
 
+        .dashboard-footer a {
+            color: #64748B !important;
+            text-decoration: none;
+        }
+
+        .dashboard-footer a:hover {
+            color: #475569 !important;
+        }
+
         [data-theme="dark"] .dashboard-footer {
             border-top-color: rgba(255,255,255,.06);
             color: #475569 !important;
