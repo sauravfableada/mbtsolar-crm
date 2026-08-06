@@ -368,7 +368,7 @@ a {
     }
 
     .crm-top-actions {
-        gap: 8px;
+        gap: 0px;
     }
 
     .crm-top-icon-group {
@@ -482,8 +482,8 @@ a {
     border: none;
     background: transparent;
     color: var(--crm-text-muted);
-    width: 38px;
-    height: 38px;
+    width: 33px;
+    height: 33px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -498,13 +498,33 @@ a {
     color: var(--crm-text-dark);
 }
 
+.crm-top-actions .quick-estimate-header-btn {
+    background: #121a33;
+    color: #ffffff;
+    text-decoration: none;
+    box-shadow: 0 8px 18px rgba(18, 26, 51, .22);
+}
+
+.crm-top-actions .quick-estimate-header-btn:hover,
+.crm-top-actions .quick-estimate-header-btn:focus {
+    background: #0b376d;
+    color: #ffffff;
+}
+
 .crm-top-actions .quick-estimate-header-btn i {
-    color: #163b73;
-    font-size: 1.15rem;
+    color: #ffffff;
+    font-size: 1.1rem;
+}
+
+[data-theme="dark"] .crm-top-actions .quick-estimate-header-btn,
+[data-theme="dark"] .crm-top-actions .quick-estimate-header-btn:hover,
+[data-theme="dark"] .crm-top-actions .quick-estimate-header-btn:focus {
+    background: #1d4ed8;
+    color: #ffffff;
 }
 
 [data-theme="dark"] .crm-top-actions .quick-estimate-header-btn i {
-    color: #93c5fd;
+    color: #ffffff;
 }
 
 [data-theme="dark"] .crm-top-actions .notification-btn:hover {
@@ -655,7 +675,7 @@ a {
 
 .crm-user-name {
     font-size: .9rem;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--crm-text-dark);
 }
 
@@ -665,6 +685,7 @@ a {
 
 .crm-user-role {
     font-size: .75rem;
+    font-weight: 700;
     color: var(--crm-text-muted);
     margin-top: 1px;
 }
