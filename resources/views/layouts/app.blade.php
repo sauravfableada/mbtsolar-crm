@@ -868,12 +868,11 @@
                             </button>
 
                             @if ($showTopEstimatesButton && auth()->user()?->hasMatrixPermission('create_estimates'))
-                                <button type="button"
+                                <a href="{{ route('estimates.create') }}"
                                     class="notification-btn quick-estimate-header-btn d-lg-none"
-                                    data-bs-toggle="modal" data-bs-target="#quickEstimateModal"
-                                    title="Quick Estimate" aria-label="Quick Estimate">
+                                    title="Add Estimate" aria-label="Add Estimate">
                                     <i class="bi bi-plus-lg"></i>
-                                </button>
+                                </a>
                             @endif
                             </div>
 
