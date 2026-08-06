@@ -1033,7 +1033,7 @@ a {
     }
 
     .crm-form-page .card-body {
-        padding-bottom: 6rem !important;
+        padding-bottom: 0rem !important;
     }
 
     .crm-form-page .form-actions {

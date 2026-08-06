@@ -353,7 +353,7 @@
 
     #estimateCreateForm .bom-row-grid,
     #estimateEditForm .bom-row-grid {
-        grid-template-columns: minmax(0, 1fr) !important;
+        grid-template-columns: minmax(0, 68%) minmax(0, 32%) !important;
         gap: 0.75rem;
     }
 
@@ -362,6 +362,15 @@
     #estimateCreateForm .bom-row-grid .bom-action-cell,
     #estimateEditForm .bom-row-grid .bom-action-cell {
         grid-column: auto !important;
+    }
+
+    #estimateCreateForm .bom-row-grid > div:first-child,
+    #estimateEditForm .bom-row-grid > div:first-child,
+    #estimateCreateForm .bom-row-grid .estimate-bom-money-col:nth-of-type(n+6),
+    #estimateEditForm .bom-row-grid .estimate-bom-money-col:nth-of-type(n+6),
+    #estimateCreateForm .bom-row-grid .bom-action-cell,
+    #estimateEditForm .bom-row-grid .bom-action-cell {
+        grid-column: 1 / -1 !important;
     }
 
     #estimateCreateForm .bom-row-grid .d-flex,
