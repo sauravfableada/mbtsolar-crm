@@ -87,20 +87,25 @@
     }
 
     function bindTabHash() {
-        const settingsTabs = document.getElementById("settingsTabs");
-        if (!settingsTabs) {
+        const tabButtons = document.querySelectorAll('[data-bs-toggle="tab"][data-bs-target], [data-bs-toggle="pill"][data-bs-target]');
+        if (!tabButtons.length) {
             return;
         }
 
         const hash = window.location.hash;
         if (hash && window.bootstrap) {
-            const trigger = settingsTabs.querySelector('[data-bs-target="' + hash + '"]');
+            const trigger = document.querySelector('[data-bs-target="' + hash + '"]');
             if (trigger) {
+                const nestedTabs = trigger.closest("#integrationSettingsTabs");
+                const integrationsMainTrigger = document.querySelector('[data-bs-target="#integrations-main"]');
+                if (nestedTabs && integrationsMainTrigger) {
+                    window.bootstrap.Tab.getOrCreateInstance(integrationsMainTrigger).show();
+                }
                 window.bootstrap.Tab.getOrCreateInstance(trigger).show();
             }
         }
 
-        settingsTabs.querySelectorAll("[data-bs-target]").forEach(function (button) {
+        tabButtons.forEach(function (button) {
             button.addEventListener("shown.bs.tab", function (event) {
                 const target = event.target.getAttribute("data-bs-target");
                 if (target) {
@@ -277,6 +282,9 @@
                 .then(parseJson)
                 .then(function (payload) {
                     notify(payload.message || "Integration status updated.", "success");
+                    window.setTimeout(function () {
+                        window.location.reload();
+                    }, 600);
                 })
                 .catch(function (error) {
                     toggle.checked = !enabled;

@@ -136,12 +136,6 @@ class MeetingController extends ApiBaseController
             'agenda.required' => 'Meeting Agenda is required.',
         ]);
 
-        $validator->after(function ($validator) use ($request) {
-            // Check if scheduled_at is in the past for new meetings
-            if ($request->scheduled_at && \Carbon\Carbon::parse($request->scheduled_at)->isPast()) {
-                $validator->errors()->add('scheduled_at', 'Schedule date cannot be in the past.');
-            }
-        });
 
         if ($validator->fails()) {
             return response()->json([

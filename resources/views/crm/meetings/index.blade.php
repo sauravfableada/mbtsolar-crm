@@ -3,6 +3,9 @@
 @section('page_title', 'Meetings')
 
 @section('content')
+@php
+    $isGoogleConnectionEnabled = \App\Helpers\IntegrationHelper::isGoogleEnabled();
+@endphp
 <div class="container-fluid p-0">
 
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden" id="googleCalendarSection">
@@ -12,14 +15,16 @@
                     <h4 class="fw-bold mb-0">Manage Meetings</h4>
                 </div>
                 <div class="d-flex flex-wrap align-items-center gap-2">
-                    @can('meetings.edit')
-                    <button type="button" id="connectGoogleBtn" class="btn btn-outline-primary" onclick="GoogleCalendar.connect()">
-                        <i class="bi bi-google me-1"></i>Connect Google Calendar
-                    </button>
-                    <button type="button" id="disconnectGoogleBtn" class="btn btn-outline-danger" onclick="GoogleCalendar.disconnect()" style="display: none;">
-                        <i class="bi bi-x-circle me-1"></i>Disconnect
-                    </button>
-                    @endcan
+                    @if($isGoogleConnectionEnabled)
+                        @can('meetings.edit')
+                        <button type="button" id="connectGoogleBtn" class="btn btn-dark-blue" onclick="GoogleCalendar.connect()">
+                            <i class="bi bi-google me-1"></i>Connect Google Calendar
+                        </button>
+                        <button type="button" id="disconnectGoogleBtn" class="btn btn-outline-danger" onclick="GoogleCalendar.disconnect()" style="display: none;">
+                            <i class="bi bi-x-circle me-1"></i>Disconnect
+                        </button>
+                        @endcan
+                    @endif
                     @can('meetings.view')
                     <a href="{{ route('meetings.export') }}" class="btn btn-outline-dark-blue">
                         <i class="fa-solid fa-download me-1"></i>Export

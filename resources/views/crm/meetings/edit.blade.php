@@ -98,7 +98,6 @@
                             <label class="form-label fw-semibold">Scheduled On <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="scheduled_at" id="scheduled_at"
                                 value="{{ old('scheduled_at', \Carbon\Carbon::parse($meeting->scheduled_at)->format('Y-m-d\TH:i')) }}"
-                                min="{{ now()->format('Y-m-d\TH:i') }}"
                                 class="form-control" required>
                             <div class="invalid-feedback" id="scheduled_at-error"></div>
                         </div>
