@@ -2178,9 +2178,7 @@
             el.classList.toggle('col-md-8', mode !== 'base');
         });
         document.querySelectorAll('#bomContainer .bom-row-grid').forEach(function (grid) {
-            grid.style.gridTemplateColumns = mode === 'base'
-                ? 'minmax(180px, 2fr) minmax(130px, 1.2fr) minmax(90px, .7fr) minmax(70px, auto)'
-                : '';
+            grid.classList.toggle('estimate-bom-base-grid', mode === 'base');
         });
 
         if (mode === 'bom') {
