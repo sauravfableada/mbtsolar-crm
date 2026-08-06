@@ -2,6 +2,12 @@
 
 @section('page_title', 'Deals - Edit')
 
+@section('page_actions')
+    <a href="{{ route('deals.index') }}" class="btn btn-dark-blue back-btn">
+        <i class="fa-solid fa-angle-left pe-2"></i>Back
+    </a>
+@endsection
+
 @section('content')
     <div class="container-fluid p-0">
         <div class="card shadow-sm border-0 rounded-4 overflow-hidden deal-form-card">
@@ -11,17 +17,11 @@
                         <h1 class="h4 mb-1 fw-semibold">Edit Deal</h1>
                         <p class="text-muted small mb-0">Update deal details for the customer.</p>
                     </div>
-                    <div class="d-flex flex-wrap gap-2 w-100 w-md-auto justify-content-lg-end justify-content-md-end">
-                        @can('deals.view')
-                            <a href="{{ route('deals.show', $deal) }}" class="btn btn-outline-dark-blue flex-grow-1 flex-md-grow-0">
-                                <i class="bi bi-eye me-1"></i>View
-                            </a>
-                        @endcan
-                        <a href="{{ route('deals.index') }}" class="btn btn-dark-blue flex-grow-1 flex-md-grow-0">
-                            <i class="fa-solid fa-angle-left pe-1"></i>
-                            <span>Back</span>
+                    @can('deals.view')
+                        <a href="{{ route('deals.show', $deal) }}" class="btn btn-outline-dark-blue flex-grow-1 flex-md-grow-0">
+                            <i class="bi bi-eye me-1"></i>View
                         </a>
-                    </div>
+                    @endcan
                 </div>
             </div>
             <div class="card-body p-3 p-md-4">

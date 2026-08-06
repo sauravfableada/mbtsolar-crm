@@ -82,10 +82,10 @@
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2 text-muted"></i>Due Date <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold"><i class="fa-solid fa-calendar-days me-2 text-muted"></i>Due Date</label>
                             <input type="date" name="due_date" id="due_date" value="{{ old('due_date') }}"
                                 min="{{ date('Y-m-d') }}"
-                                class="form-control @error('due_date') is-invalid @enderror" required>
+                                class="form-control @error('due_date') is-invalid @enderror">
                             <div class="invalid-feedback d-block" id="due_date-error">{{ $errors->first('due_date') }}</div>
                         </div>
 
