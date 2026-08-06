@@ -113,7 +113,7 @@ class EstimateController extends Controller
         $this->authorize('create', Estimate::class);
         $priceMode = $request->price_mode 
             ? $request->price_mode 
-            : (Setting::where('key', 'estimate_price_mode')->value('value') === 'bom' ? 'bom' : 'base');
+            : 'base';
         $useBomPrice = $priceMode === 'bom';
 
         // Strict validation matching reference code
