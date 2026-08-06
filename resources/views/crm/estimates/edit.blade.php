@@ -2,6 +2,13 @@
 
 @section('page_title', 'Estimates - Edit')
 
+@section('page_actions')
+    <a href="{{ route('estimates.index') }}" class="btn btn-dark-blue">
+        <i class="fa-solid fa-angle-left pe-1"></i>
+        <span>Back</span>
+    </a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/estimates.css') }}">
@@ -197,7 +204,7 @@
             .bom-row-grid > div:nth-child(2) {
                 grid-column: span 2;
             }
-            
+
             .create-step-indicator {
                 display: flex;
                 align-items: center;
@@ -309,10 +316,7 @@
                                 <i class="bi bi-eye me-1"></i>View
                             </a>
                         @endcan
-                        <a href="{{ route('estimates.index') }}" class="btn btn-dark-blue flex-grow-1 flex-md-grow-0">
-                            <i class="fa-solid fa-angle-left pe-1"></i>
-                            <span>Back</span>
-                        </a>
+
                     </div>
                 </div>
             </div>
@@ -766,8 +770,6 @@
         </div>
     </div>
 
-
-
     <!-- Add Customer Modal -->
     <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
@@ -866,24 +868,24 @@
                 let name = $('#quick_customer_name').val().trim();
                 let number = $('#quick_customer_number').val().trim();
                 let address = $('#quick_customer_address').val().trim();
-                
+
                 $('#quick_customer_name, #quick_customer_number').removeClass('is-invalid');
-                
+
                 if (!name || !number) {
                     if(!name) $('#quick_customer_name').addClass('is-invalid');
                     if(!number) $('#quick_customer_number').addClass('is-invalid');
                     return;
                 }
-                
+
                 if (!address) {
                     address = 'Address';
                 }
-                
+
                 let btn = $(this);
                 let originalText = btn.data('original-text') || btn.html();
                 btn.data('original-text', originalText);
                 btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
-                
+
                 $.ajax({
                     url: '/api/customers',
                     type: 'POST',
@@ -915,7 +917,7 @@
                     }
                 });
             });
-            
+
             $(document).on('select2:select', '.product-select', function (e) {
                 $(this).trigger('change');
             });
@@ -968,7 +970,7 @@
 
                 $('#bomContainer .bom-row').each(function () {
                     const select = $(this).find('.product-select');
-                    
+
                     if (select.val()) {
                         hasValidBom = true;
                     }
@@ -988,7 +990,7 @@
 
             $('.create-next-btn').click(function () {
                 let isValid = true;
-                
+
                 if (currentStep === 1) {
                     $('#estimateEditForm .create-step-1 [required]').each(function () {
                         if (!$(this).val()) {
@@ -1041,7 +1043,7 @@
             // Quotation template edit link logic
             const templateSelect = $('#template_id');
             const editTemplateLink = $('#edit_template_link');
-            
+
             function updateTemplateEditLink() {
                 const val = templateSelect.val();
                 if (val) {
@@ -1052,15 +1054,15 @@
                     editTemplateLink.addClass('d-none');
                 }
             }
-            
+
             templateSelect.on('change', updateTemplateEditLink);
             updateTemplateEditLink();
-            
+
             // Auto-select Quotation Template based on Estimate Type
             $('#type').on('change', function() {
                 var selectedType = $(this).find('option:selected').text().trim().toLowerCase();
                 if (!selectedType || selectedType === 'select type') return;
-                
+
                 $('#template_id option').each(function() {
                     var templateName = $(this).text().trim().toLowerCase();
                     if (templateName === selectedType || templateName === selectedType + ' template') {

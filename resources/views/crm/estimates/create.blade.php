@@ -2,6 +2,12 @@
 
 @section('page_title', 'Estimates - Create')
 
+@section('page_actions')
+    <a href="{{ route('estimates.index') }}" class="btn btn-dark-blue back-btn">
+        <i class="fa-solid fa-angle-left pe-2"></i>Back
+    </a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/estimates.css') }}?v={{ filemtime(public_path('css/estimates.css')) }}">
@@ -197,7 +203,7 @@
             .bom-row-grid > div:nth-child(2) {
                 grid-column: span 2;
             }
-            
+
             .create-step-indicator {
                 display: flex;
                 align-items: center;
@@ -289,9 +295,7 @@
                                 <option value="base" @selected($estimatePriceMode === 'base')>Show Base Price only</option>
                             </select>
                         </div>
-                        <a href="{{ route('estimates.index') }}" class="btn btn-dark-blue back-btn w-100 w-md-auto">
-                            <i class="fa-solid fa-angle-left pe-2"></i>Back
-                        </a>
+
                     </div>
                 </div>
             </div>
@@ -629,10 +633,10 @@
 
                     <div class="mt-4 pt-4 border-top d-flex justify-content-between gap-2 form-actions">
                         <a href="{{ route('estimates.index') }}" class="btn btn-outline-dark-blue d-none d-md-block">Cancel</a>
-                        
+
                         <!-- Mobile Wizard Buttons -->
                         <button type="button" class="btn btn-outline-dark-blue mobile-create-wizard-btn create-prev-btn" style="display: none !important;">Back</button>
-                        
+
                         <div class="d-flex ms-auto gap-2">
                             <button type="button" class="btn btn-dark-blue mobile-create-wizard-btn create-next-btn">Next</button>
                             <button type="submit" class="btn btn-dark-blue create-submit-btn" id="submitBtn">
@@ -717,8 +721,6 @@
             </div>
         </div>
     </div>
-
-
 
     <!-- Add Customer Modal -->
     <div class="modal fade" id="addCustomerModal" tabindex="-1" aria-hidden="true">
@@ -814,24 +816,24 @@
                 let name = $('#quick_customer_name').val().trim();
                 let number = $('#quick_customer_number').val().trim();
                 let address = $('#quick_customer_address').val().trim();
-                
+
                 $('#quick_customer_name, #quick_customer_number').removeClass('is-invalid');
-                
+
                 if (!name || !number) {
                     if(!name) $('#quick_customer_name').addClass('is-invalid');
                     if(!number) $('#quick_customer_number').addClass('is-invalid');
                     return;
                 }
-                
+
                 if (!address) {
                     address = 'Address';
                 }
-                
+
                 let btn = $(this);
                 let originalText = btn.data('original-text') || btn.html();
                 btn.data('original-text', originalText);
                 btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm"></span>');
-                
+
                 $.ajax({
                     url: '/api/customers',
                     type: 'POST',
@@ -863,11 +865,11 @@
                     }
                 });
             });
-            
+
             $(document).on('select2:select', '.product-select', function (e) {
                 $(this).trigger('change');
             });
-            
+
             // Multi-step form logic
             let currentCreateStep = 1;
             const totalCreateSteps = 3;
@@ -877,11 +879,11 @@
                     $('.create-submit-btn').show();
                     return;
                 }
-                
+
                 // Hide all steps, show current
                 $('#estimateCreateForm .active-step').removeClass('active-step');
                 $('#estimateCreateForm .create-step-' + currentCreateStep).addClass('active-step');
-                
+
                 // Update dots
                 $('.create-step-dot').removeClass('active');
                 $('#cdot-' + currentCreateStep).addClass('active');
@@ -903,7 +905,7 @@
 
             $('.create-next-btn').click(function() {
                 let isValid = true;
-                
+
                 if (currentCreateStep === 2) {
                     const bomValidation = typeof window.validateEstimateBomRows === 'function'
                         ? window.validateEstimateBomRows()
@@ -920,7 +922,7 @@
                         }
                     });
                 }
-                
+
                 if (isValid && currentCreateStep < totalCreateSteps) {
                     currentCreateStep++;
                     updateCreateWizardUI();
@@ -958,7 +960,7 @@
             // Quotation template edit link logic
             const templateSelect = $('#template_id');
             const editTemplateLink = $('#edit_template_link');
-            
+
             function updateTemplateEditLink() {
                 const val = templateSelect.val();
                 if (val) {
@@ -969,15 +971,15 @@
                     editTemplateLink.addClass('d-none');
                 }
             }
-            
+
             templateSelect.on('change', updateTemplateEditLink);
             updateTemplateEditLink();
-            
+
             // Auto-select Quotation Template based on Estimate Type
             $('#type').on('change', function() {
                 var selectedType = $(this).find('option:selected').text().trim().toLowerCase();
                 if (!selectedType || selectedType === 'select type') return;
-                
+
                 $('#template_id option').each(function() {
                     var templateName = $(this).text().trim().toLowerCase();
                     if (templateName === selectedType || templateName === selectedType + ' template') {

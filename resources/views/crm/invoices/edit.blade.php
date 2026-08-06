@@ -2,6 +2,13 @@
 
 @section('page_title', 'Edit Invoice #' . $invoice->invoice_no)
 
+@section('page_actions')
+    <a href="{{ route('invoices.index') }}" class="btn btn-dark-blue">
+        <i class="fa-solid fa-angle-left pe-1"></i>
+        <span>Back</span>
+    </a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/estimates.css') }}">
@@ -132,10 +139,7 @@
                                 <i class="bi bi-eye me-1"></i>View
                             </a>
                         @endcan
-                        <a href="{{ route('invoices.index') }}" class="btn btn-dark-blue flex-grow-1 flex-md-grow-0">
-                            <i class="fa-solid fa-angle-left pe-1"></i>
-                            <span>Back</span>
-                        </a>
+
                     </div>
                 </div>
             </div>
