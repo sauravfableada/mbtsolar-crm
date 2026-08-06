@@ -15,7 +15,7 @@ class FollowUpController extends ApiBaseController
     private const FOLLOW_UP_RULES = [
         'lead_id' => ['required', 'integer', 'exists:leads,id'],
         'assigned_user_id' => ['required', 'integer', 'exists:users,id'],
-        'purpose' => ['required', 'string', 'max:255'],
+        'purpose' => ['nullable', 'string', 'max:255'],
         'comment' => ['nullable', 'string', 'max:2000'],
         'status_comment' => ['nullable', 'string', 'max:2000'],
         'priority' => ['required', 'in:low,medium,high'],
@@ -334,9 +334,7 @@ class FollowUpController extends ApiBaseController
     private function makeValidator(Request $request, bool $enforceFutureDate): \Illuminate\Contracts\Validation\Validator
     {
         $rules = self::FOLLOW_UP_RULES + [
-            'follow_up_at' => $enforceFutureDate
-                ? ['required', 'date', 'after_or_equal:today']
-                : ['required', 'date'],
+            'follow_up_at' => ['required', 'date'],
         ];
 
         return Validator::make($request->all(), $rules, $this->validationMessages());
@@ -349,14 +347,12 @@ class FollowUpController extends ApiBaseController
             'lead_id.exists' => 'Please select a valid lead.',
             'assigned_user_id.required' => 'Staff name is required!',
             'assigned_user_id.exists' => 'Please select a valid staff member.',
-            'purpose.required' => 'Purpose is required!',
             'priority.required' => 'Priority is required!',
             'priority.in' => 'Please select a valid priority.',
             'status.required' => 'Status is required!',
             'status.in' => 'Please select a valid status.',
             'follow_up_at.required' => 'Date/Time is required!',
             'follow_up_at.date' => 'Please enter a valid date/time.',
-            'follow_up_at.after_or_equal' => 'Date/Time must be today or later.',
         ];
     }
 

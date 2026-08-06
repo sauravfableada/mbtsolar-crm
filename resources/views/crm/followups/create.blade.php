@@ -59,14 +59,14 @@
                             <div class="invalid-feedback d-block" id="assigned_user_id-error"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Purpose <span class="text-danger">*</span></label>
-                            <input name="purpose" id="purpose" value="{{ old('purpose') }}" class="form-control" placeholder="Enter purpose of follow up" required>
+                            <label class="form-label">Purpose</label>
+                            <input name="purpose" id="purpose" value="{{ old('purpose') }}" class="form-control" placeholder="Enter purpose of follow up">
                             <div class="invalid-feedback d-block" id="purpose-error"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Follow Up Date <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="follow_up_at" id="follow_up_at"
-                                value="{{ old('follow_up_at') }}" min="{{ now()->format('Y-m-d\TH:i') }}" class="form-control" required>
+                                value="{{ old('follow_up_at') }}" class="form-control" required>
                             <div class="invalid-feedback d-block" id="follow_up_at-error"></div>
                         </div>
                         <div class="col-md-6">

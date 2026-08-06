@@ -906,20 +906,22 @@
                                     @if(auth()->user()?->isAdmin())
                                         <li><a class="dropdown-item {{ request()->routeIs('notifications.index') || request()->routeIs('user-logs.*') ? 'active' : '' }}" href="{{ route('user-logs.index') }}">
                                                 <i aria-autocomplete=""class="fa fa-history"></i><span>User Logs</span></a></li>
-                                        <li id="topbarGoogleAction">
-                                            @if($googleCalendarConnected)
-                                                <form method="POST" action="{{ route('api.meetings.google.disconnect') }}" class="m-0 google-disconnect-form">
-                                                    @csrf
-                                                    <button type="submit" class="dropdown-item w-100 border-0 bg-transparent text-start">
-                                                        <i class="bi bi-google"></i><span>Disconnect Google</span>
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <a class="dropdown-item" href="{{ route('google.auth') }}">
-                                                    <i class="bi bi-google"></i><span>Connect Google</span>
-                                                </a>
-                                            @endif
-                                        </li>
+                                        @if(\App\Helpers\IntegrationHelper::isGoogleEnabled())
+                                            <li id="topbarGoogleAction">
+                                                @if($googleCalendarConnected)
+                                                    <form method="POST" action="{{ route('api.meetings.google.disconnect') }}" class="m-0 google-disconnect-form">
+                                                        @csrf
+                                                        <button type="submit" class="dropdown-item w-100 border-0 bg-transparent text-start">
+                                                            <i class="bi bi-google"></i><span>Disconnect Google</span>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <a class="dropdown-item" href="{{ route('google.auth') }}">
+                                                        <i class="bi bi-google"></i><span>Connect Google</span>
+                                                    </a>
+                                                @endif
+                                            </li>
+                                        @endif
                                         <li><a class="dropdown-item {{ request()->routeIs('settings.*') ? 'active' : '' }}" href="{{ route('settings.index') }}">
                                                 <i class="fa fa-gear"></i><span>Settings</span></a></li>
                                         <li>

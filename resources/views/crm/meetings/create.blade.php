@@ -85,7 +85,7 @@
                         <div class="col-md-6">
                             <label class="form-label fw-semibold">Scheduled On <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="scheduled_at" id="scheduled_at" class="form-control"
-                                value="{{ old('scheduled_at') }}" min="{{ now()->format('Y-m-d\TH:i') }}" required>
+                                value="{{ old('scheduled_at') }}" required>
                             <div class="invalid-feedback" id="scheduled_at-error"></div>
                         </div>
 

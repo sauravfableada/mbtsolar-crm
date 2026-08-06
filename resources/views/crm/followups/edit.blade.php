@@ -71,17 +71,16 @@
                             <div class="invalid-feedback d-block" id="assigned_user_id-error"></div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Purpose <span class="text-danger">*</span></label>
+                            <label class="form-label">Purpose</label>
                             <input name="purpose" id="purpose" value="{{ old('purpose', $followUp->purpose) }}"
-                                class="form-control" required>
+                                class="form-control">
                             <div class="invalid-feedback d-block" id="purpose-error"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Follow Up Date <span class="text-danger">*</span></label>
                             <input type="datetime-local" name="follow_up_at" id="follow_up_at"
                                 value="{{ old('follow_up_at', \Illuminate\Support\Carbon::parse($followUp->follow_up_at)->format('Y-m-d\TH:i')) }}"
-                                min="{{ now()->format('Y-m-d\TH:i') }}"
-                                class="form-control" required>
+                                class="form-control">
                             <div class="invalid-feedback d-block" id="follow_up_at-error"></div>
                         </div>
                         <div class="col-md-6">
