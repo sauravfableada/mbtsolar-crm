@@ -2,6 +2,12 @@
 
 @section('page_title', 'Create Invoice')
 
+@section('page_actions')
+    <a href="{{ route('invoices.index') }}" class="btn btn-dark-blue back-btn">
+        <i class="fa-solid fa-angle-left pe-2"></i>Back
+    </a>
+@endsection
+
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/estimates.css') }}">
@@ -120,9 +126,7 @@
                         <h1 class="h4 mb-1 fw-semibold">Add Invoice</h1>
                         <p class="text-muted small mb-0">Create a new invoice for your customer.</p>
                     </div>
-                    <a href="{{ route('invoices.index') }}" class="btn btn-dark-blue back-btn w-100 w-md-auto">
-                        <i class="fa-solid fa-angle-left pe-2"></i>Back
-                    </a>
+
                 </div>
             </div>
             <div class="card-body p-3 p-md-4">
