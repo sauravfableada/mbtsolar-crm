@@ -495,7 +495,7 @@
                                             $selectedTaxRate = (float) ($selectedProduct['tax_rate'] ?? 0);
                                         @endphp
                                         <div class="bom-row mb-3 p-3 bg-white border rounded shadow-sm">
-                                            <div class="bom-row-grid" @style([$estimatePriceMode === 'base' ? 'grid-template-columns: minmax(180px, 2fr) minmax(130px, 1.2fr) minmax(90px, .7fr) minmax(70px, auto)' : ''])>
+                                            <div class="bom-row-grid {{ $estimatePriceMode === 'base' ? 'estimate-bom-base-grid' : '' }}">
                                                 <div>
                                                     <label class="form-label small fw-semibold w-100 d-flex align-items-center gap-2 mb-1">
                                                         <span>BOM <span class="text-danger">*</span></span>
