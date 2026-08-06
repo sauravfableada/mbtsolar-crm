@@ -1006,6 +1006,20 @@ a {
     letter-spacing: -.02em;
 }
 
+@media (max-width: 991.98px) {
+    .crm-form-page main {
+        padding-bottom: 8rem !important;
+    }
+
+    .crm-form-page .card-body {
+        padding-bottom: 6rem !important;
+    }
+
+    .crm-form-page .form-actions {
+        margin-bottom: 3.5rem;
+    }
+}
+
 hr,
 .border-top,
 .border-bottom,
