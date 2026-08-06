@@ -43,6 +43,8 @@
             $canViewFollowUps = $dashboardUser?->hasMatrixPermission('view_followups') ?? false;
             $canViewLeads = $dashboardUser?->hasMatrixPermission('view_leads') ?? false;
             $canViewDeals = $dashboardUser?->hasMatrixPermission('view_deals') ?? false;
+            $canViewInvoices = $dashboardUser?->hasMatrixPermission('view_invoices') ?? false;
+            $canViewMeetings = $dashboardUser?->hasMatrixPermission('view_meetings') ?? false;
             $canViewTasks = $dashboardUser?->hasMatrixPermission('view_tasks') ?? false;
             $canViewBookings = $dashboardUser?->hasMatrixPermission('view_bookings') ?? false;
             $canViewEstimates = $dashboardUser?->hasMatrixPermission('view_estimates') ?? false;
@@ -54,7 +56,9 @@
                 $canViewDeals ||
                 $canViewTasks ||
                 $canViewBookings ||
-                $canViewEstimates;
+                $canViewEstimates ||
+                $canViewInvoices ||
+                $canViewMeetings;
         @endphp
 
         <div class="row g-3 mb-2" id="dashboardStats">
@@ -102,13 +106,13 @@
             </div>
 
             <div class="col-6 col-sm-6 col-md-3 col-lg-3">
-                <a href="{{ route('deals.index') }}" class="text-decoration-none">
+                <a href="{{ route('estimates.index') }}" class="text-decoration-none">
                     <div class="metric-card card border-0 shadow-sm h-100">
                         <div class="card-body">
-                            <p class="metric-label mb-1">Deals</p>
+                            <p class="metric-label mb-1">Estimates</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <h3 class="metric-value mb-0" id="metricDeals">{{ $stats['deals'] ?? 0 }}</h3>
-                                <span class="metric-icon icon-deals"><i class="bi bi-award-fill"></i></span>
+                                <h3 class="metric-value mb-0" id="metricEstimates">{{ $stats['estimates'] ?? 0 }}</h3>
+                                <span class="metric-icon icon-estimates"><i class="bi bi-file-earmark-text-fill"></i></span>
                             </div>
                         </div>
                     </div>
@@ -327,28 +331,31 @@
             <div class="col-12 col-xl-5">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header dashboard-widget-head d-flex align-items-center justify-content-between py-3">
-                        <h5 class="mb-0 fw-bold">All Tasks</h5>
-                        <a href="{{ route('tasks.index') }}" class="badge bg-light text-dark px-3 py-2 fw-semibold small">View All</a>
+                        <h5 class="mb-0 fw-bold text-white">Invoice Snapshot</h5>
+                        @if(($invoiceSnapshot['can_view'] ?? false))
+                            <a href="{{ route('invoices.index') }}" class="badge bg-light text-dark px-3 py-2 fw-semibold small">View All</a>
+                        @endif
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0" id="dashboardTasksTable">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 35%;">Task Name</th>
-                                        <th style="width: 25%;" class="d-none d-md-table-cell">Assigned To</th>
-                                        <th style="width: 15%;" class="text-center">Priority</th>
-                                        <th style="width: 15%;" class="text-center d-none d-md-table-cell">Status</th>
-                                        <th style="width: 10%;" class="text-center d-md-none">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">Loading tasks...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="card-body">
+                        @if (!($invoiceSnapshot['can_view'] ?? false))
+                            <div class="text-center text-muted py-5">Invoice data is not available for your account.</div>
+                        @else
+                            <div class="dashboard-chart-card mb-3">
+                                <div class="d-flex align-items-start justify-content-between gap-3 mb-2">
+                                    <div>
+                                        <p class="estimate-overview-label mb-1">Monthly Invoice Value</p>
+                                        <h3 class="estimate-overview-value text-dark mb-0">&#8377;{{ number_format((float) ($invoiceSnapshot['total_value'] ?? 0), 2) }}</h3>
+                                    </div>
+                                    <span class="estimate-overview-icon"><i class="bi bi-bar-chart-fill"></i></span>
+                                </div>
+                                <div class="dashboard-mini-chart">
+                                    <canvas id="invoiceValueChart"
+                                        data-labels='@json($invoiceSnapshot['chart_labels'] ?? [])'
+                                        data-series='@json($invoiceSnapshot['chart_series'] ?? [])'></canvas>
+                                </div>
+                            </div>
+
+                        @endif
                     </div>
                 </div>
             </div>
@@ -378,28 +385,45 @@
             <div class="col-12 col-xl-5">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header dashboard-widget-head py-3 d-flex align-items-center justify-content-between">
-                        <h5 class="mb-0 fw-bold text-white">All Deals</h5>
-                        <a href="{{ route('deals.index') }}" class="badge bg-light text-dark px-3 py-2 fw-semibold small">View All</a>
+                        <h5 class="mb-0 fw-bold text-white">Inactive Content</h5>
+                        <span class="badge bg-light text-dark px-3 py-2 fw-semibold small">Needs Action</span>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0" id="dashboardDealsTable">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 40%;">Deals Name</th>
-                                        <th style="width: 25%;" class="d-none d-md-table-cell">Deal Value</th>
-                                        <th style="width: 20%;" class="text-center">Probability(%)</th>
-                                        <th style="width: 15%;" class="text-center d-none d-md-table-cell">Status</th>
-                                        <th style="width: 10%;" class="text-center d-md-none">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td colspan="4" class="text-center text-muted py-4">Loading deals...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="card-body">
+                        @if (!($actionSnapshot['can_view'] ?? false))
+                            <div class="text-center text-muted py-5">Inactive content is not available for your account.</div>
+                        @else
+                            <div class="inactive-summary mb-3">
+                                <div>
+                                    <span>Leads</span>
+                                    <strong>{{ $actionSnapshot['leads'] ?? 0 }}</strong>
+                                </div>
+                                <div>
+                                    <span>Follow-ups</span>
+                                    <strong>{{ $actionSnapshot['followups'] ?? 0 }}</strong>
+                                </div>
+                                <div>
+                                    <span>Meetings</span>
+                                    <strong>{{ $actionSnapshot['meetings'] ?? 0 }}</strong>
+                                </div>
+                            </div>
+                            <div class="inactive-list">
+                                @forelse(($actionSnapshot['items'] ?? collect()) as $item)
+                                    <a href="{{ $item['url'] ?? '#' }}" class="inactive-item text-decoration-none">
+                                        <span class="inactive-type">{{ $item['type'] ?? 'Item' }}</span>
+                                        <div class="inactive-main">
+                                            <strong>{{ $item['title'] ?? 'Untitled' }}</strong>
+                                            <small>{{ $item['meta'] ?? 'Needs update' }} · {{ $item['owner'] ?? 'Unassigned' }}</small>
+                                        </div>
+                                        <div class="inactive-side">
+                                            <span>{{ strtoupper((string) ($item['status'] ?? '-')) }}</span>
+                                            <small>{{ $item['age'] ?? '-' }}</small>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="text-center text-muted py-5">No inactive content found.</div>
+                                @endforelse
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

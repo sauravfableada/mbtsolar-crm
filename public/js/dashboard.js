@@ -14,6 +14,7 @@
     };
 
     let customerReportChart = null;
+    let invoiceValueChart = null;
     let leadBoardSliderBound = false;
     function initDashboard() {
         if (!document.getElementById("dashboardStats")) {
@@ -24,6 +25,7 @@
         loadLeadBoard();
         loadTasks();
         loadCustomerReport();
+        initStaticDashboardCharts();
         loadDealsWidget();
 
         const yearSelect = document.getElementById("customerReportYear");
@@ -70,7 +72,7 @@
                 setText("metricCustomers", formatNumber(data.customers));
                 setText("metricFollowUps", formatNumber(data.follow_ups || data.pending_followups));
                 setText("metricLeads", formatNumber(data.leads || data.active_leads));
-                setText("metricDeals", formatNumber(data.deals));
+                setText("metricEstimates", formatNumber(data.estimates));
             })
             .catch(function () {
                 notifyError("Failed to load dashboard stats.");
@@ -305,7 +307,33 @@
             .then(function (response) {
                 const data = response && response.data ? response.data : {};
                 const labels = Array.isArray(data.labels) ? data.labels : [];
-                const series = Array.isArray(data.series) ? data.series : [];
+                const datasets = data.datasets && typeof data.datasets === "object" ? data.datasets : {};
+                const reportSeries = [
+                    {
+                        key: "customers",
+                        label: "Customers",
+                        borderColor: "#3B5BDB",
+                        backgroundColor: "rgba(59,91,219,.10)",
+                    },
+                    {
+                        key: "leads",
+                        label: "Leads",
+                        borderColor: "#0D9488",
+                        backgroundColor: "rgba(13,148,136,.08)",
+                    },
+                    {
+                        key: "followups",
+                        label: "Follow-ups",
+                        borderColor: "#F59E0B",
+                        backgroundColor: "rgba(245,158,11,.08)",
+                    },
+                    {
+                        key: "meetings",
+                        label: "Meetings",
+                        borderColor: "#EF4444",
+                        backgroundColor: "rgba(239,68,68,.08)",
+                    },
+                ];
 
                 if (customerReportChart) {
                     customerReportChart.destroy();
@@ -315,21 +343,31 @@
                     type: "line",
                     data: {
                         labels: labels,
-                        datasets: [{
-                            label: "Customers",
-                            data: series,
-                            borderColor: "#3B5BDB",
-                            backgroundColor: "rgba(59,91,219,.10)",
-                            fill: true,
-                            tension: 0.35,
-                            pointRadius: 3,
-                            pointHoverRadius: 5,
-                        }],
+                        datasets: reportSeries.map(function (item) {
+                            return {
+                                label: item.label,
+                                data: Array.isArray(datasets[item.key]) ? datasets[item.key] : [],
+                                borderColor: item.borderColor,
+                                backgroundColor: item.backgroundColor,
+                                fill: false,
+                                tension: 0.35,
+                                pointRadius: 3,
+                                pointHoverRadius: 5,
+                                borderWidth: 2.5,
+                            };
+                        }),
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { display: false } },
+                        interaction: { mode: "index", intersect: false },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: "bottom",
+                                labels: { usePointStyle: true, boxWidth: 8, font: { weight: "700" } },
+                            },
+                        },
                         scales: {
                             y: {
                                 beginAtZero: true,
@@ -344,6 +382,72 @@
             .catch(function () {
                 notifyError("Failed to load customer report.");
             });
+    }
+
+    function initStaticDashboardCharts() {
+        initInvoiceValueChart();
+
+    }
+
+    function initInvoiceValueChart() {
+        const canvas = document.getElementById("invoiceValueChart");
+        if (!canvas || typeof window.Chart === "undefined") {
+            return;
+        }
+
+        const labels = parseJsonAttribute(canvas, "labels", []);
+        const series = parseJsonAttribute(canvas, "series", []);
+
+        if (invoiceValueChart) {
+            invoiceValueChart.destroy();
+        }
+
+        invoiceValueChart = new Chart(canvas, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: series,
+                    backgroundColor: "rgba(29, 78, 216, .82)",
+                    borderRadius: 8,
+                    maxBarThickness: 34,
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return "\u20B9" + formatCurrency(context.parsed.y || 0);
+                            },
+                        },
+                    },
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) { return "\u20B9" + formatNumber(value); },
+                        },
+                        grid: { color: "rgba(148, 163, 184, .2)" },
+                    },
+                    x: { grid: { display: false } },
+                },
+            },
+        });
+    }
+
+
+    function parseJsonAttribute(element, name, fallback) {
+        try {
+            const value = element.dataset[name];
+            return value ? JSON.parse(value) : fallback;
+        } catch (e) {
+            return fallback;
+        }
     }
 
     function loadDealsWidget() {
