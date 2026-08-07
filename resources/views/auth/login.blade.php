@@ -23,8 +23,8 @@
         <div class="container position-relative" style="z-index: 2;">
             <div class="row justify-content-center">
                 <div class="col-lg-5 col-md-7">
-                    <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
-                        <div class="card-body p-5 p-lg-5 py-lg-4">
+                    <div class="card login-card border-0 shadow-lg rounded-4 overflow-hidden">
+                        <div class="card-body login-card-body p-4 p-sm-4">
 
                             <!-- Header -->
                             <div class="text-center mb-1">
@@ -35,7 +35,7 @@
                                     solar business with a smart, all-in-one CRM.</p>
                             </div>
 
-                            <div class="my-4">
+                            <div class="my-3">
                                 <div class="d-flex align-items-center gap-2">
                                     <hr class="flex-grow-1 border-1 border-secondary">
                                     <span class="fs-3 px-1 text-dark-blue">Login</span>
@@ -43,13 +43,13 @@
                                 </div>
                             </div>
 
-                            <form method="POST" action="{{ route('login.submit') }}" novalidate>
+                            <form method="POST" action="{{ route('login.submit') }}" class="login-form" novalidate>
                                 @csrf
 
 
 
                                 <!-- Email -->
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="email" class="form-label fw-medium">Email Address</label>
                                     <input id="email" type="email"
                                         class="form-control form-control-lg @error('email') is-invalid @enderror"
@@ -60,7 +60,7 @@
                                 </div>
 
                                 <!-- Password -->
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="password" class="form-label fw-medium">Password</label>
                                     <div class="position-relative">
                                         <input id="password" type="password"
@@ -82,13 +82,13 @@
 
                                 <!-- Login Button -->
                                 <div class="d-grid">
-                                    <button type="submit" class="btn btn-lg fw-semibold text-white"
+                                    <button type="submit" class="btn fw-semibold text-white login-submit-btn"
                                         style="background: linear-gradient(135deg, #2b3a69, #182244); border: none;">Sign
                                         In</button>
                                 </div>
                             </form>
 
-                            <footer class="mt-4 text-center text-muted" style="font-size: 0.8rem;">
+                            <footer class="mt-3 text-center text-muted" style="font-size: 0.8rem;">
                                 &copy; {{ date('Y') }} Copyright - <a href="https://www.fableadtechnolabs.com/" target="_blank" rel="noopener noreferrer" class="text-muted">Fablead Developers Technolab</a>
                             </footer>
 
@@ -145,10 +145,43 @@
             border-radius: 20px !important;
         }
 
-        .form-control {
-            border-radius: 12px;
+        .login-card-body {
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+        }
+
+        .login-form {
+            padding-left: 0.35rem;
+            padding-right: 0.35rem;
+        }
+
+        .login-card .form-label {
+            margin-bottom: 0.35rem;
+        }
+
+        .login-card .form-control,
+        .login-card .login-submit-btn {
+            min-height: 44px;
+            height: 44px;
+            border-radius: 10px;
+        }
+
+        .login-card .form-control {
             border: 2px solid #e2e8f0;
-            padding: 14px 18px;
+            padding: 0.55rem 0.9rem;
+        }
+
+        .login-card .login-submit-btn {
+            padding: 0.55rem 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 575.98px) {
+            .login-card-body {
+                padding: 1.65rem !important;
+            }
         }
 
         .form-control:focus {

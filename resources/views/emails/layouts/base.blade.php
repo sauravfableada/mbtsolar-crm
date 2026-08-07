@@ -225,7 +225,7 @@
                         <div class="header-top">
                             <div class="header-top-left">
                                 @php
-                                    $companyLogoUrl = 'https://rising-green-energy-crm.fableadtech.in/public/images/template/company-logo-image%20(1).png';
+                                    $companyLogoUrl = 'https://mbtsolar-crm.fableadtech.in/public/images/template/company-logo-image%20(1).png';
                                 @endphp
                                 <img src="{{ $companyLogoUrl }}" alt="MBT SOLAR" class="logo-img">
                             </div>
