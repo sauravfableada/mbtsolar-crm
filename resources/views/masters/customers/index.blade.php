@@ -71,9 +71,6 @@
 
 @push('styles')
     <style>
-        body:has(main .customer-title-row) main > .mb-3:has([aria-label="breadcrumb"]) {
-            display: none !important;
-        }
         .customer-title-copy {
             min-width: 0;
         }
@@ -232,4 +229,3 @@
     </script>
     <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/customer.js') }}"></script>
 @endpush
-
