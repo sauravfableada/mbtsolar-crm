@@ -2,11 +2,6 @@
 
 @section('page_title', 'Estimates - Create')
 
-@section('page_actions')
-    <a href="{{ route('estimates.index') }}" class="btn btn-dark-blue back-btn">
-        <i class="fa-solid fa-angle-left pe-2"></i>Back
-    </a>
-@endsection
 
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
@@ -274,13 +269,17 @@
     <div class="container-fluid p-0">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-header bg-white border-bottom py-3 px-3 px-md-4">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <div>
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                    <div class="min-w-0">
                         <h1 class="h4 mb-1 fw-semibold">Add Estimate</h1>
                         <p class="text-muted small mb-0">Create a new estimate for your customer.</p>
                     </div>
-                    <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
-                        <div class="estimate-price-mode-card">
+                    <a href="{{ route('estimates.index') }}" class="btn btn-dark-blue estimate-header-back-btn">
+                        <i class="fa-solid fa-angle-left me-1"></i>Back
+                    </a>
+                </div>
+                <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
+                    <div class="estimate-price-mode-card">
                             <span class="estimate-price-mode-title fw-bold">Pricing Method</span>
                             <div class="estimate-price-mode-options" role="group" aria-label="Pricing Method">
                                 <button type="button" class="estimate-price-mode-option" data-price-mode-option="base">
@@ -296,7 +295,6 @@
                             </select>
                         </div>
 
-                    </div>
                 </div>
             </div>
             <div class="card-body p-3 p-md-4">
