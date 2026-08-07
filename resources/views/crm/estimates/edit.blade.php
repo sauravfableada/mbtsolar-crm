@@ -140,6 +140,13 @@
             height: 1px;
         }
 
+        @media (max-width: 767.98px) {
+            .estimate-price-mode-title,
+            .estimate-price-mode-option,
+            .estimate-price-mode-option i {
+                font-size: 0.82rem;
+            }
+        }
         @media (max-width: 1199.98px) {
             .bom-row-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
