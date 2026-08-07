@@ -4,32 +4,37 @@
 
 @section('masters_content')
 
-    <div class="card-header border-bottom-0 py-3 px-4">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-            <div>
+    <div class="card-header border-bottom-0 py-3 px-3">
+        <div class="customer-title-row d-flex justify-content-between align-items-start mb-3 gap-3">
+            <div class="customer-title-copy">
                 <h4 class="fw-bold mb-0">Manage Customers</h4>
                 <p class="text-muted small mb-0">View and manage your customer database and communication history.</p>
             </div>
-            <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('dashboard') }}"
+                class="btn btn-dark-blue customer-back-btn">
+                <i class="fa-solid fa-arrow-left me-1"></i>Back
+            </a>
+        </div>
+        <div class="mb-4">
+            <div class="customer-actions d-flex flex-nowrap gap-2">
                 @can('customers.create')
-                    <button type="button" class="btn btn-outline-dark-blue" onclick="showImportDialog()">
+                    <button type="button" class="btn btn-outline-dark-blue customer-action-btn" onclick="showImportDialog()">
                         <i class="fa-solid fa-upload me-1"></i>Import CSV
                     </button>
                 @endcan
                 @can('customers.view')
-                    <a href="{{ route('masters.customers.export') }}" class="btn btn-outline-dark-blue">
+                    <a href="{{ route('masters.customers.export') }}" class="btn btn-outline-dark-blue customer-action-btn">
                         <i class="fa-solid fa-download me-1"></i>Export
                     </a>
                 @endcan
                 @can('customers.create')
-                    <a href="{{ route('masters.customers.create') }}" class="btn btn-dark-blue">
+                    <a href="{{ route('masters.customers.create') }}" class="btn btn-dark-blue customer-action-btn">
                         <i class="fa-solid fa-plus me-1"></i>Add Customer
                     </a>
                 @endcan
             </div>
         </div>
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-            <h6 class="fw-bold mb-0">Active Customers</h6>
             <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
                 <span class="input-group-text crm-search-icon border-0"><i class="fa-solid fa-search"></i></span>
                 <input type="text" id="customerSearch" class="form-control crm-search-input border-0"
@@ -42,12 +47,12 @@
             <table id="customerTable" class="table table-hover align-middle mb-0 responsive-table">
                 <thead>
                     <tr>
-                        <th class="ps-4" style="width: 80px;">Sr.No</th>
+                        <th class="ps-3" style="width: 70px;">Sr.No</th>
                         <th>Customer Name</th>
                         <th class="d-none d-md-table-cell">Email</th>
                         <th class="d-none d-md-table-cell">Phone</th>
                         <th class="d-none d-md-table-cell">Created At</th>
-                        <th class="text-end pe-4 d-none d-md-table-cell" style="width: 140px;">Actions</th>
+                        <th class="text-end pe-3 d-none d-md-table-cell" style="width: 140px;">Actions</th>
                         <th class="text-center d-md-none" style="width: 80px;">Action</th>
                     </tr>
                 </thead>
@@ -56,7 +61,7 @@
         </div>
 
         <!-- Pagination Container -->
-        <div id="customerPaginationContainer" class="card-footer border-top-0 py-4 px-4"></div>
+        <div id="customerPaginationContainer" class="card-footer border-top-0 py-4 px-3"></div>
     </div>
     <form id="customersImportForm" class="d-none" enctype="multipart/form-data">
         @csrf
@@ -66,6 +71,59 @@
 
 @push('styles')
     <style>
+        body:has(main .customer-title-row) main > .mb-3:has([aria-label="breadcrumb"]) {
+            display: none !important;
+        }
+        .customer-title-copy {
+            min-width: 0;
+        }
+
+        .customer-back-btn,
+        .customer-action-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 38px;
+            white-space: nowrap;
+        }
+
+        .customer-back-btn {
+            flex: 0 0 auto;
+        }
+
+        .customer-actions {
+            width: 100%;
+        }
+
+        .customer-action-btn {
+            height: 38px;
+        }
+
+        @media (max-width: 575.98px) {
+            .customer-back-btn {
+                min-height: 34px;
+                padding: 0.35rem 0.55rem;
+                font-size: 0.86rem;
+            }
+
+            .customer-actions {
+                gap: 0.4rem !important;
+            }
+
+            .customer-action-btn {
+                flex: 1 1 0;
+                min-width: 0;
+                height: 36px;
+                padding: 0.35rem 0.35rem;
+                font-size: 0.82rem;
+                line-height: 1;
+            }
+
+            .customer-action-btn i,
+            .customer-back-btn i {
+                margin-right: 0.2rem !important;
+            }
+        }
         .customer-action-disabled,
         .customer-action-disabled:hover,
         .customer-action-disabled:focus {
@@ -174,3 +232,4 @@
     </script>
     <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/customer.js') }}"></script>
 @endpush
+

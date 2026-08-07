@@ -133,7 +133,7 @@
 
                 return `
                 <tr>
-                    <td class="ps-4" data-label="Sr.No">${index + 1}</td>
+                    <td class="ps-3" data-label="Sr.No">${index + 1}</td>
                     <td data-label="Customer Name">
                         <div class="fw-bold small">${customer.name}</div>
                     </td>
@@ -146,7 +146,7 @@
                     <td class="d-none d-md-table-cell" data-label="Created At">
                         <div class="small fw-semibold">${date}</div>
                     </td>
-                    <td class="text-end pe-4 d-none d-md-table-cell">
+                    <td class="text-end pe-3 d-none d-md-table-cell">
                         ${actionButtons}
                     </td>
                     <td class="text-center d-md-none">
