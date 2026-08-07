@@ -837,7 +837,14 @@
                             @endif
 
                             <div class="crm-top-icon-group">
-                            <div class="dropdown">
+                            @if ($showTopEstimatesButton && auth()->user()?->hasMatrixPermission('create_estimates'))
+                                <a href="{{ route('estimates.create') }}"
+                                    class="notification-btn quick-estimate-header-btn d-lg-none"
+                                    title="Add Estimate" aria-label="Add Estimate">
+                                    <i class="bi bi-plus-lg"></i>
+                                </a>
+                                @endif
+                                <div class="dropdown">
                                 <button class="notification-btn {{ request()->routeIs('notifications.index') ? 'bg-light' : '' }}"
                                     type="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-bell"></i>
@@ -895,13 +902,6 @@
                                 <i class="bi bi-moon-stars-fill" id="darkModeIcon"></i>
                             </button>
 
-                            @if ($showTopEstimatesButton && auth()->user()?->hasMatrixPermission('create_estimates'))
-                                <a href="{{ route('estimates.create') }}"
-                                    class="notification-btn quick-estimate-header-btn d-lg-none"
-                                    title="Add Estimate" aria-label="Add Estimate">
-                                    <i class="bi bi-plus-lg"></i>
-                                </a>
-                            @endif
                             </div>
 
                             <div class="vr mx-2 text-muted opacity-25 d-none d-lg-block"></div>

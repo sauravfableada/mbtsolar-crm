@@ -143,9 +143,16 @@
                 <div class="card border-0 shadow-sm h-100">
                 <div class="card-header dashboard-widget-head py-3 d-flex align-items-center justify-content-between">
                     <h5 class="mb-0 fw-bold">Estimate Overview</h5>
-                    @if(($estimateStats['can_view'] ?? false))
-                        <a href="{{ route('estimates.index') }}" class="badge bg-light text-dark px-3 py-2 fw-semibold small">View All</a>
-                    @endif
+                    <div class="d-flex align-items-center gap-2">
+                        @if($dashboardUser?->hasMatrixPermission('create_estimates'))
+                            <a href="{{ route('estimates.create') }}" class="badge bg-light text-dark px-3 py-2 fw-semibold small">
+                                <i class="fa-solid fa-plus me-1"></i>Add Estimate
+                            </a>
+                        @endif
+                        @if(($estimateStats['can_view'] ?? false))
+                            <a href="{{ route('estimates.index') }}" class="badge bg-light text-dark px-3 py-2 fw-semibold small">View All</a>
+                        @endif
+                    </div>
                 </div>
                     <div class="card-body estimate-overview-card">
                         @if (!($estimateStats['can_view'] ?? false))
@@ -412,7 +419,7 @@
                                         <span class="inactive-type">{{ $item['type'] ?? 'Item' }}</span>
                                         <div class="inactive-main">
                                             <strong>{{ $item['title'] ?? 'Untitled' }}</strong>
-                                            <small>{{ $item['meta'] ?? 'Needs update' }} · {{ $item['owner'] ?? 'Unassigned' }}</small>
+                                            <small>{{ $item['meta'] ?? 'Needs update' }} ï¿½ {{ $item['owner'] ?? 'Unassigned' }}</small>
                                         </div>
                                         <div class="inactive-side">
                                             <span>{{ strtoupper((string) ($item['status'] ?? '-')) }}</span>
