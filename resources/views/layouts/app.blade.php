@@ -938,7 +938,7 @@
                 </header>
 
                 <!-- Page Content -->
-                <main class="p-4 p-lg-4 mb-4 mb-lg-0">
+                <main class="p-3 p-lg-4 mb-4 mb-lg-0">
                     @unless(request()->routeIs('dashboard'))
                         <div class="mb-3 d-flex justify-content-between align-items-center">
                             <nav aria-label="breadcrumb">
