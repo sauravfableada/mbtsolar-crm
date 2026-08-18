@@ -648,8 +648,20 @@
                                 </div>
 
                                 <div class="totals-row" id="additional_charges_summary_row" style="display: none;">
-                                    <span class="small fw-semibold">Additional Charges:</span>
-                                    <span id="additional_charges_summary_display" class="small fw-semibold text-success">0.00</span>
+                                    <span class="small fw-semibold border-bottom pb-2" style="display: block; width: 100%; margin-bottom: 5px;">Additional Charges:</span>
+                                </div>
+                                
+                                <div id="additional_charges_breakdown" style="display: none; margin: 5px 0;">
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tbody id="additional_charges_breakdown_items">
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="border-top">
+                                                <td class="text-start small fw-semibold pt-2">Total Additional Charges:</td>
+                                                <td class="text-end small fw-semibold text-success pt-2" id="additional_charges_total_display">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
 
                                 <div class="totals-row align-items-center {{ $estimatePriceMode === 'base' ? 'd-none' : '' }}">
@@ -1088,9 +1100,10 @@
                 const container = $('#additionalChargesContainer');
                 const rows = container.find('.additional-charge-row');
                 const displayTable = $('#additionalChargesDisplay');
-                const tableBody = $('#additionalChargesTableBody');
+                const breakdownDiv = $('#additional_charges_breakdown');
+                const breakdownItems = $('#additional_charges_breakdown_items');
                 
-                tableBody.empty();
+                breakdownItems.empty();
                 let totalAdditionalCharges = 0;
 
                 rows.each(function() {
@@ -1098,10 +1111,11 @@
                     const price = parseFloat($(this).find('.additional-charge-price').val()) || 0;
 
                     if (name && price > 0) {
-                        tableBody.append(`
+                        // Add to breakdown in totals card only
+                        breakdownItems.append(`
                             <tr>
-                                <td class="text-start">${escapeHtml(name)}</td>
-                                <td class="text-end fw-semibold">${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                                <td class="text-start small">${escapeHtml(name)}</td>
+                                <td class="text-end small fw-semibold">${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                             </tr>
                         `);
                         totalAdditionalCharges += price;
@@ -1109,11 +1123,13 @@
                 });
 
                 if (totalAdditionalCharges > 0) {
-                    displayTable.show();
+                    displayTable.hide();
+                    breakdownDiv.show();
                     $('#additional_charges_summary_row').show();
-                    $('#additional_charges_summary_display').text(totalAdditionalCharges.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                    $('#additional_charges_total_display').text(totalAdditionalCharges.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                 } else {
                     displayTable.hide();
+                    breakdownDiv.hide();
                     $('#additional_charges_summary_row').hide();
                 }
 
