@@ -3056,32 +3056,13 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                     $category_image = $category_image_map[$product_category_makes];
                 }
     
-                // Get description from product table
-                $product_table_description = '';
-                if ($full_product_details) {
-                    if (isset($full_product_details['description'])) {
-                        $desc_value = $full_product_details['description'];
-                        if ($desc_value !== null && $desc_value !== '' && trim($desc_value) !== '') {
-                            $product_table_description = trim($desc_value);
-                        }
-                    }
-                }
-    
-                // Use product table description first, then fallback to estimate item description
-                $final_description = '';
-                if (!empty($product_table_description) && trim($product_table_description) !== '') {
-                    $final_description = $product_table_description;
-                } elseif (!empty($product_description) && trim($product_description) !== '') {
-                    $final_description = trim($product_description);
-                }
-    
                 // Store ALL products
                 $uniqueKey = $product_id . '_' . $product_name_display;
                 $componentsData[$uniqueKey] = [
                     'name' => $product_name_display,
                     'category' => $product_category_makes, // Make = Brand
                     'category_image' => $category_image,
-                    'description' => $final_description,
+                    'description' => '',
                     'specifications' => $specifications,
                     'image' => $product_image,
                     'quantity' => $item['quantity'] ?? 0,

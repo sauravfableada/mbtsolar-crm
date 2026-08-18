@@ -333,20 +333,11 @@
                                 <thead style="background-color: #4b9349; color: #fff;">
                                     <tr>
                                         <th
-                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: left; width: 25%; background-color: #4b9349 !important; color: #ffffff !important;">
+                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: center; width: 8%; background-color: #4b9349 !important; color: #ffffff !important;">
+                                            Sr. No.</th>
+                                        <th
+                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: left; width: 92%; background-color: #4b9349 !important; color: #ffffff !important;">
                                             Product Name</th>
-                                        <th
-                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: left; width: 45%; background-color: #4b9349 !important; color: #ffffff !important;">
-                                            Specifications</th>
-                                        <th
-                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: center; width: 10%; background-color: #4b9349 !important; color: #ffffff !important;">
-                                            Quantity</th>
-                                        <th
-                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: left; width: 10%; background-color: #4b9349 !important; color: #ffffff !important;">
-                                            Price</th>
-                                        <th
-                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: left; width: 10%; background-color: #4b9349 !important; color: #ffffff !important;">
-                                            Total(Excl. GST)</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -354,17 +345,13 @@
                                         $allproduct = is_array($estimate->product_name)
                                             ? $estimate->product_name
                                             : json_decode($estimate->product_name, true);
-                                        $total_quantity = 0;
-                                        $grand_total_excluding_gst = 0.0;
-                                        $usesGlobalTax = !empty($documentSummary['summaryUsesGlobalTax']);
                                     @endphp
                                     @if (is_array($allproduct) && !empty($allproduct))
-                                        @foreach ($allproduct as $item)
+                                        @foreach ($allproduct as $index => $item)
                                             @php
                                                 $product_id = $item['product_id'] ?? null;
                                                 $product_name_display = $item['name'] ?? 'Product name not found';
                                                 $product_name_display = ucwords(strtolower($product_name_display));
-                                                $product_quantity = (int) ($item['quantity'] ?? 0);
                                                 $product_category_makes = $item['category_name'] ?? '';
 
                                                 $full_product_details = null;
@@ -375,19 +362,20 @@
                                                     }
                                                 }
 
-                                                $specifications = [];
+                                                $specification_parts = [];
 
-                                                $description_val = !empty($item['description']) 
-                                                    ? $item['description'] 
+                                                $description_val = !empty($item['description'])
+                                                    ? $item['description']
                                                     : ($full_product_details && !empty($full_product_details['description']) ? $full_product_details['description'] : null);
                                                 if (!empty($description_val)) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Description:</span> ' . e($description_val);
+                                                    $specification_parts[] = trim((string) $description_val);
                                                 }
 
                                                 $make_val = ltrim(trim($product_category_makes), ',');
                                                 if (!empty($make_val)) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Make:</span> ' . e($make_val);
+                                                    $specification_parts[] = trim((string) $make_val);
                                                 }
+
                                                 if ($full_product_details && !empty($full_product_details['technology'])) {
                                                     $techArray = json_decode($full_product_details['technology'], true);
                                                     if (!is_array($techArray)) {
@@ -396,114 +384,49 @@
                                                     $techArray = array_filter($techArray, fn($v) => trim((string) $v) !== '');
                                                     if (!empty($techArray)) {
                                                         $techNames = array_map(fn($id) => $technology_map[$id] ?? $id, $techArray);
-                                                        $specifications[] = '<span style="color: #555; font-weight: bold;">Technology:</span> ' . e(implode(', ', $techNames));
+                                                        $specification_parts[] = trim(implode(', ', $techNames));
                                                     }
                                                 }
-                                                if ($full_product_details && !empty($full_product_details['warranty'])) {
-                                                    $warArray = json_decode($full_product_details['warranty'], true);
-                                                    if (!is_array($warArray)) {
-                                                        $warArray = [$full_product_details['warranty']];
-                                                    }
-                                                    $warArray = array_filter($warArray, fn($v) => trim((string) $v) !== '');
-                                                    if (!empty($warArray)) {
-                                                        $warNames = array_map(fn($id) => $warranty_map[$id] ?? $id, $warArray);
-                                                        $specifications[] = '<span style="color: #555; font-weight: bold;">Warranty:</span> ' . e(implode(', ', $warNames));
-                                                    }
-                                                }
+
                                                 if ($full_product_details && !empty($full_product_details['capacity'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Capacity:</span> ' . e($full_product_details['capacity']);
+                                                    $specification_parts[] = trim((string) $full_product_details['capacity']);
                                                 }
-                                                $selected_tax_rate = (float) ($item['tax_rate'] ?? 0);
-                                                $selected_tax_label = trim((string) ($item['tax_label'] ?? ''));
-                                                if ($selected_tax_rate > 0) {
-                                                    if (str_contains(strtoupper($selected_tax_label), 'IGST')) {
-                                                        $specifications[] = '<span style="color: #555; font-weight: bold;">GST:</span> IGST ' . $selected_tax_rate . '%';
-                                                    } else {
-                                                        $half_rate = $selected_tax_rate / 2;
-                                                        $specifications[] = '<span style="color: #555; font-weight: bold;">GST:</span> (CGST ' . $half_rate . '% + SGST ' . $half_rate . '%)';
-                                                    }
-                                                }
-                                                if ($full_product_details && !empty($full_product_details['height'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Height:</span> ' . e($full_product_details['height']);
-                                                }
+
                                                 if ($full_product_details && !empty($full_product_details['fitting_material'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Fitting Material:</span> ' . e($full_product_details['fitting_material']);
+                                                    $specification_parts[] = trim((string) $full_product_details['fitting_material']);
                                                 }
+
                                                 if ($full_product_details && !empty($full_product_details['fitting_type'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Fitting Type:</span> ' . e($full_product_details['fitting_type']);
+                                                    $specification_parts[] = trim((string) $full_product_details['fitting_type']);
                                                 }
+
                                                 if ($full_product_details && !empty($full_product_details['thickness'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Thickness:</span> ' . e($full_product_details['thickness']);
+                                                    $specification_parts[] = trim((string) $full_product_details['thickness']);
                                                 }
+
                                                 if ($full_product_details && !empty($full_product_details['size_of_pipe'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Size of Pipe:</span> ' . e($full_product_details['size_of_pipe']);
+                                                    $specification_parts[] = trim((string) $full_product_details['size_of_pipe']);
                                                 }
 
-                                                $specifications_html = implode('<br>', $specifications);
-
-                                                $price_val = array_key_exists('price', $item)
-                                                    ? (float) ($item['price'] ?? 0)
-                                                    : ($full_product_details ? (float) ($full_product_details['price'] ?? 0) : 0.0);
-                                                $row_total = $price_val * $product_quantity;
-
-                                                $total_quantity += $product_quantity;
-                                                $grand_total_excluding_gst += $row_total;
-
-                                                $qty_unit = '';
-                                                if ($full_product_details && !empty($full_product_details['nos'])) {
-                                                    $qty_unit = '(nos)';
-                                                } elseif ($full_product_details && !empty($full_product_details['meter'])) {
-                                                    $qty_unit = '(mtr)';
-                                                }
-
-                                                $product_image_raw = !empty($item['image']) 
-                                                    ? $item['image'] 
-                                                    : ($full_product_details['image'] ?? null);
-                                                $productImageUrl = null;
-                                                if (!empty($product_image_raw)) {
-                                                    if (str_starts_with($product_image_raw, 'http://') || str_starts_with($product_image_raw, 'https://') || str_starts_with($product_image_raw, 'data:image')) {
-                                                        $productImageUrl = $product_image_raw;
-                                                    } elseif ($product_id) {
-                                                        $productImageUrl = route('bom-products.image', $product_id);
-                                                    } else {
-                                                        $productImageUrl = asset('storage/' . ltrim($product_image_raw, '/'));
-                                                    }
-                                                } elseif ($product_id && $full_product_details) {
-                                                    $productImageUrl = route('bom-products.image', $product_id);
-                                                }
+                                                $specification_parts = array_values(array_filter(array_map('trim', $specification_parts), fn($value) => $value !== ''));
+                                                $specification_text = implode(' / ', $specification_parts);
                                             @endphp
                                             <tr>
-                                                <td style="padding: 12px 10px; border: 1px solid #333; color: #333; font-weight: bold; vertical-align: middle; text-align: center;">
-                                                    @if (!empty($productImageUrl))
-                                                        <div style="margin-bottom: 8px;">
-                                                            <img src="{{ $productImageUrl }}" alt="{{ $product_name_display }}" style="max-width: 80px; max-height: 80px; object-fit: contain; border: 1px solid #ddd; border-radius: 4px; padding: 3px; background-color: #fff;" onerror="this.style.display='none';">
-                                                        </div>
+                                                <td style="padding: 12px 10px; border: 1px solid #333; color: #333; font-weight: bold; vertical-align: top; text-align: center;">{{ $index + 1 }}</td>
+                                                <td style="padding: 12px 10px; border: 1px solid #333; vertical-align: top;">
+                                                    <div style="font-weight: bold; color: #333; margin-bottom: 4px;">{{ $product_name_display }}</div>
+                                                    @if (!empty($specification_text))
+                                                        <div style="font-size: 12px; line-height: 1.5; color: #333;">({{ $specification_text }})</div>
                                                     @endif
-                                                    <div>{{ $product_name_display }}</div>
                                                 </td>
-                                                <td style="padding: 12px 10px; border: 1px solid #333; font-size: 13px; line-height: 1.5; vertical-align: middle;">{!! $specifications_html !!}</td>
-                                                <td style="padding: 12px 10px; border: 1px solid #333; text-align: right; vertical-align: middle; font-weight: bold; color: #333;">{{ $product_quantity }}{{ $qty_unit }}</td>
-                                                <td style="padding: 12px 10px; border: 1px solid #333; text-align: right; vertical-align: middle; color: #333;">{{ $usesGlobalTax ? '--' : number_format($price_val, 2) }}</td>
-                                                <td style="padding: 12px 10px; border: 1px solid #333; text-align: right; vertical-align: middle; font-weight: bold; color: #333;">{{ $usesGlobalTax ? '--' : number_format($row_total, 2) }}</td>
                                             </tr>
                                         @endforeach
                                     @else
                                             <tr>
-                                                <td colspan="5" style="text-align: center; color: #666; padding: 20px; border: 1px solid #333;">No products added to this estimate</td>
+                                                <td colspan="2" style="text-align: center; color: #666; padding: 20px; border: 1px solid #333;">No products added to this estimate</td>
                                             </tr>
                                         @endif
                                     </tbody>
-                                    @if (is_array($allproduct) && !empty($allproduct))
-                                        <tfoot>
-                                            <tr style="font-weight: bold;">
-                                                <td style="border: 1px solid #333; background-color: #fff;"></td>
-                                                <td style="text-align: right; padding: 10px 15px; border: 1px solid #333; font-size: 14px; background-color: #fff; color: #333;">Total:</td>
-                                                <td style="text-align: right; padding: 10px 15px; border: 1px solid #333; font-size: 14px; background-color: #fff; color: #333;">{{ $total_quantity }}</td>
-                                                <td style="text-align: center; padding: 10px 15px; border: 1px solid #333; font-size: 14px; background-color: #fff; color: #333;">—</td>
-                                                <td style="text-align: right; padding: 10px 15px; border: 1px solid #333; font-size: 14px; background-color: #4b9349 !important; color: #ffffff !important;">{{ $usesGlobalTax ? '--' : number_format($grand_total_excluding_gst, 2) }}</td>
-                                            </tr>
-                                        </tfoot>
-                                    @endif
                                 </table>
                             </div>
                         </div>
