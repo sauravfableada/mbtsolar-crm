@@ -806,14 +806,15 @@
                                                     <i class="fa-solid fa-plus"></i>
                                                     <span>Add Estimate</span>
                                                 </a>
-                                            </li>    
-                                        <li>
+                                            </li>
+                                        {{-- Quick Estimate button commented out --}}
+                                        {{-- <li>
                                                 <button type="button" class="dropdown-item"
                                                     data-bs-toggle="modal" data-bs-target="#quickEstimateModal">
                                                     <i class="bi bi-plus-lg"></i>
                                                     <span>Quick Estimate</span>
                                                 </button>
-                                            </li>
+                                            </li> --}}
                                         @if (auth()->user()?->hasMatrixPermission('create_bom'))
                                             <li>
                                                 <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#quickBomModal">
