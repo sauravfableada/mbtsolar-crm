@@ -566,6 +566,49 @@
                             </div>
                         </div>
 
+                        <div class="col-12 create-step-3">
+                            <div class="card border-0 bg-light rounded-3 p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0 fw-semibold">Additional Charges</h6>
+                                    <button type="button" class="btn btn-sm btn-dark-blue" id="add_additional_charge_btn">
+                                        <i class="bi bi-plus-lg me-1"></i>Add More
+                                    </button>
+                                </div>
+
+                                <div id="additionalChargesContainer">
+                                    <div class="additional-charge-row d-flex gap-2 mb-2">
+                                        <input type="text" name="additional_charge_name[]" placeholder="e.g., Walkway+Sidi" class="form-control form-control-sm flex-grow-1 additional-charge-name">
+                                        <input type="number" min="0" step="0.01" name="additional_charge_price[]" placeholder="Price" class="form-control form-control-sm additional-charge-price" style="max-width: 150px;">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-charge-row">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Hidden field to store total additional charges -->
+                                <input type="hidden" name="additional_charges_total" id="additional_charges_total" value="0">
+
+                                <!-- Hidden template for additional charge rows -->
+                                <div id="additionalChargeRowTemplate" style="display: none;">
+                                    <div class="additional-charge-row d-flex gap-2 mb-2">
+                                        <input type="text" name="additional_charge_name[]" placeholder="e.g., Walkway+Sidi" class="form-control form-control-sm flex-grow-1 additional-charge-name">
+                                        <input type="number" min="0" step="0.01" name="additional_charge_price[]" placeholder="Price" class="form-control form-control-sm additional-charge-price" style="max-width: 150px;">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-charge-row">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Table to display added charges -->
+                                <div id="additionalChargesDisplay" style="display: none;">
+                                    <table class="table table-sm table-borderless mt-3">
+                                        <tbody id="additionalChargesTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-lg-6 create-step-3">
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Design File</label>
@@ -602,6 +645,11 @@
                                 <div class="totals-row">
                                     <span class="fw-semibold crm-label-with-icon"><i class="fa-solid fa-money-bill crm-label-icon" aria-hidden="true"></i>Subtotal:</span>
                                     <span id="subtotal_display" class="fw-bold text-dark">0.00</span>
+                                </div>
+
+                                <div class="totals-row" id="additional_charges_summary_row" style="display: none;">
+                                    <span class="small fw-semibold">Additional Charges:</span>
+                                    <span id="additional_charges_summary_display" class="small fw-semibold text-success">0.00</span>
                                 </div>
 
                                 <div class="totals-row align-items-center {{ $estimatePriceMode === 'base' ? 'd-none' : '' }}">
@@ -1034,6 +1082,97 @@
 
             // Initialize calculation on page load if values are present
             calculateTotalPrice();
+
+            // Additional Charges Functionality
+            function updateAdditionalChargesDisplay() {
+                const container = $('#additionalChargesContainer');
+                const rows = container.find('.additional-charge-row');
+                const displayTable = $('#additionalChargesDisplay');
+                const tableBody = $('#additionalChargesTableBody');
+                
+                tableBody.empty();
+                let totalAdditionalCharges = 0;
+
+                rows.each(function() {
+                    const name = $(this).find('.additional-charge-name').val().trim();
+                    const price = parseFloat($(this).find('.additional-charge-price').val()) || 0;
+
+                    if (name && price > 0) {
+                        tableBody.append(`
+                            <tr>
+                                <td class="text-start">${escapeHtml(name)}</td>
+                                <td class="text-end fw-semibold">${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            </tr>
+                        `);
+                        totalAdditionalCharges += price;
+                    }
+                });
+
+                if (totalAdditionalCharges > 0) {
+                    displayTable.show();
+                    $('#additional_charges_summary_row').show();
+                    $('#additional_charges_summary_display').text(totalAdditionalCharges.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                } else {
+                    displayTable.hide();
+                    $('#additional_charges_summary_row').hide();
+                }
+
+                // Update hidden field with total additional charges
+                $('#additional_charges_total').val(totalAdditionalCharges.toFixed(2));
+
+                // Update totals when additional charges change
+                setTimeout(function() {
+                    document.getElementById('price')?.dispatchEvent(new Event('change', { bubbles: true }));
+                }, 10);
+            }
+
+            function escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, m => map[m]);
+            }
+
+            $('#add_additional_charge_btn').on('click', function() {
+                const template = $('#additionalChargeRowTemplate').html();
+                const newRow = $('<div>').html(template).children().first();
+                $('#additionalChargesContainer').append(newRow);
+                
+                newRow.find('.remove-charge-row').on('click', function() {
+                    $(this).closest('.additional-charge-row').remove();
+                    updateAdditionalChargesDisplay();
+                });
+
+                newRow.find('input').on('change input', function() {
+                    updateAdditionalChargesDisplay();
+                });
+            });
+
+            // Handle removal of charge rows
+            $(document).on('click', '.remove-charge-row', function() {
+                $(this).closest('.additional-charge-row').remove();
+                updateAdditionalChargesDisplay();
+            });
+
+            // Handle input changes on charge fields
+            $(document).on('change input', '.additional-charge-name, .additional-charge-price', function() {
+                updateAdditionalChargesDisplay();
+            });
+
+            // Initialize event listeners for default row and any existing rows
+            $('#additionalChargesContainer').find('.additional-charge-row').each(function() {
+                $(this).find('.remove-charge-row').on('click', function() {
+                    $(this).closest('.additional-charge-row').remove();
+                    updateAdditionalChargesDisplay();
+                });
+            });
+
+            // Initialize display on page load
+            updateAdditionalChargesDisplay();
         });
     </script>
 @endpush
