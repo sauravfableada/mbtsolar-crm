@@ -197,12 +197,6 @@
                 <td class="summary-cell summary-cell-right">{{ number_format($summaryBaseCost ?? 0, 2) }}</td>
             </tr>
         @endif
-        @if (empty($summaryUsesGlobalTax))
-        <tr>
-            <td class="summary-cell">Bill of Materials (BOM)</td>
-            <td class="summary-cell summary-cell-right">{{ number_format($summaryBomTotal ?? 0, 2) }}</td>
-        </tr>
-        @endif
         @if (!empty($summaryShowBomTaxes))
             <tr>
                 <td class="summary-cell"><strong>{{ !empty($summaryUsesGlobalTax) ? 'Global Tax on Base Price' : 'Taxes on Bill of Materials (BOM Only)' }}</strong></td>
@@ -259,6 +253,9 @@
             if (($summarySolarStructureCharges ?? 0) > 0) {
                 $summarySubtotalFormula .= ' + Solar Structure Charges';
             }
+            if (($summaryAdditionalChargesTotal ?? 0) > 0) {
+                $summarySubtotalFormula .= ' + Additional Charges';
+            }
             if (($summaryDiscount ?? 0) > 0) {
                 $summarySubtotalFormula .= ' - Discount';
             }
@@ -266,11 +263,22 @@
         @endphp
         <tr>
             <td class="summary-cell">
-                <strong>Consumer Net Payable</strong>
-                <span style="font-style:italic;font-weight:normal;">{{ $summarySubtotalFormula }}</span>
+                @if (!empty(trim((string) ($summaryEstimateDescription ?? ''))))
+                    <div style="font-size:12px;line-height:1.35;color:#4c4c4c;white-space:pre-line;">{{ $summaryEstimateDescription }}</div>
+                @endif
+                <div style="margin-top:{{ !empty(trim((string) ($summaryEstimateDescription ?? ''))) ? '4px' : '0' }};">
+                    <strong>Consumer Net Payable</strong>
+                    <span style="font-style:italic;font-weight:normal;">{{ $summarySubtotalFormula }}</span>
+                </div>
             </td>
             <td class="summary-cell summary-cell-right"><strong>{{ number_format($summaryInvoiceSubtotal ?? 0, 2) }}</strong></td>
         </tr>
+        @if (($summaryAdditionalChargesTotal ?? 0) > 0)
+            <tr>
+                <td class="summary-cell">Additional Charges</td>
+                <td class="summary-cell summary-cell-right">+{{ number_format($summaryAdditionalChargesTotal, 2) }}</td>
+            </tr>
+        @endif
         @if (($summarySubsidy ?? 0) > 0)
             <tr>
                 <td class="summary-cell">Subsidy</td>

@@ -3178,6 +3178,10 @@ if (isset($after_blocks) && is_array($after_blocks)) {
         $isLastComponentsPage = ($componentsPageIndex === $componentsPageTotal - 1);
         $componentsChunkPageClass = $isLastComponentsPage ? $componentsPageClass : 'page page-break';
         $componentsPageLayout = $componentsPage['layout'];
+        $componentsTableStartIndex = 0;
+        for ($previousPageIndex = 0; $previousPageIndex < $componentsPageIndex; $previousPageIndex++) {
+            $componentsTableStartIndex += count($componentsPages[$previousPageIndex]['rows'] ?? []);
+        }
     ?>
     <div class="<?= $componentsChunkPageClass ?>" style="position: relative; background: white;">
         <div style="padding: 20px 40px 56px 40px;">
@@ -3188,11 +3192,13 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             @include('pdfbuilder.partials.company-components-intro', ['componentsIntroExpanded' => false])
             @include('pdfbuilder.partials.company-components-table', [
                 'componentsTableRows' => $componentsPage['rows'] ?? [],
+                'componentsTableStartIndex' => $componentsTableStartIndex,
             ])
             <?php else: ?>
             @include('pdfbuilder.partials.company-components-title')
             @include('pdfbuilder.partials.company-components-table', [
                 'componentsTableRows' => $componentsPage['rows'] ?? [],
+                'componentsTableStartIndex' => $componentsTableStartIndex,
             ])
             <?php endif; ?>
         </div>
