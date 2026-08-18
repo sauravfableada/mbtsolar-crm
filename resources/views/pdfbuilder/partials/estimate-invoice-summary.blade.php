@@ -17,14 +17,20 @@ $summarySubsidy = ($estdata && isset($estdata->subsidy_amount)) ? (float) $estda
 $summarySolarStructureCharges = ($estdata && isset($estdata->solar_structure_charges)) ? (float) $estdata->solar_structure_charges : 0;
 $summaryAdditionalChargesBreakdown = [];
 $summaryAdditionalChargesTotal = ($estdata && isset($estdata->additional_charges_total)) ? (float) $estdata->additional_charges_total : 0;
-if ($summaryAdditionalChargesTotal <= 0 && $estdata && isset($estdata->other_charges) && is_numeric($estdata->other_charges)) {
+if ($estdata && isset($estdata->other_charges) && is_numeric($estdata->other_charges)) {
     $summaryAdditionalChargesTotal = (float) $estdata->other_charges;
 }
-if ($summaryAdditionalChargesTotal <= 0 && $estdata && !empty($estdata->generation_data)) {
+if ($estdata && !empty($estdata->generation_data)) {
     $decodedAdditionalCharges = is_array($estdata->generation_data)
         ? $estdata->generation_data
         : json_decode((string) $estdata->generation_data, true);
+
+    $rawAdditionalCharges = [];
     if (is_array($decodedAdditionalCharges) && !empty($decodedAdditionalCharges['additional_charges'])) {
+        $rawAdditionalCharges = (array) $decodedAdditionalCharges['additional_charges'];
+    }
+
+    if (!empty($rawAdditionalCharges)) {
         $summaryAdditionalChargesBreakdown = array_values(array_filter(array_map(function ($charge) {
             if (!is_array($charge)) {
                 return null;
@@ -35,9 +41,13 @@ if ($summaryAdditionalChargesTotal <= 0 && $estdata && !empty($estdata->generati
                 return null;
             }
             return ['name' => $name, 'price' => $price];
-        }, (array) $decodedAdditionalCharges['additional_charges'])));
+        }, $rawAdditionalCharges)));
         $summaryAdditionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $summaryAdditionalChargesBreakdown));
     }
+}
+
+if (empty($summaryAdditionalChargesBreakdown) && $summaryAdditionalChargesTotal <= 0 && $estdata && !empty($estdata->additional_charges_total)) {
+    $summaryAdditionalChargesTotal = (float) $estdata->additional_charges_total;
 }
 $summaryEstimateDescription = trim((string) (($estdata->estimate_description ?? $estdata->description ?? '') ?? ''));
 $summaryIsQuotation = ($estdata && isset($estdata->is_quotation)) ? (int) $estdata->is_quotation : 0;
