@@ -126,6 +126,8 @@ class DocumentSummaryPresenter
         $summaryDiscount = isset($estdata->discount) ? (float) $estdata->discount : 0;
         $summarySubsidy = isset($estdata->subsidy_amount) ? (float) $estdata->subsidy_amount : 0;
         $summarySolarStructureCharges = isset($estdata->solar_structure_charges) ? (float) $estdata->solar_structure_charges : 0;
+        $summaryAdditionalChargesTotal = isset($estdata->additional_charges_total) ? (float) $estdata->additional_charges_total : 0;
+        $summaryEstimateDescription = trim((string) ($estdata->estimate_description ?? $estdata->description ?? ''));
         $summaryGstAmount = null;
         $summaryGstBreakdown = [];
         $summaryBreakupLines = [];
@@ -289,7 +291,7 @@ class DocumentSummaryPresenter
         $summaryGstRateText = is_numeric($summaryGstRate) ? rtrim(rtrim(number_format((float) $summaryGstRate, 2, '.', ''), '0'), '.') : '';
         $summaryShowGst = ((float) $summaryGstAmount > 0) || ((float) $summaryGstRate > 0);
         $summaryShowBomTaxes = !empty($summaryBreakupLines) && $summaryBomTaxTotal > 0;
-        $summaryInvoiceSubtotal = $summaryBaseCost + $summaryBomTotal + $summaryBomTaxTotal + $summarySolarStructureCharges - $summaryDiscount;
+        $summaryInvoiceSubtotal = $summaryBaseCost + $summaryBomTotal + $summaryBomTaxTotal + $summarySolarStructureCharges + $summaryAdditionalChargesTotal - $summaryDiscount;
         $summaryNetPayable = $summaryInvoiceSubtotal - $summarySubsidy;
 
         $summaryBankFields = array_values(array_filter([
@@ -321,6 +323,8 @@ class DocumentSummaryPresenter
             'summaryGstRateText' => $summaryGstRateText,
             'summaryBomTaxTotal' => $summaryBomTaxTotal,
             'summarySolarStructureCharges' => $summarySolarStructureCharges,
+            'summaryAdditionalChargesTotal' => $summaryAdditionalChargesTotal,
+            'summaryEstimateDescription' => $summaryEstimateDescription,
             'summaryDiscount' => $summaryDiscount,
             'summaryInvoiceSubtotal' => $summaryInvoiceSubtotal,
             'summarySubsidy' => $summarySubsidy,

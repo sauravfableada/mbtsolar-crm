@@ -255,12 +255,6 @@ $summaryLendingCost = $summaryNetPayable;
         <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summaryBaseCost, 2) ?></td>
     </tr>
     <?php endif; ?>
-    <?php if (!$summaryUsesGlobalTax): ?>
-    <tr>
-        <td style="<?= $summaryCellStyle ?>">Bill of Materials (BOM)</td>
-        <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summaryBomTotal, 2) ?></td>
-    </tr>
-    <?php endif; ?>
     <?php if ($summaryShowBomTaxes): ?>
     <tr>
         <td style="<?= $summaryCellStyle ?>"><strong><?= $summaryUsesGlobalTax ? 'Global Tax on Base Price' : 'Taxes on Bill of Materials (BOM Only)' ?></strong></td>
@@ -311,10 +305,38 @@ $summaryLendingCost = $summaryNetPayable;
         <td style="<?= $summaryRightCellStyle ?>">-<?= number_format($summaryDiscount, 2) ?></td>
     </tr>
     <?php endif; ?>
+    <?php
+        $summarySubtotalText = $summaryUsesGlobalTax ? 'Base cost + Global Tax' : 'BOM + BOM Taxes';
+        if ($summarySolarStructureCharges > 0) {
+            $summarySubtotalText .= ' + Solar Structure Charges';
+        }
+        if ($summaryAdditionalChargesTotal > 0) {
+            $summarySubtotalText .= ' + Additional Charges';
+        }
+        if ($summaryDiscount > 0) {
+            $summarySubtotalText .= ' - Discount';
+        }
+    ?>
     <tr>
-        <td style="<?= $summaryCellStyle ?>"><strong>Consumer Net Payable</strong> <span style="font-style:italic;font-weight:normal;">(<?= $summaryUsesGlobalTax ? 'Base cost + Global Tax' : 'BOM + BOM Taxes' ?><?= $summarySolarStructureCharges > 0 ? ' + Solar Structure Charges' : '' ?><?= $summaryDiscount > 0 ? ' - Discount' : '' ?>)</span></td>
+        <td style="<?= $summaryCellStyle ?>">
+            <?php if (trim((string) ($summaryEstimateDescription ?? '')) !== ''): ?>
+                <div style="font-size:12px;line-height:1.35;color:#4c4c4c;white-space:pre-line;">
+                    <?= nl2br(esc($summaryEstimateDescription)) ?>
+                </div>
+            <?php endif; ?>
+            <div style="margin-top:<?= trim((string) ($summaryEstimateDescription ?? '')) !== '' ? '4px' : '0' ?>;">
+                <strong>Consumer Net Payable</strong>
+                <span style="font-style:italic;font-weight:normal;">(<?= esc($summarySubtotalText) ?>)</span>
+            </div>
+        </td>
         <td style="<?= $summaryRightCellStyle ?>"><strong><?= number_format($summaryInvoiceSubtotal, 2) ?></strong></td>
     </tr>
+    <?php if ($summaryAdditionalChargesTotal > 0): ?>
+    <tr>
+        <td style="<?= $summaryCellStyle ?>">Additional Charges</td>
+        <td style="<?= $summaryRightCellStyle ?>">+<?= number_format($summaryAdditionalChargesTotal, 2) ?></td>
+    </tr>
+    <?php endif; ?>
     <?php if ($summarySubsidy > 0): ?>
     <tr>
         <td style="<?= $summaryCellStyle ?>">Subsidy</td>
