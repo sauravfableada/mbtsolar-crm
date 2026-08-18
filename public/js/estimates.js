@@ -3696,9 +3696,10 @@
             : 0;
         const discount = parseFloat(document.getElementById('discount')?.value || 0);
         const subsidy = parseFloat(document.getElementById('subsidy_amount')?.value || 0);
+        const additionalCharges = parseFloat(document.getElementById('additional_charges_total')?.value || 0);
 
         const basePrice = getDocumentPriceMode() === 'base' ? price : price + productsTotal;
-        const subtotal = basePrice + structureCharges;
+        const subtotal = basePrice + structureCharges + additionalCharges;
         const taxBreakdown = document.getElementById('apply_gst')?.checked
             ? getSelectedTaxBreakdown(subtotal)
             : getSelectedTaxBreakdown(0);
