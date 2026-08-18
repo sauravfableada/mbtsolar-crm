@@ -3840,8 +3840,8 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                                             <td align="left" valign="middle" style="padding-left: 10px;">
                                                 <div style="font-size: 14px; font-weight: bold; color: #1a1a1a; margin-bottom: 3px; font-family: 'Montserrat', sans-serif;">Visit Us</div>
                                                 <div style="font-size: 12px; color: #444; font-family: 'Montserrat', sans-serif;">
-                                                    <a href="<?= base_url() ?>" style="color: #444; text-decoration: none;" target="_blank">
-                                                        <?= !empty($company_name) ? esc($company_name) : '--' ?>
+                                                    <a href="https://mbtsolar.in/" style="color: #444; text-decoration: none;" target="_blank">
+                                                        https://mbtsolar.in/
                                                     </a>
                                                 </div>
                                             </td>
