@@ -316,7 +316,7 @@
                     </div>
 
                     <div class="row g-3">
-                        <div class="col-12 create-step-1 active-step">
+                        <div class="col-6 create-step-1 active-step estimate-form-field-col">
                             <label class="form-label fw-semibold mb-1">Select Customer <span class="text-danger">*</span></label>
                             <div class="d-flex align-items-start gap-2" style="min-width: 0;">
                                 <div class="flex-grow-1 w-100" style="min-width: 0;">
@@ -336,12 +336,20 @@
                             <div class="invalid-feedback" id="customer_id-error">Please select a customer</div>
                         </div>
 
-                        <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col">
+                        <div class="col-6 create-step-1 active-step estimate-form-field-col">
                             <label class="form-label fw-semibold">Estimate Name <span class="text-danger">*</span></label>
                             <input type="text" name="estimate_name" id="estimate_name" value="{{ old('estimate_name') }}"
                                 class="form-control @error('estimate_name') is-invalid @enderror"
                                 placeholder="Enter estimate name" required>
                             <div class="invalid-feedback" id="estimate_name-error">Please enter estimate name</div>
+                        </div>
+
+                        <div class="col-12 create-step-1 active-step estimate-form-field-col">
+                            <label class="form-label fw-semibold">Estimate Description</label>
+                            <textarea name="estimate_description" id="estimate_description" rows="3"
+                                class="form-control @error('estimate_description') is-invalid @enderror"
+                                placeholder="Enter estimate description (optional)">{{ old('estimate_description') }}</textarea>
+                            <div class="invalid-feedback" id="estimate_description-error">Please enter valid description</div>
                         </div>
 
                         <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col">
@@ -359,22 +367,6 @@
                         </div>
 
                         <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col">
-                            <label class="form-label fw-semibold">Quantity (kW) <span class="text-danger">*</span></label>
-                            <input type="number" min="0" step="1" name="quantity" id="quantity"
-                                value="{{ old('quantity') }}" class="form-control @error('quantity') is-invalid @enderror"
-                                placeholder="Enter kW" required>
-                            <div class="invalid-feedback" id="quantity-error">Please enter valid quantity (kW)</div>
-                        </div>
-
-                        <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col estimate-base-price-col {{ $estimatePriceMode === 'bom' ? 'd-none' : '' }}">
-                            <label class="form-label fw-semibold crm-label-with-icon"><i class="fa-solid fa-money-bill crm-label-icon" aria-hidden="true"></i>Price <span class="text-danger">*</span></label>
-                            <input type="number" min="0" step="1" name="price" id="price"
-                                value="{{ $estimatePriceMode === 'bom' ? 0 : old('price') }}" class="form-control @error('price') is-invalid @enderror"
-                                placeholder="Enter price" @required($estimatePriceMode === 'base')>
-                            <div class="invalid-feedback" id="price-error">Please enter valid price</div>
-                        </div>
-
-                        <div class="col-12 col-md-4 create-step-1 active-step estimate-form-field-col">
                             <label class="form-label fw-semibold">Solar Meter <span
                                     class="text-danger">*</span></label>
                             <select name="solar_meter_charges" id="solar_meter_select"
@@ -386,6 +378,30 @@
                             </select>
                             <div class="invalid-feedback" id="solar_meter_charges-error">Please select solar meter charges
                             </div>
+                        </div>
+
+                        <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col">
+                            <label class="form-label fw-semibold">Quantity (kW) <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="1" name="quantity" id="quantity"
+                                value="{{ old('quantity') }}" class="form-control @error('quantity') is-invalid @enderror"
+                                placeholder="Enter kW" required>
+                            <div class="invalid-feedback" id="quantity-error">Please enter valid quantity (kW)</div>
+                        </div>
+
+                        <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col estimate-base-price-col {{ $estimatePriceMode === 'bom' ? 'd-none' : '' }}">
+                            <label class="form-label fw-semibold crm-label-with-icon"><i class="fa-solid fa-money-bill crm-label-icon" aria-hidden="true"></i>Price per Unit <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="0.01" name="price_per_unit" id="price_per_unit"
+                                value="{{ old('price_per_unit') }}" class="form-control @error('price_per_unit') is-invalid @enderror price-calculator-field"
+                                placeholder="Enter price per kW" @required($estimatePriceMode === 'base')>
+                            <div class="invalid-feedback" id="price_per_unit-error">Please enter valid price per unit</div>
+                        </div>
+
+                        <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col estimate-base-price-col {{ $estimatePriceMode === 'bom' ? 'd-none' : '' }}">>
+                            <label class="form-label fw-semibold crm-label-with-icon"><i class="fa-solid fa-calculator crm-label-icon" aria-hidden="true"></i>Total Price <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="0.01" name="price" id="price"
+                                value="{{ $estimatePriceMode === 'bom' ? 0 : old('price') }}" class="form-control @error('price') is-invalid @enderror" readonly
+                                placeholder="Auto-calculated" @required($estimatePriceMode === 'base')>
+                            <div class="invalid-feedback" id="price-error">Please enter valid price</div>
                         </div>
 
                         <div class="col-12 col-md-4 create-step-1 active-step estimate-form-field-col" id="create_template_wrapper">
@@ -794,6 +810,28 @@
     <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/estimates.js') }}?v={{ filemtime(public_path('js/estimates.js')) }}"></script>
     <script>
         $(document).ready(function() {
+            // Price calculation: Total Price = Quantity (kW) × Price per Unit
+            function calculateTotalPrice() {
+                const quantity = parseFloat($('#quantity').val()) || 0;
+                const pricePerUnit = parseFloat($('#price_per_unit').val()) || 0;
+                const totalPrice = quantity * pricePerUnit;
+                $('#price').val(totalPrice > 0 ? totalPrice.toFixed(2) : '');
+                
+                // Trigger the main calculation after price update
+                setTimeout(function() {
+                    const priceField = document.getElementById('price');
+                    if (priceField) {
+                        priceField.dispatchEvent(new Event('change', { bubbles: true }));
+                        priceField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }, 10);
+            }
+
+            // Trigger calculation when quantity or price per unit changes
+            $(document).on('change input', '#quantity, #price_per_unit', function() {
+                calculateTotalPrice();
+            });
+
             function initSelect2(context = document) {
                 $(context).find('#select_customer, #template_id, #type, #solar_meter_select, .product-select, .product-make').select2({
                     theme: 'bootstrap-5',
@@ -993,6 +1031,9 @@
                     }
                 });
             });
+
+            // Initialize calculation on page load if values are present
+            calculateTotalPrice();
         });
     </script>
 @endpush
