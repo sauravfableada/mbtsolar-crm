@@ -344,7 +344,7 @@
                                                 $specifications = [];
                                                 $make_val = ltrim(trim($product_category_makes), ',');
                                                 if (!empty($make_val)) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Make:</span> ' . e($make_val);
+                                                    $specifications[] = e($make_val);
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['technology'])) {
                                                     $techArray = json_decode($full_product_details['technology'], true);
@@ -354,7 +354,7 @@
                                                     $techArray = array_filter($techArray, fn($v) => trim((string)$v) !== '');
                                                     if (!empty($techArray)) {
                                                         $techNames = array_map(fn($id) => $technology_map[$id] ?? $id, $techArray);
-                                                        $specifications[] = '<span style="color: #555; font-weight: bold;">Technology:</span> ' . e(implode(', ', $techNames));
+                                                        $specifications[] = e(implode(', ', $techNames));
                                                     }
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['warranty'])) {
@@ -365,38 +365,39 @@
                                                     $warArray = array_filter($warArray, fn($v) => trim((string)$v) !== '');
                                                     if (!empty($warArray)) {
                                                         $warNames = array_map(fn($id) => $warranty_map[$id] ?? $id, $warArray);
-                                                        $specifications[] = '<span style="color: #555; font-weight: bold;">Warranty:</span> ' . e(implode(', ', $warNames));
+                                                        $specifications[] = e(implode(', ', $warNames));
                                                     }
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['capacity'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Capacity:</span> ' . e($full_product_details['capacity']);
+                                                    $specifications[] = e($full_product_details['capacity']);
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['tax_rate']) && (float)$full_product_details['tax_rate'] > 0) {
                                                     $tax_rate = (float)$full_product_details['tax_rate'];
                                                     $tax_type = $full_product_details['tax_type'] ?? '';
                                                     if (strcasecmp($tax_type, 'IGST') === 0 || strcasecmp($tax_type, 'GST') === 0) {
-                                                        $specifications[] = '<span style="color: #555; font-weight: bold;">GST:</span> ' . e($tax_type) . ' ' . $tax_rate . '%';
+                                                        $specifications[] = e($tax_type) . ' ' . $tax_rate . '%';
                                                     } else {
                                                         $half_rate = $tax_rate / 2;
-                                                        $specifications[] = '<span style="color: #555; font-weight: bold;">GST:</span> (CGST ' . $half_rate . '% + SGST ' . $half_rate . '%)';
+                                                        $specifications[] = 'CGST ' . $half_rate . '% + SGST ' . $half_rate . '%';
                                                     }
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['height'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Height:</span> ' . e($full_product_details['height']);
+                                                    $specifications[] = e($full_product_details['height']);
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['fitting_material'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Fitting Material:</span> ' . e($full_product_details['fitting_material']);
+                                                    $specifications[] = e($full_product_details['fitting_material']);
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['fitting_type'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Fitting Type:</span> ' . e($full_product_details['fitting_type']);
+                                                    $specifications[] = e($full_product_details['fitting_type']);
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['thickness'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Thickness:</span> ' . e($full_product_details['thickness']);
+                                                    $specifications[] = e($full_product_details['thickness']);
                                                 }
                                                 if ($full_product_details && !empty($full_product_details['size_of_pipe'])) {
-                                                    $specifications[] = '<span style="color: #555; font-weight: bold;">Size of Pipe:</span> ' . e($full_product_details['size_of_pipe']);
+                                                    $specifications[] = e($full_product_details['size_of_pipe']);
                                                 }
 
+                                                $specifications = array_values(array_filter(array_map('trim', $specifications), fn($value) => $value !== ''));
                                                 $specifications_html = implode('<br>', $specifications);
 
                                                 $price_val = array_key_exists('price', $item)
