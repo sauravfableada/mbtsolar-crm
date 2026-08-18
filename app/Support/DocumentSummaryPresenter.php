@@ -126,7 +126,30 @@ class DocumentSummaryPresenter
         $summaryDiscount = isset($estdata->discount) ? (float) $estdata->discount : 0;
         $summarySubsidy = isset($estdata->subsidy_amount) ? (float) $estdata->subsidy_amount : 0;
         $summarySolarStructureCharges = isset($estdata->solar_structure_charges) ? (float) $estdata->solar_structure_charges : 0;
+        $summaryAdditionalChargesBreakdown = [];
         $summaryAdditionalChargesTotal = isset($estdata->additional_charges_total) ? (float) $estdata->additional_charges_total : 0;
+        if ($summaryAdditionalChargesTotal <= 0 && isset($estdata->other_charges) && is_numeric($estdata->other_charges)) {
+            $summaryAdditionalChargesTotal = (float) $estdata->other_charges;
+        }
+        if ($summaryAdditionalChargesTotal <= 0 && !empty($estdata->generation_data)) {
+            $decodedAdditionalCharges = is_array($estdata->generation_data)
+                ? $estdata->generation_data
+                : json_decode((string) $estdata->generation_data, true);
+            if (is_array($decodedAdditionalCharges) && !empty($decodedAdditionalCharges['additional_charges'])) {
+                $summaryAdditionalChargesBreakdown = array_values(array_filter(array_map(function ($charge) {
+                    if (!is_array($charge)) {
+                        return null;
+                    }
+                    $name = trim((string) ($charge['name'] ?? ''));
+                    $price = (float) ($charge['price'] ?? 0);
+                    if ($name === '' || $price <= 0) {
+                        return null;
+                    }
+                    return ['name' => $name, 'price' => $price];
+                }, (array) $decodedAdditionalCharges['additional_charges'])));
+                $summaryAdditionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $summaryAdditionalChargesBreakdown));
+            }
+        }
         $summaryEstimateDescription = trim((string) ($estdata->estimate_description ?? $estdata->description ?? ''));
         $summaryGstAmount = null;
         $summaryGstBreakdown = [];
@@ -323,6 +346,7 @@ class DocumentSummaryPresenter
             'summaryGstRateText' => $summaryGstRateText,
             'summaryBomTaxTotal' => $summaryBomTaxTotal,
             'summarySolarStructureCharges' => $summarySolarStructureCharges,
+            'summaryAdditionalChargesBreakdown' => $summaryAdditionalChargesBreakdown,
             'summaryAdditionalChargesTotal' => $summaryAdditionalChargesTotal,
             'summaryEstimateDescription' => $summaryEstimateDescription,
             'summaryDiscount' => $summaryDiscount,

@@ -586,7 +586,7 @@
                                 </div>
 
                                 <!-- Hidden field to store total additional charges -->
-                                <input type="hidden" name="additional_charges_total" id="additional_charges_total" value="0">
+                                <input type="hidden" name="other_charges" id="additional_charges_total" value="0">
 
                                 <!-- Hidden template for additional charge rows -->
                                 <div id="additionalChargeRowTemplate" style="display: none;">

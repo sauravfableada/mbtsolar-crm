@@ -2,7 +2,10 @@
 <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin:10px 0 18px; border:1px solid #cfe0cf; font-family:'Montserrat', sans-serif; page-break-inside: avoid;">
     <thead>
         <tr style="background-color:#4b9349; border-bottom:2px solid #3d7a3b;">
-            <th width="60%" style="padding:14px 16px; font-weight:bold; font-size:14px; color:#fff; text-align:left; font-family:'Montserrat',sans-serif; border: 1px solid #3d7a3b;">
+            <th width="6%" style="padding:14px 10px; font-weight:bold; font-size:14px; color:#fff; text-align:center; font-family:'Montserrat',sans-serif; border: 1px solid #3d7a3b;">
+                Sr. No.
+            </th>
+            <th width="54%" style="padding:14px 16px; font-weight:bold; font-size:14px; color:#fff; text-align:left; font-family:'Montserrat',sans-serif; border: 1px solid #3d7a3b;">
                 Component Type
             </th>
             <th width="40%" style="padding:14px 16px; font-weight:bold; font-size:14px; color:#fff; text-align:left; font-family:'Montserrat',sans-serif; border: 1px solid #3d7a3b;">
@@ -62,10 +65,16 @@
         }
 
         $techSpecsHtml = !empty($techSpecs) ? implode(' / ', $techSpecs) : '—';
+        $makeWithSpecs = $make !== ''
+            ? ($techSpecsHtml !== '—' ? $make . ' (' . $techSpecsHtml . ')' : $make)
+            : ($techSpecsHtml !== '—' ? '(' . $techSpecsHtml . ')' : '—');
         $rowBg = '#ffffff';
         $componentRowIndex++;
     ?>
     <tr style="page-break-inside:avoid; background:<?= $rowBg ?>;">
+        <td style="padding:12px 10px; font-size:14px; color:#222; border:1px solid #dfe9df; font-family:'DejaVu Sans',sans-serif; text-align:center; vertical-align:top;">
+            <?= $componentRowIndex ?>
+        </td>
         <td style="padding:12px 14px; font-size:14px; color:#222; border:1px solid #dfe9df; font-family:'DejaVu Sans',sans-serif; vertical-align:top;">
             <?php if (!empty($productImagePath)): ?>
                 <div style="text-align: center; margin-bottom: 8px;">
@@ -73,12 +82,9 @@
                 </div>
             <?php endif; ?>
             <div style="font-weight:bold; margin-bottom:4px;"><?= esc($component['name'] ?? '--') ?></div>
-            <div style="line-height:1.45;">
-                <?= $techSpecsHtml !== '—' ? esc($techSpecsHtml) : '—' ?>
-            </div>
         </td>
         <td style="padding:12px 14px; font-size:14px; color:#222; border:1px solid #dfe9df; font-family:'DejaVu Sans',sans-serif; vertical-align:top;">
-            <?= $make !== '' ? esc($make) : '—' ?>
+            <?= esc($makeWithSpecs) ?>
         </td>
     </tr>
     <?php endforeach; ?>
