@@ -15,6 +15,31 @@ $summaryGstRate = ($estdata && isset($estdata->gst)) ? (float) $estdata->gst : 0
 $summaryDiscount = ($estdata && isset($estdata->discount)) ? (float) $estdata->discount : 0;
 $summarySubsidy = ($estdata && isset($estdata->subsidy_amount)) ? (float) $estdata->subsidy_amount : 0;
 $summarySolarStructureCharges = ($estdata && isset($estdata->solar_structure_charges)) ? (float) $estdata->solar_structure_charges : 0;
+$summaryAdditionalChargesBreakdown = [];
+$summaryAdditionalChargesTotal = ($estdata && isset($estdata->additional_charges_total)) ? (float) $estdata->additional_charges_total : 0;
+if ($summaryAdditionalChargesTotal <= 0 && $estdata && isset($estdata->other_charges) && is_numeric($estdata->other_charges)) {
+    $summaryAdditionalChargesTotal = (float) $estdata->other_charges;
+}
+if ($summaryAdditionalChargesTotal <= 0 && $estdata && !empty($estdata->generation_data)) {
+    $decodedAdditionalCharges = is_array($estdata->generation_data)
+        ? $estdata->generation_data
+        : json_decode((string) $estdata->generation_data, true);
+    if (is_array($decodedAdditionalCharges) && !empty($decodedAdditionalCharges['additional_charges'])) {
+        $summaryAdditionalChargesBreakdown = array_values(array_filter(array_map(function ($charge) {
+            if (!is_array($charge)) {
+                return null;
+            }
+            $name = trim((string) ($charge['name'] ?? ''));
+            $price = (float) ($charge['price'] ?? 0);
+            if ($name === '' || $price <= 0) {
+                return null;
+            }
+            return ['name' => $name, 'price' => $price];
+        }, (array) $decodedAdditionalCharges['additional_charges'])));
+        $summaryAdditionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $summaryAdditionalChargesBreakdown));
+    }
+}
+$summaryEstimateDescription = trim((string) (($estdata->estimate_description ?? $estdata->description ?? '') ?? ''));
 $summaryIsQuotation = ($estdata && isset($estdata->is_quotation)) ? (int) $estdata->is_quotation : 0;
 $summaryGstAmount = null;
 $summaryGstBreakdown = [];
@@ -192,7 +217,7 @@ if (empty($summaryBreakupLines) && $summaryGstRate > 0 && $summaryBomTaxTotal > 
     ];
 }
 $summaryShowBomTaxes = !empty($summaryBreakupLines) && $summaryBomTaxTotal > 0;
-$summaryInvoiceSubtotal = $summaryBaseCost + $summaryBomTotal + $summaryBomTaxTotal + $summarySolarStructureCharges - $summaryDiscount;
+$summaryInvoiceSubtotal = $summaryBaseCost + $summaryBomTotal + $summaryBomTaxTotal + $summarySolarStructureCharges + $summaryAdditionalChargesTotal - $summaryDiscount;
 $summaryNetPayable = $summaryInvoiceSubtotal - $summarySubsidy;
 $summaryTotalPayable = $summaryInvoiceSubtotal;
 $summaryLendingCost = $summaryNetPayable;
@@ -332,10 +357,19 @@ $summaryLendingCost = $summaryNetPayable;
         <td style="<?= $summaryRightCellStyle ?>"><strong><?= number_format($summaryInvoiceSubtotal, 2) ?></strong></td>
     </tr>
     <?php if ($summaryAdditionalChargesTotal > 0): ?>
-    <tr>
-        <td style="<?= $summaryCellStyle ?>">Additional Charges</td>
-        <td style="<?= $summaryRightCellStyle ?>">+<?= number_format($summaryAdditionalChargesTotal, 2) ?></td>
-    </tr>
+        <?php if (!empty($summaryAdditionalChargesBreakdown)): ?>
+            <?php foreach ($summaryAdditionalChargesBreakdown as $additionalCharge): ?>
+            <tr>
+                <td style="<?= $summaryCellStyle ?>"><?= esc($additionalCharge['name'] ?? 'Additional Charge') ?></td>
+                <td style="<?= $summaryRightCellStyle ?>">+<?= number_format((float) ($additionalCharge['price'] ?? 0), 2) ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php else: ?>
+            <tr>
+                <td style="<?= $summaryCellStyle ?>">Additional Charges</td>
+                <td style="<?= $summaryRightCellStyle ?>">+<?= number_format($summaryAdditionalChargesTotal, 2) ?></td>
+            </tr>
+        <?php endif; ?>
     <?php endif; ?>
     <?php if ($summarySubsidy > 0): ?>
     <tr>

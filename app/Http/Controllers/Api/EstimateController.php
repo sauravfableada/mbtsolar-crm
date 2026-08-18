@@ -161,6 +161,17 @@ class EstimateController extends Controller
             $comment = $request->input('comment', '');
             $discount = (float) ($request->input('discount') ?? 0);
             $subsidyAmount = (float) ($request->input('subsidy_amount') ?? 0);
+            $additionalChargeNames = $request->input('additional_charge_name', []);
+            $additionalChargePrices = $request->input('additional_charge_price', []);
+            $additionalCharges = [];
+            foreach ((array) $additionalChargeNames as $index => $name) {
+                $cleanName = trim((string) $name);
+                $price = (float) ($additionalChargePrices[$index] ?? 0);
+                if ($cleanName !== '' && $price > 0) {
+                    $additionalCharges[] = ['name' => $cleanName, 'price' => $price];
+                }
+            }
+            $additionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $additionalCharges));
             $applyCharges = (int) ($request->input('apply_gst') ?? 0);
             $gstPercent = (float) ($request->input('gst') ?? 0);
             if ($gstPercent > 0 && !$request->has('apply_gst')) {
@@ -231,6 +242,7 @@ class EstimateController extends Controller
             $generationData = [
                 'monthly_electricity_bill' => (float) $monthlyBill,
                 'unit_rate' => (float) $unitRate,
+                'additional_charges' => $additionalCharges,
             ];
 
             // Create estimate
@@ -258,6 +270,7 @@ class EstimateController extends Controller
                 'gst_breakdown' => $applyCharges ? $gstBreakdown : null,
                 'discount' => $discount,
                 'subsidy_amount' => $subsidyAmount,
+                'other_charges' => $additionalChargesTotal,
                 'amount' => $finalAmount,
                 'generation_data' => $generationData,
                 'is_quotation' => 1,
@@ -372,6 +385,17 @@ class EstimateController extends Controller
             $comment = $request->input('comment', '');
             $discount = (float) ($request->input('discount') ?? 0);
             $subsidyAmount = (float) ($request->input('subsidy_amount') ?? 0);
+            $additionalChargeNames = $request->input('additional_charge_name', []);
+            $additionalChargePrices = $request->input('additional_charge_price', []);
+            $additionalCharges = [];
+            foreach ((array) $additionalChargeNames as $index => $name) {
+                $cleanName = trim((string) $name);
+                $price = (float) ($additionalChargePrices[$index] ?? 0);
+                if ($cleanName !== '' && $price > 0) {
+                    $additionalCharges[] = ['name' => $cleanName, 'price' => $price];
+                }
+            }
+            $additionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $additionalCharges));
             $applyCharges = (int) ($request->input('apply_gst') ?? 0);
             $gstPercent = (float) ($request->input('gst') ?? 0);
             if ($gstPercent > 0 && !$request->has('apply_gst')) {
@@ -437,6 +461,7 @@ class EstimateController extends Controller
             $generationData = [
                 'monthly_electricity_bill' => (float) $monthlyBill,
                 'unit_rate' => (float) $unitRate,
+                'additional_charges' => $additionalCharges,
             ];
 
             // Update estimate
@@ -460,6 +485,7 @@ class EstimateController extends Controller
                 'gst_breakdown' => $applyCharges ? $gstBreakdown : null,
                 'discount' => $discount,
                 'subsidy_amount' => $subsidyAmount,
+                'other_charges' => $additionalChargesTotal,
                 'amount' => $finalAmount,
                 'generation_data' => $generationData,
             ];

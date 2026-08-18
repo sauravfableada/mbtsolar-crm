@@ -274,10 +274,18 @@
             <td class="summary-cell summary-cell-right"><strong>{{ number_format($summaryInvoiceSubtotal ?? 0, 2) }}</strong></td>
         </tr>
         @if (($summaryAdditionalChargesTotal ?? 0) > 0)
-            <tr>
-                <td class="summary-cell">Additional Charges</td>
-                <td class="summary-cell summary-cell-right">+{{ number_format($summaryAdditionalChargesTotal, 2) }}</td>
-            </tr>
+            @foreach (($summaryAdditionalChargesBreakdown ?? []) as $additionalCharge)
+                <tr>
+                    <td class="summary-cell">{{ $additionalCharge['name'] ?? 'Additional Charge' }}</td>
+                    <td class="summary-cell summary-cell-right">+{{ number_format((float) ($additionalCharge['price'] ?? 0), 2) }}</td>
+                </tr>
+            @endforeach
+            @if (empty($summaryAdditionalChargesBreakdown))
+                <tr>
+                    <td class="summary-cell">Additional Charges</td>
+                    <td class="summary-cell summary-cell-right">+{{ number_format($summaryAdditionalChargesTotal, 2) }}</td>
+                </tr>
+            @endif
         @endif
         @if (($summarySubsidy ?? 0) > 0)
             <tr>
