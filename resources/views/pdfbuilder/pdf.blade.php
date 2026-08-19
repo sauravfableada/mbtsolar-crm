@@ -478,7 +478,7 @@ if ($estdata) {
         $qtyValue = (float) $estdata->quantity;
         if ($qtyValue > 0) {
             // Format quantity - remove trailing zeros if decimal
-            $quantity = rtrim(rtrim(number_format($qtyValue, 1), '0'), '.');
+            $quantity = rtrim(rtrim(number_format($qtyValue, 3), '0'), '.');
         }
     }
 
@@ -495,7 +495,7 @@ if ($estdata) {
                 }
             }
             if ($totalQty > 0) {
-                $quantity = rtrim(rtrim(number_format($totalQty, 1), '0'), '.');
+                $quantity = rtrim(rtrim(number_format($totalQty, 3), '0'), '.');
             }
         }
     }
@@ -523,7 +523,7 @@ if ($estdata) {
                 $assumedDays = 30.0;
                 $requiredKw = $monthlyUnits / ($avgUnitsPerKwTmp * $assumedDays * $prFactorTmp);
                 if ($requiredKw > 0) {
-                    $quantity = rtrim(rtrim(number_format($requiredKw, 1), '0'), '.');
+                    $quantity = rtrim(rtrim(number_format($requiredKw, 3), '0'), '.');
                 }
             }
         }
