@@ -303,6 +303,7 @@
                         <p class="text-muted small mb-0">Estimate No: {{ $estimate->estimate_no }}</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2 w-100 w-md-auto justify-content-lg-end justify-content-md-end align-items-center">
+                        {{-- Commented out Pricing Method selection as requested
                         <div class="estimate-price-mode-card">
                             <span class="estimate-price-mode-title fw-bold">Pricing Method</span>
                             <div class="estimate-price-mode-options" role="group" aria-label="Pricing Method">
@@ -313,11 +314,12 @@
                                     <i class="bi bi-boxes" aria-hidden="true"></i>BOM Price
                                 </button>
                             </div>
-                            <select name="price_mode" id="estimate_price_mode_selector" form="estimateEditForm" class="form-select form-select-sm estimate-price-mode-selector estimate-price-mode-select" aria-label="Pricing Method">
-                                <option value="bom" @selected($estimatePriceMode === 'bom')>Show BOM Price only</option>
-                                <option value="base" @selected($estimatePriceMode === 'base')>Show Base Price only</option>
-                            </select>
                         </div>
+                        --}}
+                        <select name="price_mode" id="estimate_price_mode_selector" form="estimateEditForm" class="d-none" aria-label="Pricing Method">
+                            <option value="bom" @selected($estimatePriceMode === 'bom')>Show BOM Price only</option>
+                            <option value="base" @selected($estimatePriceMode === 'base')>Show Base Price only</option>
+                        </select>
                         @can('estimates.view')
                             <a href="{{ route('estimates.show', $estimate) }}" class="btn btn-outline-dark-blue flex-grow-1 flex-md-grow-0">
                                 <i class="bi bi-eye me-1"></i>View
