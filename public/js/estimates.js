@@ -3701,7 +3701,7 @@
         const basePrice = getDocumentPriceMode() === 'base' ? price : price + productsTotal;
         const subtotal = basePrice + structureCharges + additionalCharges;
         const taxBreakdown = document.getElementById('apply_gst')?.checked
-            ? getSelectedTaxBreakdown(subtotal)
+            ? getSelectedTaxBreakdown(basePrice)
             : getSelectedTaxBreakdown(0);
         const gstAmount = taxBreakdown.totalAmount;
         const subtotalTaxIncl = subtotal + gstAmount;

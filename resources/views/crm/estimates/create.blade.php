@@ -286,6 +286,7 @@
                     </a>
                 </div>
                 <div class="d-flex flex-column flex-sm-row align-items-stretch align-items-sm-center gap-2">
+                    {{-- Commented out Pricing Method selection as requested
                     <div class="estimate-price-mode-card">
                             <span class="estimate-price-mode-title fw-bold">Pricing Method</span>
                             <div class="estimate-price-mode-options" role="group" aria-label="Pricing Method">
@@ -296,12 +297,12 @@
                                     <i class="bi bi-boxes" aria-hidden="true"></i>BOM Price
                                 </button>
                             </div>
-                            <select name="price_mode" id="estimate_price_mode_selector" form="estimateCreateForm" class="form-select form-select-sm estimate-price-mode-selector estimate-price-mode-select" aria-label="Pricing Method">
-                                <option value="bom" @selected($estimatePriceMode === 'bom')>Show BOM Price only</option>
-                                <option value="base" @selected($estimatePriceMode === 'base')>Show Base Price only</option>
-                            </select>
                         </div>
-
+                    --}}
+                    <select name="price_mode" id="estimate_price_mode_selector" form="estimateCreateForm" class="d-none" aria-label="Pricing Method">
+                        <option value="bom" @selected($estimatePriceMode === 'bom')>Show BOM Price only</option>
+                        <option value="base" @selected($estimatePriceMode === 'base')>Show Base Price only</option>
+                    </select>
                 </div>
             </div>
             <div class="card-body p-3 p-md-4">
