@@ -186,15 +186,33 @@
         </tr>
     </table>
 
+    @php
+        $kwQuantity = (float) ($estdata->quantity ?? $quantity ?? 0);
+        $pricePerKw = $kwQuantity > 0 ? ($summaryBaseCost ?? 0) / $kwQuantity : 0;
+        $summarySystemSubtotal = ($summaryBaseCost ?? 0) + ($summaryBomTotal ?? 0) + ($summaryBomTaxTotal ?? 0) + ($summarySolarStructureCharges ?? 0) - ($summaryDiscount ?? 0);
+        $summaryNetPayable = $summarySystemSubtotal + ($summaryAdditionalChargesTotal ?? 0) - ($summarySubsidy ?? 0);
+    @endphp
+
     <table style="margin-top:6px;margin-bottom:8px;">
         <tr>
             <td class="summary-header-cell" style="width:68%;">Description</td>
             <td class="summary-header-cell summary-cell-right" style="width:32%;">Amount (&#8377;)</td>
         </tr>
-        @if (!empty($summaryUsesGlobalTax))
+        <tr>
+            <td class="summary-cell">
+                Base Price
+                @if ($kwQuantity > 0 && $pricePerKw > 0)
+                    <span style="font-size: 13px; color: #555; font-weight: normal; font-style: italic;">
+                        ({{ $kwQuantity }} kW @ &#8377;{{ number_format($pricePerKw, 2) }} / kW)
+                    </span>
+                @endif
+            </td>
+            <td class="summary-cell summary-cell-right">{{ number_format($summaryBaseCost ?? 0, 2) }}</td>
+        </tr>
+        @if (($summaryBomTotal ?? 0) > 0)
             <tr>
-                <td class="summary-cell">Base cost</td>
-                <td class="summary-cell summary-cell-right">{{ number_format($summaryBaseCost ?? 0, 2) }}</td>
+                <td class="summary-cell">Bill of Materials (BOM) Items</td>
+                <td class="summary-cell summary-cell-right">{{ number_format($summaryBomTotal, 2) }}</td>
             </tr>
         @endif
         @if (!empty($summaryShowBomTaxes))
@@ -248,42 +266,48 @@
         @endif
         @php
             $summarySubtotalFormula = !empty($summaryUsesGlobalTax)
-                ? '(Base cost + Global Tax'
-                : '(Base cost + BOM + BOM Taxes';
+                ? '(Base Price + Global Tax'
+                : '(Base Price + BOM + BOM Taxes';
             if (($summarySolarStructureCharges ?? 0) > 0) {
                 $summarySubtotalFormula .= ' + Solar Structure Charges';
-            }
-            if (($summaryAdditionalChargesTotal ?? 0) > 0) {
-                $summarySubtotalFormula .= ' + Additional Charges';
             }
             if (($summaryDiscount ?? 0) > 0) {
                 $summarySubtotalFormula .= ' - Discount';
             }
             $summarySubtotalFormula .= ')';
         @endphp
-        <tr>
-            <td class="summary-cell">
+        <tr style="font-weight: bold; background-color: #f8fafc;">
+            <td class="summary-cell" style="font-weight: bold; background-color: #f8fafc;">
                 @if (!empty(trim((string) ($summaryEstimateDescription ?? ''))))
-                    <div style="font-size:12px;line-height:1.35;color:#4c4c4c;white-space:pre-line;">{{ $summaryEstimateDescription }}</div>
+                    <div style="font-size:12px;line-height:1.35;color:#4c4c4c;white-space:pre-line;margin-bottom:4px;">{{ $summaryEstimateDescription }}</div>
                 @endif
-                <div style="margin-top:{{ !empty(trim((string) ($summaryEstimateDescription ?? ''))) ? '4px' : '0' }};">
+                <div>
                     <strong>Consumer Net Payable</strong>
-                    <span style="font-style:italic;font-weight:normal;">{{ $summarySubtotalFormula }}</span>
+                    <span style="font-style:italic;font-weight:normal;font-size:13px;color:#555;">{{ $summarySubtotalFormula }}</span>
                 </div>
             </td>
-            <td class="summary-cell summary-cell-right"><strong>{{ number_format($summaryInvoiceSubtotal ?? 0, 2) }}</strong></td>
+            <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #f8fafc;"><strong>{{ number_format($summarySystemSubtotal ?? 0, 2) }}</strong></td>
         </tr>
         @if (($summaryAdditionalChargesTotal ?? 0) > 0)
-            @foreach (($summaryAdditionalChargesBreakdown ?? []) as $additionalCharge)
-                <tr>
-                    <td class="summary-cell">{{ $additionalCharge['name'] ?? 'Additional Charge' }}</td>
-                    <td class="summary-cell summary-cell-right">+{{ number_format((float) ($additionalCharge['price'] ?? 0), 2) }}</td>
-                </tr>
-            @endforeach
-            @if (empty($summaryAdditionalChargesBreakdown))
-                <tr>
-                    <td class="summary-cell">Additional Charges</td>
-                    <td class="summary-cell summary-cell-right">+{{ number_format($summaryAdditionalChargesTotal, 2) }}</td>
+            @if (!empty($summaryAdditionalChargesBreakdown))
+                @foreach ($summaryAdditionalChargesBreakdown as $additionalCharge)
+                    <tr style="background-color: #eef2f6;">
+                        <td class="summary-cell" style="background-color: #eef2f6; font-weight: 500; padding-left: 20px;">
+                            {{ $additionalCharge['name'] ?? 'Additional Charge' }} (Additional Charge)
+                        </td>
+                        <td class="summary-cell summary-cell-right" style="background-color: #eef2f6; font-weight: 500;">
+                            +{{ number_format((float) ($additionalCharge['price'] ?? 0), 2) }}
+                        </td>
+                    </tr>
+                @endforeach
+            @else
+                <tr style="background-color: #eef2f6;">
+                    <td class="summary-cell" style="background-color: #eef2f6; font-weight: 500; padding-left: 20px;">
+                        Additional Charges
+                    </td>
+                    <td class="summary-cell summary-cell-right" style="background-color: #eef2f6; font-weight: 500;">
+                        +{{ number_format($summaryAdditionalChargesTotal, 2) }}
+                    </td>
                 </tr>
             @endif
         @endif
