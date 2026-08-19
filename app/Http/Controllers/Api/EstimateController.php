@@ -166,9 +166,9 @@ class EstimateController extends Controller
             $additionalCharges = [];
             foreach ((array) $additionalChargeNames as $index => $name) {
                 $cleanName = trim((string) $name);
-                $price = (float) ($additionalChargePrices[$index] ?? 0);
-                if ($cleanName !== '' && $price > 0) {
-                    $additionalCharges[] = ['name' => $cleanName, 'price' => $price];
+                $chargePrice = (float) ($additionalChargePrices[$index] ?? 0);
+                if ($cleanName !== '' && $chargePrice > 0) {
+                    $additionalCharges[] = ['name' => $cleanName, 'price' => $chargePrice];
                 }
             }
             $additionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $additionalCharges));
@@ -229,7 +229,7 @@ class EstimateController extends Controller
             $gstPercent = $applyCharges ? $gstBreakdown['tax_rate'] : 0;
             $gstAmount = $applyCharges ? $gstBreakdown['gst_amount'] : 0;
 
-            $finalAmount = $subtotal + $gstAmount - $discount - $subsidyAmount;
+            $finalAmount = $subtotal + $gstAmount + $additionalChargesTotal - $discount - $subsidyAmount;
 
             // Generate estimate number (6-digit padded)
             $lastEstimate = Estimate::orderBy('estimate_id', 'desc')->first();
@@ -390,9 +390,9 @@ class EstimateController extends Controller
             $additionalCharges = [];
             foreach ((array) $additionalChargeNames as $index => $name) {
                 $cleanName = trim((string) $name);
-                $price = (float) ($additionalChargePrices[$index] ?? 0);
-                if ($cleanName !== '' && $price > 0) {
-                    $additionalCharges[] = ['name' => $cleanName, 'price' => $price];
+                $chargePrice = (float) ($additionalChargePrices[$index] ?? 0);
+                if ($cleanName !== '' && $chargePrice > 0) {
+                    $additionalCharges[] = ['name' => $cleanName, 'price' => $chargePrice];
                 }
             }
             $additionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $additionalCharges));
@@ -453,7 +453,7 @@ class EstimateController extends Controller
             $gstPercent = $applyCharges ? $gstBreakdown['tax_rate'] : 0;
             $gstAmount = $applyCharges ? $gstBreakdown['gst_amount'] : 0;
 
-            $finalAmount = $subtotal + $gstAmount - $discount - $subsidyAmount;
+            $finalAmount = $subtotal + $gstAmount + $additionalChargesTotal - $discount - $subsidyAmount;
 
             // Generation data
             $monthlyBill = $request->input('monthly_electricity_bill', 3000);
