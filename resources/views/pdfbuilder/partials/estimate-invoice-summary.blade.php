@@ -294,7 +294,7 @@ $summaryLendingCost = $summaryNetPayable;
             Base Price
             <?php if ($kwQty > 0 && $pricePerKw > 0): ?>
                 <span style="font-size: 13px; color: #555; font-weight: normal; font-style: italic;">
-                    (<?= esc($kwQty) ?> kW @ &#8377;<?= number_format($pricePerKw, 2) ?> / kW)
+                    (<?= esc($kwQty) ?> kW @ <span style="font-family: DejaVu Sans, sans-serif;">&#8377;</span><?= number_format($pricePerKw, 2) ?> / kW)
                 </span>
             <?php endif; ?>
         </td>
