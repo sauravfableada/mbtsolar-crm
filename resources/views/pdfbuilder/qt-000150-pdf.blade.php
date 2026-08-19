@@ -101,8 +101,8 @@ if (!function_exists('normalize_pdf_image')) {
     $companyWebsite = $valueOr($companySettings['website'] ?? data_get($preparedUser, 'website'));
     
     $capacityValue = (float) ($doc->quantity ?? 0);
-    $capacity = $capacityValue > 0 ? $plainNumber($capacityValue, 1) . ' kWp' : 'as proposed';
-    $proposalLabel = 'System Capacity: ' . ($capacityValue > 0 ? $plainNumber($capacityValue, 1) . ' kW' : 'To be finalized');
+    $capacity = $capacityValue > 0 ? $plainNumber($capacityValue, 3) . ' kWp' : 'as proposed';
+    $proposalLabel = 'System Capacity: ' . ($capacityValue > 0 ? $plainNumber($capacityValue, 3) . ' kW' : 'To be finalized');
     
     $dailyGenerationValue = $capacityValue > 0 ? $capacityValue * 4.3 : 0;
     $monthlyGenerationValue = $dailyGenerationValue * 30;

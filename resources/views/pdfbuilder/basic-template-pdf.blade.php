@@ -80,7 +80,7 @@ if (!function_exists('normalize_pdf_image')) {
     $contactInfo = !empty($contactParts) ? implode(' | ', $contactParts) : 'Contact details on record';
     $websiteInfo = $companyWebsite !== '' ? $companyWebsite : 'Website on record';
     $capacityValue = (float) ($doc->quantity ?? 0);
-    $capacity = $capacityValue > 0 ? $plainNumber($capacityValue, 1) . ' kWp' : 'as proposed';
+    $capacity = $capacityValue > 0 ? $plainNumber($capacityValue, 3) . ' kWp' : 'as proposed';
     $dailyGenerationValue = $capacityValue > 0 ? $capacityValue * 4.3 : 0;
     $monthlyGenerationValue = $dailyGenerationValue * 30;
     $annualGenerationValue = $dailyGenerationValue * 365;
@@ -214,7 +214,7 @@ if (!function_exists('normalize_pdf_image')) {
             ['type' => 'Switchgear / Safety', 'make' => 'Approved Switchgear Make', 'spec' => 'IP65 enclosed ACDB & DCDB with Type-II SPD & fuses', 'warranty' => '1 Year Comprehensive'],
         ];
     }
-    $proposalLabel = 'System Capacity: ' . ($capacityValue > 0 ? $plainNumber($capacityValue, 1) . ' kW' : 'To be finalized');
+    $proposalLabel = 'System Capacity: ' . ($capacityValue > 0 ? $plainNumber($capacityValue, 3) . ' kW' : 'To be finalized');
     $notesContent = trim(strip_tags((string) ($doc->estimate_comment ?? $doc->comment ?? '')));
     
     $logoBase64 = null;
@@ -245,7 +245,7 @@ if (!function_exists('normalize_pdf_image')) {
         $attrs = preg_replace('/(width|height|style)="[^"]*"/i', '', $matches[1]);
         return '<img ' . $attrs . ' width="100%" style="width: 100%;">';
     }, $companyDescriptionRaw);
-    $capacity = $capacityValue > 0 ? $plainNumber($capacityValue, 1) . ' kWp' : 'as proposed';
+    $capacity = $capacityValue > 0 ? $plainNumber($capacityValue, 3) . ' kWp' : 'as proposed';
     $placeholders = [
         '{{client_name}}' => $clientName,
         '{{company_name}}' => $companyName,
@@ -560,7 +560,7 @@ if (!function_exists('normalize_pdf_image')) {
             
             <table class="data-table" style="margin-top: 20px;">
                 <tbody>
-                    <tr><td style="width: 50%;"><strong>System Capacity</strong></td><td>{{ $capacityValue > 0 ? $plainNumber($capacityValue, 1) . ' kW' : '--' }}</td></tr>
+                    <tr><td style="width: 50%;"><strong>System Capacity</strong></td><td>{{ $capacityValue > 0 ? $plainNumber($capacityValue, 3) . ' kW' : '--' }}</td></tr>
                     <tr><td><strong>Estimate Type</strong></td><td>{{ $estimateType }}</td></tr>
                     <tr><td><strong>Solar Meter Charges</strong></td><td>{{ $solarMeterCharges }}</td></tr>
                 </tbody>
