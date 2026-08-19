@@ -341,7 +341,7 @@
                     </div>
 
                     <div class="row g-3">
-                        <div class="col-12 create-step-1 active-step">
+                        <div class="col-6 create-step-1 active-step estimate-form-field-col">
                             <label class="form-label fw-semibold mb-1">Select Customer <span class="text-danger">*</span></label>
                             <div class="d-flex align-items-start gap-2" style="min-width: 0;">
                                 <div class="flex-grow-1 w-100" style="min-width: 0;">
@@ -361,13 +361,21 @@
                             <div class="invalid-feedback" id="customer_id-error">Please select a customer</div>
                         </div>
 
-                        <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col">
+                        <div class="col-6 create-step-1 active-step estimate-form-field-col">
                             <label class="form-label fw-semibold">Estimate Name <span class="text-danger">*</span></label>
                             <input type="text" name="estimate_name" id="estimate_name"
                                 value="{{ old('estimate_name', $estimate->estimate_name) }}"
                                 class="form-control @error('estimate_name') is-invalid @enderror"
                                 placeholder="Enter estimate name" required>
                             <div class="invalid-feedback" id="estimate_name-error">Please enter estimate name</div>
+                        </div>
+
+                        <div class="col-12 create-step-1 active-step estimate-form-field-col">
+                            <label class="form-label fw-semibold">Estimate Description</label>
+                            <textarea name="estimate_description" id="estimate_description" rows="3"
+                                class="form-control @error('estimate_description') is-invalid @enderror"
+                                placeholder="Enter estimate description (optional)">{{ old('estimate_description', $estimate->estimate_description ?? $estimate->description ?? '') }}</textarea>
+                            <div class="invalid-feedback" id="estimate_description-error">Please enter valid description</div>
                         </div>
 
                         <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col">
@@ -394,11 +402,18 @@
                         </div>
 
                         <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col estimate-base-price-col {{ $estimatePriceMode === 'bom' ? 'd-none' : '' }}">
-                            <label class="form-label fw-semibold crm-label-with-icon"><i class="fa-solid fa-money-bill crm-label-icon" aria-hidden="true"></i>Price <span class="text-danger">*</span></label>
-                            <input type="number" min="0" step="1" name="price" id="price"
-                                value="{{ $estimatePriceMode === 'bom' ? 0 : old('price', $estimate->price) }}"
-                                class="form-control @error('price') is-invalid @enderror" placeholder="Enter price"
-                                @required($estimatePriceMode === 'base')>
+                            <label class="form-label fw-semibold crm-label-with-icon"><i class="fa-solid fa-money-bill crm-label-icon" aria-hidden="true"></i>Price per Unit <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="0.01" name="price_per_unit" id="price_per_unit"
+                                value="{{ old('price_per_unit', ($estimate->quantity > 0) ? ($estimate->price / $estimate->quantity) : '') }}" class="form-control @error('price_per_unit') is-invalid @enderror price-calculator-field"
+                                placeholder="Enter price per kW" @required($estimatePriceMode === 'base')>
+                            <div class="invalid-feedback" id="price_per_unit-error">Please enter valid price per unit</div>
+                        </div>
+
+                        <div class="col-6 col-md-4 create-step-1 active-step estimate-form-field-col estimate-base-price-col {{ $estimatePriceMode === 'bom' ? 'd-none' : '' }}">
+                            <label class="form-label fw-semibold crm-label-with-icon"><i class="fa-solid fa-calculator crm-label-icon" aria-hidden="true"></i>Total Price <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="0.01" name="price" id="price"
+                                value="{{ $estimatePriceMode === 'bom' ? 0 : old('price', $estimate->price) }}" class="form-control @error('price') is-invalid @enderror" readonly
+                                placeholder="Auto-calculated" @required($estimatePriceMode === 'base')>
                             <div class="invalid-feedback" id="price-error">Please enter valid price</div>
                         </div>
 
@@ -589,6 +604,59 @@
                             </div>
                         </div>
 
+                        @php
+                            $generationData = is_array($estimate->generation_data)
+                                ? $estimate->generation_data
+                                : json_decode((string) ($estimate->generation_data ?? '[]'), true);
+                            $savedAdditionalCharges = $generationData['additional_charges'] ?? [];
+                        @endphp
+                        <div class="col-12 create-step-3">
+                            <div class="card border-0 bg-light rounded-3 p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0 fw-semibold">Additional Charges</h6>
+                                    <button type="button" class="btn btn-sm btn-dark-blue" id="add_additional_charge_btn">
+                                        <i class="bi bi-plus-lg me-1"></i>Add More
+                                    </button>
+                                </div>
+
+                                <div id="additionalChargesContainer">
+                                    @if (!empty($savedAdditionalCharges) && is_array($savedAdditionalCharges))
+                                        @foreach ($savedAdditionalCharges as $charge)
+                                            <div class="additional-charge-row d-flex gap-2 mb-2">
+                                                <input type="text" name="additional_charge_name[]" value="{{ $charge['name'] ?? '' }}" placeholder="e.g., Walkway+Sidi" class="form-control form-control-sm flex-grow-1 additional-charge-name">
+                                                <input type="number" min="0" step="0.01" name="additional_charge_price[]" value="{{ $charge['price'] ?? '' }}" placeholder="Price" class="form-control form-control-sm additional-charge-price" style="max-width: 150px;">
+                                                <button type="button" class="btn btn-outline-danger btn-sm remove-charge-row">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="additional-charge-row d-flex gap-2 mb-2">
+                                            <input type="text" name="additional_charge_name[]" placeholder="e.g., Walkway+Sidi" class="form-control form-control-sm flex-grow-1 additional-charge-name">
+                                            <input type="number" min="0" step="0.01" name="additional_charge_price[]" placeholder="Price" class="form-control form-control-sm additional-charge-price" style="max-width: 150px;">
+                                            <button type="button" class="btn btn-outline-danger btn-sm remove-charge-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <!-- Hidden field to store total additional charges -->
+                                <input type="hidden" name="other_charges" id="additional_charges_total" value="{{ old('other_charges', $estimate->other_charges ?? 0) }}">
+
+                                <!-- Hidden template for additional charge rows -->
+                                <div id="additionalChargeRowTemplate" style="display: none;">
+                                    <div class="additional-charge-row d-flex gap-2 mb-2">
+                                        <input type="text" name="additional_charge_name[]" placeholder="e.g., Walkway+Sidi" class="form-control form-control-sm flex-grow-1 additional-charge-name">
+                                        <input type="number" min="0" step="0.01" name="additional_charge_price[]" placeholder="Price" class="form-control form-control-sm additional-charge-price" style="max-width: 150px;">
+                                        <button type="button" class="btn btn-outline-danger btn-sm remove-charge-row">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-lg-6 create-step-3">
                             <div class="mb-3">
                                 <label class="form-label fw-semibold">Design File</label>
@@ -633,6 +701,23 @@
                                 <div class="totals-row">
                                     <span class="fw-semibold crm-label-with-icon"><i class="fa-solid fa-money-bill crm-label-icon" aria-hidden="true"></i>Subtotal:</span>
                                     <span id="subtotal_display" class="fw-bold text-dark">0.00</span>
+                                </div>
+
+                                <div class="totals-row" id="additional_charges_summary_row" style="display: none;">
+                                    <span class="small fw-semibold border-bottom pb-2" style="display: block; width: 100%; margin-bottom: 5px;">Additional Charges:</span>
+                                </div>
+                                
+                                <div id="additional_charges_breakdown" style="display: none; margin: 5px 0;">
+                                    <table class="table table-sm table-borderless mb-0">
+                                        <tbody id="additional_charges_breakdown_items">
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="border-top">
+                                                <td class="text-start small fw-semibold pt-2">Total Additional Charges:</td>
+                                                <td class="text-end small fw-semibold text-success pt-2" id="additional_charges_total_display">0.00</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
                                 </div>
 
                                 <div class="totals-row align-items-center {{ $estimatePriceMode === 'base' ? 'd-none' : '' }}">
@@ -848,6 +933,31 @@
     <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/estimates.js') }}?v={{ filemtime(public_path('js/estimates.js')) }}"></script>
     <script>
         $(document).ready(function() {
+            // Price calculation: Total Price = Quantity (kW) × Price per Unit
+            function calculateTotalPrice() {
+                const quantity = parseFloat($('#quantity').val()) || 0;
+                const pricePerUnit = parseFloat($('#price_per_unit').val()) || 0;
+                const totalPrice = quantity * pricePerUnit;
+                $('#price').val(totalPrice > 0 ? totalPrice.toFixed(2) : '');
+                
+                // Trigger the main calculation after price update
+                setTimeout(function() {
+                    const priceField = document.getElementById('price');
+                    if (priceField) {
+                        priceField.dispatchEvent(new Event('change', { bubbles: true }));
+                        priceField.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }, 10);
+            }
+
+            // Trigger calculation when quantity or price per unit changes
+            $(document).on('change input', '#quantity, #price_per_unit', function() {
+                calculateTotalPrice();
+            });
+
+            // Initialize calculation on page load
+            calculateTotalPrice();
+
             function initSelect2(context = document) {
                 $(context).find('#select_customer, #template_id, .product-select, .product-make').select2({
                     theme: 'bootstrap-5',
@@ -1078,6 +1188,101 @@
                     }
                 });
             });
+
+            // Additional Charges Functionality
+            function updateAdditionalChargesDisplay() {
+                const container = $('#additionalChargesContainer');
+                const rows = container.find('.additional-charge-row');
+                const displayTable = $('#additionalChargesDisplay');
+                const breakdownDiv = $('#additional_charges_breakdown');
+                const breakdownItems = $('#additional_charges_breakdown_items');
+                
+                breakdownItems.empty();
+                let totalAdditionalCharges = 0;
+
+                rows.each(function() {
+                    const name = $(this).find('.additional-charge-name').val().trim();
+                    const price = parseFloat($(this).find('.additional-charge-price').val()) || 0;
+
+                    if (name && price > 0) {
+                        // Add to breakdown in totals card only
+                        breakdownItems.append(`
+                            <tr>
+                                <td class="text-start small">${escapeHtml(name)}</td>
+                                <td class="text-end small fw-semibold">${price.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            </tr>
+                        `);
+                        totalAdditionalCharges += price;
+                    }
+                });
+
+                if (totalAdditionalCharges > 0) {
+                    displayTable.hide();
+                    breakdownDiv.show();
+                    $('#additional_charges_summary_row').show();
+                    $('#additional_charges_total_display').text(totalAdditionalCharges.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                } else {
+                    displayTable.hide();
+                    breakdownDiv.hide();
+                    $('#additional_charges_summary_row').hide();
+                }
+
+                // Update hidden field with total additional charges
+                $('#additional_charges_total').val(totalAdditionalCharges.toFixed(2));
+
+                // Update totals when additional charges change
+                setTimeout(function() {
+                    document.getElementById('price')?.dispatchEvent(new Event('change', { bubbles: true }));
+                }, 10);
+            }
+
+            function escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, m => map[m]);
+            }
+
+            $('#add_additional_charge_btn').on('click', function() {
+                const template = $('#additionalChargeRowTemplate').html();
+                const newRow = $('<div>').html(template).children().first();
+                $('#additionalChargesContainer').append(newRow);
+                
+                newRow.find('.remove-charge-row').on('click', function() {
+                    $(this).closest('.additional-charge-row').remove();
+                    updateAdditionalChargesDisplay();
+                });
+
+                newRow.find('input').on('change input', function() {
+                    updateAdditionalChargesDisplay();
+                });
+            });
+
+            // Handle removal of charge rows
+            $(document).on('click', '.remove-charge-row', function() {
+                $(this).closest('.additional-charge-row').remove();
+                updateAdditionalChargesDisplay();
+            });
+
+            // Handle input changes on charge fields
+            $(document).on('change input', '.additional-charge-name, .additional-charge-price', function() {
+                updateAdditionalChargesDisplay();
+            });
+
+            // Initialize event listeners for default row and any existing rows
+            $('#additionalChargesContainer').find('.additional-charge-row').each(function() {
+                $(this).find('.remove-charge-row').on('click', function() {
+                    $(this).closest('.additional-charge-row').remove();
+                    updateAdditionalChargesDisplay();
+                });
+            });
+
+            // Initialize display on page load
+            updateAdditionalChargesDisplay();
         });
     </script>
 @endpush
