@@ -455,10 +455,12 @@
                             </div>
                         </div>
 
-                        <!-- Footer -->
+                        {{-- Footer thank-you text hidden by request.
                         <div class="text-center mt-5 no-print">
                             <p class="mb-0 text-muted small">Thank you for your business!</p>
                         </div>
+
+                        --}}
                     </div>
                 </div>
             </div>

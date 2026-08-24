@@ -566,59 +566,54 @@ try {
 }
             ?>
 
-            <!-- Comment + Bank Details Table -->
+            <?php
+            $estimateHasBankDetails = !empty($bank) && collect(['bank_name', 'account_name', 'account_number', 'ifsc_code', 'branch_name'])->contains(fn ($field) => trim((string) ($bank[$field] ?? '')) !== '');
+            $estimateQrCodePath = $settings['company_qr_code_path'] ?? '';
+            $estimateLegacyQrCode = $user['qr_code'] ?? '';
+            $estimateHasQrCode = $estimateQrCodePath !== '' || $estimateLegacyQrCode !== '';
+            $estimateFooterColumnCount = 1 + ($estimateHasBankDetails ? 1 : 0) + ($estimateHasQrCode ? 1 : 0);
+            $estimateFooterColumnWidth = 100 / $estimateFooterColumnCount;
+            ?>
+
+            <!-- Comment / Bank Details / QR Code Table -->
             <table class="info-table" style="margin-top:15px;">
                 <thead>
                     <tr>
-                        <th style="width: 35%;">Comment</th>
-                        <th style="width: 40%;">Bank Details</th>
-                        <th style="width: 25%;">QR Code</th>
+                        <th style="width: <?php echo $estimateFooterColumnWidth; ?>%;">Comment</th>
+                        <?php if ($estimateHasBankDetails): ?>
+                        <th style="width: <?php echo $estimateFooterColumnWidth; ?>%;">Bank Details</th>
+                        <?php endif; ?>
+                        <?php if ($estimateHasQrCode): ?>
+                        <th style="width: <?php echo $estimateFooterColumnWidth; ?>%;">QR Code</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <!-- Comment Column -->
-                        <td style="vertical-align: top; background: #fafafa;">
+                        <td style="width: <?php echo $estimateFooterColumnWidth; ?>%; vertical-align: top; background: #fafafa;">
                             <?php echo nl2br(htmlspecialchars($estdata->estimate_comment ?? ($estdata->comment ?? '--'))); ?>
                         </td>
-
-                        <!-- Bank Details Column -->
-                        <td style="vertical-align: top; background: #fafafa;">
-                            <?php if ($bank): ?>
-                            <div><strong>Bank:</strong>
-                                <?php    echo htmlspecialchars($bank['bank_name'] ?? '--'); ?>
-                            </div>
-                            <div><strong>Account Name:</strong>
-                                <?php    echo htmlspecialchars($bank['account_name'] ?? '--'); ?>
-                            </div>
-                            <div><strong>Account No.:</strong>
-                                <?php    echo htmlspecialchars($bank['account_number'] ?? '--'); ?>
-                            </div>
-                            <div><strong>IFSC:</strong>
-                                <?php    echo htmlspecialchars($bank['ifsc_code'] ?? '--'); ?>
-                            </div>
-                            <div><strong>Branch:</strong>
-                                <?php    echo htmlspecialchars($bank['branch_name'] ?? '--'); ?>
-                            </div>
+                        <?php if ($estimateHasBankDetails): ?>
+                        <td style="width: <?php echo $estimateFooterColumnWidth; ?>%; vertical-align: top; background: #fafafa;">
+                            <div><strong>Bank:</strong> <?php echo htmlspecialchars($bank['bank_name'] ?? '--'); ?></div>
+                            <div><strong>Account Name:</strong> <?php echo htmlspecialchars($bank['account_name'] ?? '--'); ?></div>
+                            <div><strong>Account No.:</strong> <?php echo htmlspecialchars($bank['account_number'] ?? '--'); ?></div>
+                            <div><strong>IFSC:</strong> <?php echo htmlspecialchars($bank['ifsc_code'] ?? '--'); ?></div>
+                            <div><strong>Branch:</strong> <?php echo htmlspecialchars($bank['branch_name'] ?? '--'); ?></div>
+                        </td>
+                        <?php endif; ?>
+                        <?php if ($estimateHasQrCode): ?>
+                        <td style="width: <?php echo $estimateFooterColumnWidth; ?>%; vertical-align: top; background: #fafafa; text-align:center;">
+                            <?php if ($estimateQrCodePath !== ''): ?>
+                            <img src="<?php echo htmlspecialchars(base_url('storage/' . $estimateQrCodePath)); ?>" alt="QR Code" style="max-width:120px; max-height:120px; object-fit:contain; border:1px solid #ddd; border-radius:4px;">
                             <?php else: ?>
-                            <div style="color:#666;">No bank details available.</div>
+                            <img src="<?php echo htmlspecialchars(base_url('public/assets/img/profile/' . $estimateLegacyQrCode)); ?>" alt="QR Code" style="max-width:120px; max-height:120px; object-fit:contain; border:1px solid #ddd; border-radius:4px;">
                             <?php endif; ?>
                         </td>
-                        <td style="vertical-align: top; background: #fafafa; text-align:center;">
-                            <?php if (!empty($user['qr_code'])): ?>
-                            <img src="<?php    echo htmlspecialchars(base_url('public/assets/img/profile/' . $user['qr_code'])); ?>"
-                                alt="QR Code"
-                                style="max-width:120px; max-height:120px; object-fit:contain; border:1px solid #ddd; border-radius:4px;">
-                            <?php else: ?>
-                            <div style="color:#666;">No QR code available.</div>
-                            <?php endif; ?>
-                        </td>
+                        <?php endif; ?>
                     </tr>
                 </tbody>
             </table>
-
-
-
 
             <!-- Page Break for BOM (Removed to fit on single page) -->
 

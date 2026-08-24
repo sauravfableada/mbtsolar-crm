@@ -436,16 +436,26 @@ $summaryLendingCost = $summaryNetPayable;
     </tr>
 </table>
 
+<?php
+$summaryHasBankDetails = $summaryBankName !== '' || !empty($summaryBankFields);
+$summaryHasQrCode = !empty($summaryQrImage);
+$summaryFooterColumnCount = 1 + ($summaryHasBankDetails ? 1 : 0) + ($summaryHasQrCode ? 1 : 0);
+$summaryFooterColumnWidth = 100 / $summaryFooterColumnCount;
+?>
 <table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:5px;margin-bottom:8px;border-collapse:collapse;page-break-inside:avoid;">
     <tr style="page-break-inside:avoid;">
-        <td style="<?= $summaryFooterHeaderCellStyle ?>width:35%;">Comment</td>
-        <td style="<?= $summaryFooterHeaderCellStyle ?>width:40%;">Bank Details</td>
-        <td style="<?= $summaryFooterHeaderCellStyle ?>width:25%;">QR Code</td>
+        <td style="<?= $summaryFooterHeaderCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;">Comment</td>
+        <?php if ($summaryHasBankDetails): ?>
+        <td style="<?= $summaryFooterHeaderCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;">Bank Details</td>
+        <?php endif; ?>
+        <?php if ($summaryHasQrCode): ?>
+        <td style="<?= $summaryFooterHeaderCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;">QR Code</td>
+        <?php endif; ?>
     </tr>
     <tr style="page-break-inside:avoid;">
-        <td style="<?= $summaryFooterCellStyle ?>"><?= nl2br(esc($summaryEstimateComment ?: '--')) ?></td>
-        <td style="<?= $summaryFooterCellStyle ?>padding:4px 6px;">
-            <?php if ($summaryBankName !== '' || !empty($summaryBankFields)): ?>
+        <td style="<?= $summaryFooterCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;"><?= nl2br(esc($summaryEstimateComment ?: '--')) ?></td>
+        <?php if ($summaryHasBankDetails): ?>
+        <td style="<?= $summaryFooterCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;padding:4px 6px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background-color:#f6fbf6;border:1px solid #cfe5cf;font-family:'DejaVu Sans',sans-serif;">
                 <?php if ($summaryBankName !== ''): ?>
                 <tr>
@@ -466,17 +476,13 @@ $summaryLendingCost = $summaryNetPayable;
                 </tr>
                 <?php endforeach; ?>
             </table>
-            <?php else: ?>
-            <span style="font-size:13px;font-family:'DejaVu Sans',sans-serif;color:#888;font-style:italic;">No bank details available.</span>
-            <?php endif; ?>
         </td>
-        <td style="<?= $summaryFooterCellStyle ?>text-align:center;">
-            <?php if (!empty($summaryQrImage)): ?>
-                <img src="<?= $summaryQrImage ?>" alt="QR Code" style="max-width:58px;max-height:58px;">
-            <?php else: ?>
-                No QR code available.
-            <?php endif; ?>
+        <?php endif; ?>
+        <?php if ($summaryHasQrCode): ?>
+        <td style="<?= $summaryFooterCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;text-align:center;">
+            <img src="<?= $summaryQrImage ?>" alt="QR Code" style="max-width:58px;max-height:58px;">
         </td>
+        <?php endif; ?>
     </tr>
 </table>
 </div>

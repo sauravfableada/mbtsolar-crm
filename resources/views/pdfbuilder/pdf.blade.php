@@ -3693,7 +3693,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                 </tr>
             </table>
 
-            <!-- Thank You Section -->
+            {{-- Thank You Section hidden by request.
             <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 20px;">
                 <tr>
                     <td align="center" style="padding-bottom: 12px;">
@@ -3738,6 +3738,7 @@ if (isset($after_blocks) && is_array($after_blocks)) {
                     </td>
                 </tr>
             </table>
+            --}}
 
             <!-- Contact Information Footer (Black Box) -->
             <?php
