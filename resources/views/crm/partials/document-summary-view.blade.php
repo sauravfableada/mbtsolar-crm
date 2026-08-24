@@ -87,6 +87,15 @@
         line-height: 1.45;
     }
 
+    .document-summary-view .summary-company-logo {
+        display: block;
+        max-width: 220px;
+        max-height: 90px;
+        width: auto;
+        height: auto;
+        object-fit: contain;
+    }
+
     .document-summary-view .summary-bank-box {
         background-color: #f6fbf6;
         border: 1px solid #cfe5cf;
@@ -148,6 +157,11 @@
     <table class="summary-top-row" style="margin-bottom:8px;">
         <tr>
             <td width="45%" valign="top" align="left" class="summary-company-text" style="padding-bottom:8px;">
+                @if (!empty($settings['company_logo_path']))
+                    <img src="{{ route('profile.company_logo.image') }}" alt="{{ $summaryCompanyName ?? 'Company' }} logo" class="summary-company-logo">
+                @elseif (!empty(optional($user)->company_logo))
+                    <img src="{{ asset('storage/' . $user->company_logo) }}" alt="{{ $summaryCompanyName ?? 'Company' }} logo" class="summary-company-logo">
+                @endif
             </td>
             <td width="55%" valign="top" align="right" class="summary-company-text" style="padding-bottom:8px;">
                 <strong style="font-size:16px;">{{ $summaryCompanyName ?? '--' }}</strong><br>
@@ -350,19 +364,29 @@
         </tr>
     </table>
 
+    @php
+        $summaryHasBankDetails = ($summaryBankName ?? '') !== '' || !empty($summaryBankFields);
+        $summaryHasQrCode = !empty($summaryQrUrl);
+        $summaryFooterColumnCount = 1 + ($summaryHasBankDetails ? 1 : 0) + ($summaryHasQrCode ? 1 : 0);
+        $summaryFooterColumnWidth = 100 / $summaryFooterColumnCount;
+    @endphp
     <table class="summary-footer-table" style="margin-top:8px;margin-bottom:8px;">
         <thead>
             <tr>
-                <th class="summary-footer-header" style="width:35%;">Comment</th>
-                <th class="summary-footer-header" style="width:40%;">Bank Details</th>
-                <th class="summary-footer-header" style="width:25%;">QR Code</th>
+                <th class="summary-footer-header" style="width:{{ $summaryFooterColumnWidth }}%;">Comment</th>
+                @if ($summaryHasBankDetails)
+                    <th class="summary-footer-header" style="width:{{ $summaryFooterColumnWidth }}%;">Bank Details</th>
+                @endif
+                @if ($summaryHasQrCode)
+                    <th class="summary-footer-header" style="width:{{ $summaryFooterColumnWidth }}%;">QR Code</th>
+                @endif
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td class="summary-footer-cell">{!! nl2br(e($summaryEstimateComment ?: '--')) !!}</td>
-                <td class="summary-footer-cell">
-                    @if (($summaryBankName ?? '') !== '' || !empty($summaryBankFields))
+                <td class="summary-footer-cell" style="width:{{ $summaryFooterColumnWidth }}%;">{!! nl2br(e($summaryEstimateComment ?: '--')) !!}</td>
+                @if ($summaryHasBankDetails)
+                    <td class="summary-footer-cell" style="width:{{ $summaryFooterColumnWidth }}%;">
                         <table class="summary-bank-box">
                             @if (($summaryBankName ?? '') !== '')
                                 <tr>
@@ -380,17 +404,13 @@
                                 </tr>
                             @endforeach
                         </table>
-                    @else
-                        <span style="font-size:13px;color:#888;font-style:italic;">No bank details available.</span>
-                    @endif
-                </td>
-                <td class="summary-footer-cell" style="text-align:center;">
-                    @if (!empty($summaryQrUrl))
+                    </td>
+                @endif
+                @if ($summaryHasQrCode)
+                    <td class="summary-footer-cell" style="width:{{ $summaryFooterColumnWidth }}%;text-align:center;">
                         <img src="{{ $summaryQrUrl }}" alt="QR Code" class="summary-qr-img">
-                    @else
-                        No QR code available.
-                    @endif
-                </td>
+                    </td>
+                @endif
             </tr>
         </tbody>
     </table>
