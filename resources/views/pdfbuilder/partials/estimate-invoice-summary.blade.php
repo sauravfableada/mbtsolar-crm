@@ -112,7 +112,7 @@ $summaryBankFields = array_values(array_filter([
     ['label' => 'Branch', 'value' => $companySettings['branch_name'] ?? ''],
 ], fn ($field) => trim((string) ($field['value'] ?? '')) !== ''));
 $summaryBankName = trim((string) ($companySettings['bank_name'] ?? ''));
-$summaryQrImage = !empty($companyQrCodePath) ? normalize_pdf_image($companyQrCodePath) : '';
+$summaryQrImage = !empty($companyQrCodePath) && is_file($companyQrCodePath) ? normalize_pdf_image($companyQrCodePath) : '';
 $summaryGstRateText = is_numeric($summaryGstRate) ? rtrim(rtrim(number_format((float) $summaryGstRate, 2, '.', ''), '0'), '.') : '';
 $summaryShowGst = ((float) $summaryGstAmount > 0) || ((float) $summaryGstRate > 0);
 $summaryBreakupLines = [];
@@ -439,50 +439,34 @@ $summaryLendingCost = $summaryNetPayable;
 <?php
 $summaryHasBankDetails = $summaryBankName !== '' || !empty($summaryBankFields);
 $summaryHasQrCode = !empty($summaryQrImage);
-$summaryFooterColumnCount = 1 + ($summaryHasBankDetails ? 1 : 0) + ($summaryHasQrCode ? 1 : 0);
-$summaryFooterColumnWidth = 100 / $summaryFooterColumnCount;
 ?>
 <table width="98%" align="center" cellpadding="0" cellspacing="0" style="margin-top:5px;margin-bottom:8px;border-collapse:collapse;page-break-inside:avoid;">
+    <tr style="page-break-inside:avoid;"><td style="<?= $summaryFooterHeaderCellStyle ?>">Comment</td></tr>
+    <tr style="page-break-inside:avoid;"><td style="<?= $summaryFooterCellStyle ?>"><?= nl2br(esc($summaryEstimateComment ?: '--')) ?></td></tr>
+
+    <?php if ($summaryHasBankDetails): ?>
+    <tr style="page-break-inside:avoid;"><td style="<?= $summaryFooterHeaderCellStyle ?>">Bank Details</td></tr>
     <tr style="page-break-inside:avoid;">
-        <td style="<?= $summaryFooterHeaderCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;">Comment</td>
-        <?php if ($summaryHasBankDetails): ?>
-        <td style="<?= $summaryFooterHeaderCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;">Bank Details</td>
-        <?php endif; ?>
-        <?php if ($summaryHasQrCode): ?>
-        <td style="<?= $summaryFooterHeaderCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;">QR Code</td>
-        <?php endif; ?>
-    </tr>
-    <tr style="page-break-inside:avoid;">
-        <td style="<?= $summaryFooterCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;"><?= nl2br(esc($summaryEstimateComment ?: '--')) ?></td>
-        <?php if ($summaryHasBankDetails): ?>
-        <td style="<?= $summaryFooterCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;padding:4px 6px;">
+        <td style="<?= $summaryFooterCellStyle ?>padding:4px 6px;">
             <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background-color:#f6fbf6;border:1px solid #cfe5cf;font-family:'DejaVu Sans',sans-serif;">
                 <?php if ($summaryBankName !== ''): ?>
-                <tr>
-                    <td colspan="2" style="background-color:#4b9349;color:#fff;padding:4px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;font-weight:bold;letter-spacing:0.3px;">
-                        <?= esc($summaryBankName) ?>
-                    </td>
-                </tr>
+                <tr><td colspan="2" style="background-color:#4b9349;color:#fff;padding:4px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;font-weight:bold;letter-spacing:0.3px;"><?= esc($summaryBankName) ?></td></tr>
                 <?php endif; ?>
                 <?php foreach ($summaryBankFields as $bankIndex => $bankField): ?>
                 <?php $bankRowBorder = ($bankIndex > 0 || $summaryBankName !== '') ? 'border-top:1px solid #e3efe3;' : ''; ?>
                 <tr>
-                    <td width="38%" style="padding:3px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;color:#5a6b5a;font-weight:bold;vertical-align:top;line-height:1.2;<?= $bankRowBorder ?>">
-                        <?= esc($bankField['label']) ?>
-                    </td>
-                    <td width="62%" style="padding:3px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;color:#1a1a1a;font-weight:normal;vertical-align:top;line-height:1.2;<?= $bankRowBorder ?>">
-                        <?= esc($bankField['value']) ?>
-                    </td>
+                    <td width="38%" style="padding:3px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;color:#5a6b5a;font-weight:bold;vertical-align:top;line-height:1.2;<?= $bankRowBorder ?>"><?= esc($bankField['label']) ?></td>
+                    <td width="62%" style="padding:3px 6px;font-size:13px;font-family:'DejaVu Sans',sans-serif;color:#1a1a1a;font-weight:normal;vertical-align:top;line-height:1.2;<?= $bankRowBorder ?>"><?= esc($bankField['value']) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </table>
         </td>
-        <?php endif; ?>
-        <?php if ($summaryHasQrCode): ?>
-        <td style="<?= $summaryFooterCellStyle ?>width:<?= $summaryFooterColumnWidth ?>%;text-align:center;">
-            <img src="<?= $summaryQrImage ?>" alt="QR Code" style="max-width:58px;max-height:58px;">
-        </td>
-        <?php endif; ?>
     </tr>
+    <?php endif; ?>
+
+    <?php if ($summaryHasQrCode): ?>
+    <tr style="page-break-inside:avoid;"><td style="<?= $summaryFooterHeaderCellStyle ?>">QR Code</td></tr>
+    <tr style="page-break-inside:avoid;"><td style="<?= $summaryFooterCellStyle ?>text-align:center;"><img src="<?= $summaryQrImage ?>" alt="QR Code" style="max-width:58px;max-height:58px;"></td></tr>
+    <?php endif; ?>
 </table>
 </div>
