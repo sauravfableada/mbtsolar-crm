@@ -367,51 +367,35 @@
     @php
         $summaryHasBankDetails = ($summaryBankName ?? '') !== '' || !empty($summaryBankFields);
         $summaryHasQrCode = !empty($summaryQrUrl);
-        $summaryFooterColumnCount = 1 + ($summaryHasBankDetails ? 1 : 0) + ($summaryHasQrCode ? 1 : 0);
-        $summaryFooterColumnWidth = 100 / $summaryFooterColumnCount;
     @endphp
     <table class="summary-footer-table" style="margin-top:8px;margin-bottom:8px;">
-        <thead>
-            <tr>
-                <th class="summary-footer-header" style="width:{{ $summaryFooterColumnWidth }}%;">Comment</th>
-                @if ($summaryHasBankDetails)
-                    <th class="summary-footer-header" style="width:{{ $summaryFooterColumnWidth }}%;">Bank Details</th>
-                @endif
-                @if ($summaryHasQrCode)
-                    <th class="summary-footer-header" style="width:{{ $summaryFooterColumnWidth }}%;">QR Code</th>
-                @endif
-            </tr>
-        </thead>
         <tbody>
-            <tr>
-                <td class="summary-footer-cell" style="width:{{ $summaryFooterColumnWidth }}%;">{!! nl2br(e($summaryEstimateComment ?: '--')) !!}</td>
-                @if ($summaryHasBankDetails)
-                    <td class="summary-footer-cell" style="width:{{ $summaryFooterColumnWidth }}%;">
+            <tr><th class="summary-footer-header">Comment</th></tr>
+            <tr><td class="summary-footer-cell">{!! nl2br(e($summaryEstimateComment ?: '--')) !!}</td></tr>
+
+            @if ($summaryHasBankDetails)
+                <tr><th class="summary-footer-header">Bank Details</th></tr>
+                <tr>
+                    <td class="summary-footer-cell">
                         <table class="summary-bank-box">
                             @if (($summaryBankName ?? '') !== '')
-                                <tr>
-                                    <td colspan="2" class="summary-bank-title">{{ $summaryBankName }}</td>
-                                </tr>
+                                <tr><td colspan="2" class="summary-bank-title">{{ $summaryBankName }}</td></tr>
                             @endif
                             @foreach ($summaryBankFields ?? [] as $bankIndex => $bankField)
                                 <tr>
-                                    <td width="38%" style="padding:3px 6px;font-size:13px;color:#5a6b5a;font-weight:bold;vertical-align:top;{{ $bankIndex > 0 || ($summaryBankName ?? '') !== '' ? 'border-top:1px solid #e3efe3;' : '' }}">
-                                        {{ $bankField['label'] }}
-                                    </td>
-                                    <td width="62%" style="padding:3px 6px;font-size:13px;color:#1a1a1a;vertical-align:top;{{ $bankIndex > 0 || ($summaryBankName ?? '') !== '' ? 'border-top:1px solid #e3efe3;' : '' }}">
-                                        {{ $bankField['value'] }}
-                                    </td>
+                                    <td width="38%" style="padding:3px 6px;font-size:13px;color:#5a6b5a;font-weight:bold;vertical-align:top;{{ $bankIndex > 0 || ($summaryBankName ?? '') !== '' ? 'border-top:1px solid #e3efe3;' : '' }}">{{ $bankField['label'] }}</td>
+                                    <td width="62%" style="padding:3px 6px;font-size:13px;color:#1a1a1a;vertical-align:top;{{ $bankIndex > 0 || ($summaryBankName ?? '') !== '' ? 'border-top:1px solid #e3efe3;' : '' }}">{{ $bankField['value'] }}</td>
                                 </tr>
                             @endforeach
                         </table>
                     </td>
-                @endif
-                @if ($summaryHasQrCode)
-                    <td class="summary-footer-cell" style="width:{{ $summaryFooterColumnWidth }}%;text-align:center;">
-                        <img src="{{ $summaryQrUrl }}" alt="QR Code" class="summary-qr-img">
-                    </td>
-                @endif
-            </tr>
+                </tr>
+            @endif
+
+            @if ($summaryHasQrCode)
+                <tr><th class="summary-footer-header">QR Code</th></tr>
+                <tr><td class="summary-footer-cell" style="text-align:center;"><img src="{{ $summaryQrUrl }}" alt="QR Code" class="summary-qr-img"></td></tr>
+            @endif
         </tbody>
     </table>
 </div>

@@ -474,32 +474,20 @@ if (!function_exists('base_url')) {
         @php
             $invoiceHasBankDetails = !empty($settings['bank_name']) || !empty($settings['account_name']) || !empty($settings['account_number']) || !empty($settings['ifsc_code']) || !empty($settings['branch_name']);
             $qrCodePath = $settings['company_qr_code_path'] ?? \App\Models\Setting::where('key', 'company_qr_code_path')->value('value');
-            $invoiceHasQrCode = !empty($qrCodePath);
-            $invoiceFooterColumnCount = 1 + ($invoiceHasBankDetails ? 1 : 0) + ($invoiceHasQrCode ? 1 : 0);
-            $invoiceFooterColumnWidth = 100 / $invoiceFooterColumnCount;
+            $invoiceHasQrCode = !empty($qrCodePath) && \Illuminate\Support\Facades\Storage::disk('public')->exists($qrCodePath);
         @endphp
 
-        <!-- Comment / Bank Details / QR Code Table -->
-        <table class="info-table" style="margin-top:20px; border: 1px solid #eee;">
-            <thead>
-                <tr>
-                    <th style="width: {{ $invoiceFooterColumnWidth }}%; background-color: #f8f9fa; color: #333; border: 1px solid #ddd;">Comment</th>
-                    @if($invoiceHasBankDetails)
-                        <th style="width: {{ $invoiceFooterColumnWidth }}%; background-color: #f8f9fa; color: #333; border: 1px solid #ddd;">Bank Details</th>
-                    @endif
-                    @if($invoiceHasQrCode)
-                        <th style="width: {{ $invoiceFooterColumnWidth }}%; background-color: #f8f9fa; color: #333; border: 1px solid #ddd;">QR Code</th>
-                    @endif
-                </tr>
-            </thead>
+        <!-- Stacked Comment / Bank Details / QR Code Table -->
+        <table class="info-table" style="margin-top:20px;border:1px solid #eee;">
             <tbody>
-                <tr>
-                    <td style="width: {{ $invoiceFooterColumnWidth }}%; vertical-align: top; padding: 15px; background: #fff; border: 1px solid #eee;">
-                        <div style="font-size: 13px; color: #555;">{!! nl2br(e($invoice->comment ?? '--')) !!}</div>
-                    </td>
-                    @if($invoiceHasBankDetails)
-                        <td style="width: {{ $invoiceFooterColumnWidth }}%; vertical-align: top; padding: 15px; background: #fff; border: 1px solid #eee;">
-                            <div style="font-size: 13px; line-height: 1.6;">
+                <tr><th style="background-color:#f8f9fa;color:#333;border:1px solid #ddd;">Comment</th></tr>
+                <tr><td style="vertical-align:top;padding:15px;background:#fff;border:1px solid #eee;"><div style="font-size:13px;color:#555;">{!! nl2br(e($invoice->comment ?? '--')) !!}</div></td></tr>
+
+                @if($invoiceHasBankDetails)
+                    <tr><th style="background-color:#f8f9fa;color:#333;border:1px solid #ddd;">Bank Details</th></tr>
+                    <tr>
+                        <td style="vertical-align:top;padding:15px;background:#fff;border:1px solid #eee;">
+                            <div style="font-size:13px;line-height:1.6;">
                                 <strong>Bank:</strong> {{ $settings['bank_name'] ?? '--' }}<br>
                                 <strong>A/c Name:</strong> {{ $settings['account_name'] ?? '--' }}<br>
                                 <strong>A/c No.:</strong> {{ $settings['account_number'] ?? '--' }}<br>
@@ -507,13 +495,13 @@ if (!function_exists('base_url')) {
                                 <strong>Branch:</strong> {{ $settings['branch_name'] ?? '--' }}
                             </div>
                         </td>
-                    @endif
-                    @if($invoiceHasQrCode)
-                        <td style="width: {{ $invoiceFooterColumnWidth }}%; vertical-align: top; padding: 15px; background: #fff; border: 1px solid #eee; text-align:center;">
-                            <img src="{{ base_url('storage/' . $qrCodePath) }}" alt="QR Code" style="max-width: 100px; height: auto;">
-                        </td>
-                    @endif
-                </tr>
+                    </tr>
+                @endif
+
+                @if($invoiceHasQrCode)
+                    <tr><th style="background-color:#f8f9fa;color:#333;border:1px solid #ddd;">QR Code</th></tr>
+                    <tr><td style="vertical-align:top;padding:15px;background:#fff;border:1px solid #eee;text-align:center;"><img src="{{ base_url('storage/' . $qrCodePath) }}" alt="QR Code" style="max-width:100px;height:auto;"></td></tr>
+                @endif
             </tbody>
         </table>
 

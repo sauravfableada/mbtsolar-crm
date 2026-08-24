@@ -570,48 +570,38 @@ try {
             $estimateHasBankDetails = !empty($bank) && collect(['bank_name', 'account_name', 'account_number', 'ifsc_code', 'branch_name'])->contains(fn ($field) => trim((string) ($bank[$field] ?? '')) !== '');
             $estimateQrCodePath = $settings['company_qr_code_path'] ?? '';
             $estimateLegacyQrCode = $user['qr_code'] ?? '';
-            $estimateHasQrCode = $estimateQrCodePath !== '' || $estimateLegacyQrCode !== '';
-            $estimateFooterColumnCount = 1 + ($estimateHasBankDetails ? 1 : 0) + ($estimateHasQrCode ? 1 : 0);
-            $estimateFooterColumnWidth = 100 / $estimateFooterColumnCount;
+            $estimateQrImageUrl = '';
+            if ($estimateQrCodePath !== '' && \Illuminate\Support\Facades\Storage::disk('public')->exists($estimateQrCodePath)) {
+                $estimateQrImageUrl = base_url('storage/' . $estimateQrCodePath);
+            } elseif ($estimateLegacyQrCode !== '' && is_file(public_path('assets/img/profile/' . $estimateLegacyQrCode))) {
+                $estimateQrImageUrl = base_url('public/assets/img/profile/' . $estimateLegacyQrCode);
+            }
+            $estimateHasQrCode = $estimateQrImageUrl !== '';
             ?>
 
-            <!-- Comment / Bank Details / QR Code Table -->
+            <!-- Stacked Comment / Bank Details / QR Code Table -->
             <table class="info-table" style="margin-top:15px;">
-                <thead>
-                    <tr>
-                        <th style="width: <?php echo $estimateFooterColumnWidth; ?>%;">Comment</th>
-                        <?php if ($estimateHasBankDetails): ?>
-                        <th style="width: <?php echo $estimateFooterColumnWidth; ?>%;">Bank Details</th>
-                        <?php endif; ?>
-                        <?php if ($estimateHasQrCode): ?>
-                        <th style="width: <?php echo $estimateFooterColumnWidth; ?>%;">QR Code</th>
-                        <?php endif; ?>
-                    </tr>
-                </thead>
                 <tbody>
+                    <tr><th>Comment</th></tr>
+                    <tr><td style="vertical-align:top;background:#fafafa;"><?php echo nl2br(htmlspecialchars($estdata->estimate_comment ?? ($estdata->comment ?? '--'))); ?></td></tr>
+
+                    <?php if ($estimateHasBankDetails): ?>
+                    <tr><th>Bank Details</th></tr>
                     <tr>
-                        <td style="width: <?php echo $estimateFooterColumnWidth; ?>%; vertical-align: top; background: #fafafa;">
-                            <?php echo nl2br(htmlspecialchars($estdata->estimate_comment ?? ($estdata->comment ?? '--'))); ?>
-                        </td>
-                        <?php if ($estimateHasBankDetails): ?>
-                        <td style="width: <?php echo $estimateFooterColumnWidth; ?>%; vertical-align: top; background: #fafafa;">
+                        <td style="vertical-align:top;background:#fafafa;">
                             <div><strong>Bank:</strong> <?php echo htmlspecialchars($bank['bank_name'] ?? '--'); ?></div>
                             <div><strong>Account Name:</strong> <?php echo htmlspecialchars($bank['account_name'] ?? '--'); ?></div>
                             <div><strong>Account No.:</strong> <?php echo htmlspecialchars($bank['account_number'] ?? '--'); ?></div>
                             <div><strong>IFSC:</strong> <?php echo htmlspecialchars($bank['ifsc_code'] ?? '--'); ?></div>
                             <div><strong>Branch:</strong> <?php echo htmlspecialchars($bank['branch_name'] ?? '--'); ?></div>
                         </td>
-                        <?php endif; ?>
-                        <?php if ($estimateHasQrCode): ?>
-                        <td style="width: <?php echo $estimateFooterColumnWidth; ?>%; vertical-align: top; background: #fafafa; text-align:center;">
-                            <?php if ($estimateQrCodePath !== ''): ?>
-                            <img src="<?php echo htmlspecialchars(base_url('storage/' . $estimateQrCodePath)); ?>" alt="QR Code" style="max-width:120px; max-height:120px; object-fit:contain; border:1px solid #ddd; border-radius:4px;">
-                            <?php else: ?>
-                            <img src="<?php echo htmlspecialchars(base_url('public/assets/img/profile/' . $estimateLegacyQrCode)); ?>" alt="QR Code" style="max-width:120px; max-height:120px; object-fit:contain; border:1px solid #ddd; border-radius:4px;">
-                            <?php endif; ?>
-                        </td>
-                        <?php endif; ?>
                     </tr>
+                    <?php endif; ?>
+
+                    <?php if ($estimateHasQrCode): ?>
+                    <tr><th>QR Code</th></tr>
+                    <tr><td style="vertical-align:top;background:#fafafa;text-align:center;"><img src="<?php echo htmlspecialchars($estimateQrImageUrl); ?>" alt="QR Code" style="max-width:120px;max-height:120px;object-fit:contain;border:1px solid #ddd;border-radius:4px;"></td></tr>
+                    <?php endif; ?>
                 </tbody>
             </table>
 
