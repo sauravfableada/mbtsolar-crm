@@ -340,7 +340,7 @@ if (!function_exists('base_url')) {
         <!-- Invoice Info -->
         <div class="flex-between">
             <div style="font-weight:700; font-size:15px;">Invoice no.: #{{ $invoice->invoice_no }}</div>
-            <div class="center-text" style="font-size:16px;">TAX INVOICE</div>
+            <div class="center-text" style="font-size:16px;">INVOICE</div>
             <div style="font-weight:700; font-size:15px;">Date: {{ optional($invoice->invoice_date)->format('Y-m-d') }}
             </div>
         </div>
