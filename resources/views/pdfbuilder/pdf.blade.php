@@ -1664,7 +1664,6 @@ if (isset($after_blocks) && is_array($after_blocks)) {
             </div>
             @include('pdfbuilder.partials.company-info-about')
         </div>
-        @if (empty($is_invoice_only))
         <table width="100%" cellpadding="0" cellspacing="0"
             style="position:fixed; bottom:10; left:0; right:0;
                     background:#fff; color:#4b9349; height:40px; border-top: 1px solid #4b9349;">
