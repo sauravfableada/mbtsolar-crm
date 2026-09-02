@@ -13,7 +13,7 @@
                     </div>
                     <div class="d-flex flex-wrap gap-2">
                         @can('leads.view')
-                            <a href="{{ route('leads.export') }}" class="btn btn-outline-dark-blue">
+                            <a href="{{ route('leads.export') }}" id="leadsExportButton" class="btn btn-outline-dark-blue">
                                 <i class="fa-solid fa-download me-1"></i>Export
                             </a>
                         @endcan
@@ -25,11 +25,25 @@
                     </div>
                 </div>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <h6 class="fw-bold mb-0">Active Enquiries</h6>
-                    <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
-                        <span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control crm-search-input border-0" placeholder="Search leads..."
-                            id="leadsSearch" value="{{ request('search') }}">
+                    <div class="d-flex gap-2 flex-grow-1">
+                        <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
+                            <span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span>
+                            <input type="text" class="form-control crm-search-input border-0" placeholder="Search leads..." id="leadsSearch" value="{{ request('search') }}">
+                        </div>
+                        <button type="button" id="leadsFilterToggle" class="btn btn-outline-dark-blue" aria-expanded="true" aria-controls="leadsFilters"><i class="fa-solid fa-filter me-1"></i>Filters <span id="leadsFilterCount" class="badge rounded-pill text-bg-primary d-none">0</span></button>
+                    </div>
+                    <div class="d-flex align-items-center gap-2"><label for="leadsPerPage" class="small text-muted text-nowrap mb-0">Show per page:</label><select id="leadsPerPage" class="form-select form-select-sm" style="width:78px"><option>10</option><option>25</option><option>50</option><option>100</option></select></div>
+                </div>
+                <div id="leadsFilters" class="lead-filter-panel mt-3">
+                    <div class="row g-3 align-items-end">
+                        <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsFromDate">Start Date</label><input type="date" id="leadsFromDate" class="form-control form-control-sm"></div>
+                        <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsToDate">End Date</label><input type="date" id="leadsToDate" class="form-control form-control-sm"></div>
+                        <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsStatus">Status</label><select id="leadsStatus" class="form-select form-select-sm"><option value="">All statuses</option><option value="new">New</option><option value="qualified">Qualified</option><option value="working">Working</option><option value="ready_to_close">Ready to Close</option><option value="won">Closed Won</option><option value="lost">Closed Lost</option></select></div>
+                        <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsSource">Lead Source</label><select id="leadsSource" class="form-select form-select-sm"><option value="">All sources</option>@foreach($sources as $source)<option value="{{ $source->id }}">{{ $source->name }}</option>@endforeach</select></div>
+                        <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsStage">Lead Stage</label><select id="leadsStage" class="form-select form-select-sm"><option value="">All stages</option>@foreach($stages as $stage)<option value="{{ $stage->id }}">{{ $stage->name }}</option>@endforeach</select></div>
+                        <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsCreator">Created By</label><select id="leadsCreator" class="form-select form-select-sm"><option value="">All creators</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
+                        <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsAssignee">Assigned To</label><select id="leadsAssignee" class="form-select form-select-sm"><option value="">All assignees</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
+                        <div class="col-sm-6 col-lg-3"><button type="button" id="leadsClearFilters" class="btn btn-dark-blue btn-sm w-100"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button></div>
                     </div>
                 </div>
             </div>
@@ -51,7 +65,7 @@
                 </div>
                 @endif
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 responsive-table" id="leadsTable">
+                    <table class="table table-hover align-middle mb-0 responsive-table" id="leadsTable" data-no-auto-filter>
                         <thead>
                             <tr>
                                 <th class="ps-4" style="width: 80px;">Sr.No</th>
@@ -85,6 +99,8 @@
             text-align: center;
             white-space: nowrap;
         }
+        .lead-filter-panel { padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; box-shadow: 0 2px 6px rgba(15,23,42,.05); }
+        [data-theme="dark"] .lead-filter-panel { border-color: rgba(255,255,255,.08); background: #172033; }
         .crm-filter-tabs {
             border-bottom: 2px solid #e9ecef;
         }

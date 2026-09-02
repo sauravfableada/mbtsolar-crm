@@ -41,8 +41,16 @@ class LeadController extends ApiBaseController
                 $query->where('assigned_user_id', $user->id)
                       ->where('created_by', '!=', $user->id);
             })
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->get('status')))
+            ->when($request->filled('source_id'), fn ($query) => $query->where('lead_source_id', (int) $request->get('source_id')))
+            ->when($request->filled('stage_id'), fn ($query) => $query->where('lead_stage_id', (int) $request->get('stage_id')))
+            ->when($request->filled('creator_id'), fn ($query) => $query->where('created_by', (int) $request->get('creator_id')))
+            ->when($request->filled('assigned_user_id'), fn ($query) => $query->where('assigned_user_id', (int) $request->get('assigned_user_id')))
+            ->when($request->filled('is_converted'), fn ($query) => $query->where('is_converted', $request->get('is_converted') === '1'))
+            ->when($request->filled('from_date'), fn ($query) => $query->whereDate('created_at', '>=', $request->get('from_date')))
+            ->when($request->filled('to_date'), fn ($query) => $query->whereDate('created_at', '<=', $request->get('to_date')))
             ->latest()
-            ->paginate(10)
+            ->paginate(in_array((int) $request->get('per_page'), [10, 25, 50, 100], true) ? (int) $request->get('per_page') : 10)
             ->withQueryString();
 
         return response()->json([
