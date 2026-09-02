@@ -293,7 +293,7 @@
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 dashboard-followups-table">
+                            <table class="table table-hover align-middle mb-0 dashboard-followups-table" data-no-auto-filter>
                                 <thead>
                                     <tr>
                                         <th>Customer</th>
