@@ -44,14 +44,14 @@
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table id="customerTable" class="table table-hover align-middle mb-0 responsive-table">
+            <table id="customerTable" class="table table-hover align-middle mb-0 responsive-table" data-sort-mode="server" data-sort-column="created_at" data-sort-direction="desc">
                 <thead>
                     <tr>
-                        <th class="ps-3" style="width: 70px;">Sr.No</th>
-                        <th>Customer Name</th>
-                        <th class="d-none d-md-table-cell">Email</th>
-                        <th class="d-none d-md-table-cell">Phone</th>
-                        <th class="d-none d-md-table-cell">Created At</th>
+                        <th class="ps-3" style="width: 90px;"><button type="button" class="customer-sort-button" data-sort="id">Sr.No <span class="customer-sort-indicator" aria-hidden="true"><i class="fa-solid fa-caret-up sort-up"></i><i class="fa-solid fa-caret-down sort-down"></i></span></button></th>
+                        <th><button type="button" class="customer-sort-button" data-sort="name">Customer Name <span class="customer-sort-indicator" aria-hidden="true"><i class="fa-solid fa-caret-up sort-up"></i><i class="fa-solid fa-caret-down sort-down"></i></span></button></th>
+                        <th class="d-none d-md-table-cell"><button type="button" class="customer-sort-button" data-sort="email">Email <span class="customer-sort-indicator" aria-hidden="true"><i class="fa-solid fa-caret-up sort-up"></i><i class="fa-solid fa-caret-down sort-down"></i></span></button></th>
+                        <th class="d-none d-md-table-cell"><button type="button" class="customer-sort-button" data-sort="phone">Phone <span class="customer-sort-indicator" aria-hidden="true"><i class="fa-solid fa-caret-up sort-up"></i><i class="fa-solid fa-caret-down sort-down"></i></span></button></th>
+                        <th class="d-none d-md-table-cell"><button type="button" class="customer-sort-button" data-sort="created_at">Created At <span class="customer-sort-indicator" aria-hidden="true"><i class="fa-solid fa-caret-up sort-up"></i><i class="fa-solid fa-caret-down sort-down"></i></span></button></th>
                         <th class="text-end pe-3 d-none d-md-table-cell" style="width: 140px;">Actions</th>
                         <th class="text-center d-md-none" style="width: 80px;">Action</th>
                     </tr>

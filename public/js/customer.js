@@ -16,6 +16,15 @@
 
         const paginationContainer = document.getElementById("customerPaginationContainer");
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "";
+        let sortBy = "created_at";
+        let sortDirection = "desc";
+        let currentPage = 1;
+
+        document.getElementById("customerTable")?.addEventListener("crm:table-sort", event => {
+            sortBy = event.detail.column;
+            sortDirection = event.detail.direction;
+            fetchCustomers(1);
+        });
 
         // ✅ DELETE FUNCTION
         function deleteCustomer(id, button) {
@@ -133,7 +142,7 @@
 
                 return `
                 <tr>
-                    <td class="ps-3" data-label="Sr.No">${index + 1}</td>
+                    <td class="ps-3" data-label="Sr.No">${(currentPage - 1) * 10 + index + 1}</td>
                     <td data-label="Customer Name">
                         <div class="fw-bold small">${customer.name}</div>
                     </td>
@@ -223,7 +232,8 @@
 
         // ✅ FETCH API
         function fetchCustomers(page = 1) {
-            let url = `/api/customers?page=${page}`;
+            currentPage = Number(page) || 1;
+            let url = `/api/customers?page=${currentPage}&sort_by=${encodeURIComponent(sortBy)}&sort_direction=${encodeURIComponent(sortDirection)}`;
 
             if (searchInput && searchInput.value.trim()) {
                 url += `&search=${encodeURIComponent(searchInput.value.trim())}`;

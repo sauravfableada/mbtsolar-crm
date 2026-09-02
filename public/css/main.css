@@ -981,3 +981,38 @@
 [data-theme="dark"] .badge.bg-warning { background-color: rgba(251, 191, 36, 0.2) !important; color: #fde047 !important; border-color: rgba(251, 191, 36, 0.1) !important; }
 [data-theme="dark"] .badge.bg-info { background-color: rgba(13, 202, 240, 0.2) !important; color: #67e8f9 !important; border-color: rgba(13, 202, 240, 0.1) !important; }
 [data-theme="dark"] .badge.bg-dark { background-color: rgba(255, 255, 255, 0.1) !important; color: #f8fafc !important; border-color: rgba(255, 255, 255, 0.05) !important; }
+.crm-table-sort-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-transform: inherit;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.crm-table-sort-indicator {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 0.55;
+}
+
+.crm-table-sort-indicator i {
+    color: #94a3b8;
+    font-size: 0.62rem;
+}
+
+.crm-table-sort-button.active.sort-asc .sort-up,
+.crm-table-sort-button.active.sort-desc .sort-down {
+    color: #0f172a;
+}
+
+[data-theme="dark"] .crm-table-sort-button.active.sort-asc .sort-up,
+[data-theme="dark"] .crm-table-sort-button.active.sort-desc .sort-down {
+    color: #60a5fa;
+}
