@@ -15,7 +15,11 @@ class LeadController extends Controller
 {
     public function index()
     {
-        return view('crm.leads.index');
+        $sources = LeadSource::orderBy('name')->get(['id', 'name']);
+        $stages = Stage::orderBy('name')->get(['id', 'name']);
+        $users = User::orderBy('name')->get(['id', 'name']);
+
+        return view('crm.leads.index', compact('sources', 'stages', 'users'));
     }
 
     // public function create()
@@ -170,13 +174,12 @@ class LeadController extends Controller
             })
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->when($request->source_id, fn($q) => $q->where('lead_source_id', $request->source_id))
-            ->when($request->stage_id, fn($q) => $q->where('stage_id', $request->stage_id))
-            ->when($request->from_date && $request->to_date, function ($q) use ($request) {
-                $q->whereBetween('created_at', [
-                    $request->from_date . ' 00:00:00',
-                    $request->to_date . ' 23:59:59',
-                ]);
-            });
+            ->when($request->stage_id, fn($q) => $q->where('lead_stage_id', $request->stage_id))
+            ->when($request->creator_id, fn($q) => $q->where('created_by', $request->creator_id))
+            ->when($request->assigned_user_id, fn($q) => $q->where('assigned_user_id', $request->assigned_user_id))
+            ->when($request->filled('is_converted'), fn($q) => $q->where('is_converted', $request->is_converted === '1'))
+            ->when($request->from_date, fn($q) => $q->whereDate('created_at', '>=', $request->from_date))
+            ->when($request->to_date, fn($q) => $q->whereDate('created_at', '<=', $request->to_date));
 
         $leads = $query->get();
 
@@ -216,4 +219,3 @@ class LeadController extends Controller
         return response()->stream($callback, 200, $headers);
     }
 }
-

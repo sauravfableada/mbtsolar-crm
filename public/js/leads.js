@@ -15,10 +15,67 @@
         const paginationContainer = document.getElementById("leadsPagination");
         const searchInput = document.getElementById("leadsSearch");
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "";
+        const filterPanel = document.getElementById("leadsFilters");
+        const filterToggle = document.getElementById("leadsFilterToggle");
+        const filterCount = document.getElementById("leadsFilterCount");
+        const exportButton = document.getElementById("leadsExportButton");
+        const perPage = document.getElementById("leadsPerPage");
+        const fromDate = document.getElementById("leadsFromDate");
+        const toDate = document.getElementById("leadsToDate");
+        const filters = {
+            status: document.getElementById("leadsStatus"),
+            source_id: document.getElementById("leadsSource"),
+            stage_id: document.getElementById("leadsStage"),
+            creator_id: document.getElementById("leadsCreator"),
+            assigned_user_id: document.getElementById("leadsAssignee"),
+        };
         
         // Get filter from URL parameter or default to 'created_by_me'
         const urlParams = new URLSearchParams(window.location.search);
         let currentFilter = urlParams.get('filter') || 'created_by_me';
+
+        function requestParams(page) {
+            const params = new URLSearchParams({ page: String(page), per_page: perPage.value, filter: currentFilter });
+            if (searchInput.value.trim()) params.set("search", searchInput.value.trim());
+            if (fromDate.value) params.set("from_date", fromDate.value);
+            if (toDate.value) params.set("to_date", toDate.value);
+            Object.entries(filters).forEach(([key, field]) => { if (field.value !== "") params.set(key, field.value); });
+            return params;
+        }
+
+        function updateFilterState() {
+            const count = [fromDate.value || toDate.value, ...Object.values(filters).map(field => field.value !== "" ? "active" : "")].filter(Boolean).length;
+            filterCount.textContent = String(count);
+            filterCount.classList.toggle("d-none", count === 0);
+            if (exportButton) {
+                const url = new URL(exportButton.href, window.location.origin);
+                url.search = requestParams(1).toString();
+                url.searchParams.delete("page");
+                url.searchParams.delete("per_page");
+                exportButton.href = url.toString();
+            }
+        }
+
+        function filtersChanged() {
+            if (fromDate.value && toDate.value && fromDate.value > toDate.value) {
+                if (window.showAlert) window.showAlert("error", "Start date cannot be after end date.");
+                return;
+            }
+            updateFilterState();
+            fetchLeads(1);
+        }
+
+        filterToggle.addEventListener("click", () => {
+            const open = filterPanel.classList.toggle("d-none") === false;
+            filterToggle.setAttribute("aria-expanded", String(open));
+        });
+        [fromDate, toDate].forEach(field => field.addEventListener("change", filtersChanged));
+        [...Object.values(filters), perPage].forEach(field => field.addEventListener("change", filtersChanged));
+        document.getElementById("leadsClearFilters").addEventListener("click", () => {
+            [fromDate, toDate, ...Object.values(filters)].forEach(field => { field.value = ""; });
+            updateFilterState();
+            fetchLeads(1);
+        });
 
         // Set the filter in URL if not present (for first load)
         if (!urlParams.has('filter')) {
@@ -341,16 +398,7 @@
         }
 
         function fetchLeads(page = 1) {
-            let url = `/api/leads?page=${page}`;
-
-            if (searchInput && searchInput.value.trim()) {
-                url += `&search=${encodeURIComponent(searchInput.value.trim())}`;
-            }
-
-            // Add filter parameter for staff users
-            if (currentFilter) {
-                url += `&filter=${currentFilter}`;
-            }
+            const url = `/api/leads?${requestParams(page).toString()}`;
 
             $.ajax({
                 url: url,
@@ -387,6 +435,7 @@
             searchInput.addEventListener('input', function () {
                 clearTimeout(timer);
                 timer = setTimeout(function () {
+                    updateFilterState();
                     fetchLeads(1);
                 }, 400);
             });

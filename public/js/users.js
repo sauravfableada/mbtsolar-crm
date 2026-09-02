@@ -764,6 +764,7 @@
                 : extraHeaders;
 
         forms.forEach((form) => {
+            const isEditForm = form.id === 'staffEditForm' || form.querySelector('input[name="_method"][value="PUT"]');
             let currentStep = 1;
             const totalSteps = 2;
             const $steps = form.querySelectorAll('.staff-form-step');
@@ -806,9 +807,12 @@
                         const requiredFields = {
                             'name': 'Name is required',
                             'email': 'Email is required',
-                            'password': 'Password is required (minimum 8 characters)',
                             'phone': 'Phone number is required'
                         };
+
+                        if (!isEditForm) {
+                            requiredFields.password = 'Password is required (minimum 8 characters)';
+                        }
                         
                         let hasErrors = false;
                         const errors = {};
@@ -830,6 +834,12 @@
                                 }
                             }
                         });
+
+                        const optionalPassword = form.querySelector('[name="password"]');
+                        if (isEditForm && optionalPassword?.value.trim() && optionalPassword.value.trim().length < 8) {
+                            errors.password = ['Password must be at least 8 characters'];
+                            hasErrors = true;
+                        }
                         
                         if (hasErrors) {
                             showFormErrors(form, errors);

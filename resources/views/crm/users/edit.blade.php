@@ -84,7 +84,7 @@
                             <div class="col-md-6">
                                 <label class="form-label d-flex flex-wrap align-items-center gap-2" for="password">
                                     <span class="d-flex align-items-center gap-2">
-                                        <i class="bi bi-key-fill"></i> New Password <span class="text-danger">*</span>
+                                        <i class="bi bi-key-fill"></i> New Password
                                     </span>
                                     <small class="text-muted">(leave blank to keep current)</small>
                                 </label>
