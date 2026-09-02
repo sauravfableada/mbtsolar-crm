@@ -6,6 +6,35 @@
     const NUMBER_FIELD = /(amount|price|stock|quantity|total|rate)/i;
     const SELECT_FIELD = /(status|type|priority|category|stage|role|country|city|staff|customer|make|technology|warranty|source)/i;
 
+    function selectedPerPage() {
+        return document.querySelector(".crm-auto-per-page")?.value || "10";
+    }
+
+    function addPerPage(url) {
+        try {
+            const parsed = new URL(url, window.location.origin);
+            if (parsed.origin === window.location.origin && parsed.pathname.startsWith("/api/") && parsed.searchParams.has("page")) {
+                parsed.searchParams.set("per_page", selectedPerPage());
+                return parsed.toString();
+            }
+        } catch (error) {
+            return url;
+        }
+        return url;
+    }
+
+    if (window.jQuery?.ajaxPrefilter) {
+        window.jQuery.ajaxPrefilter(options => { if ((options.type || "GET").toUpperCase() === "GET") options.url = addPerPage(options.url); });
+    }
+
+    const nativeFetch = window.fetch?.bind(window);
+    if (nativeFetch) {
+        window.fetch = function (resource, options) {
+            if (typeof resource === "string" && (!options?.method || options.method.toUpperCase() === "GET")) resource = addPerPage(resource);
+            return nativeFetch(resource, options);
+        };
+    }
+
     function text(value) {
         return String(value || "").replace(/\s+/g, " ").trim();
     }
@@ -119,12 +148,16 @@
         const wrapper = table.closest(".table-responsive") || table;
         const toolbar = document.createElement("div");
         toolbar.className = "crm-auto-filter-wrap px-3 pt-3";
-        toolbar.innerHTML = `<button type="button" class="btn btn-outline-dark-blue btn-sm crm-auto-filter-toggle" aria-expanded="true"><i class="fa-solid fa-filter me-1"></i>Filters <span class="badge rounded-pill text-bg-primary d-none">0</span></button><div class="crm-auto-filter-panel mt-3"><div class="row g-3 align-items-end">${fields.map(fieldMarkup).join("")}<div class="col-sm-6 col-lg-3"><button type="button" class="btn btn-dark-blue btn-sm w-100 crm-auto-filter-clear"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button></div></div></div>`;
+        toolbar.innerHTML = `<div class="d-flex justify-content-between align-items-center gap-3"><button type="button" class="btn btn-outline-dark-blue btn-sm crm-auto-filter-toggle" aria-expanded="true"><i class="fa-solid fa-filter me-1"></i>Filters <span class="badge rounded-pill text-bg-primary d-none">0</span></button><div class="crm-auto-per-page-wrap d-flex align-items-center gap-2"><label class="small text-muted text-nowrap mb-0">Show per page:</label><select class="form-select form-select-sm crm-auto-per-page"><option>10</option><option>25</option><option>50</option><option>100</option></select></div></div><div class="crm-auto-filter-panel mt-3"><div class="row g-3 align-items-end">${fields.map(fieldMarkup).join("")}<div class="col-sm-6 col-lg-3"><button type="button" class="btn btn-dark-blue btn-sm w-100 crm-auto-filter-clear"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button></div></div></div>`;
         wrapper.parentNode.insertBefore(toolbar, wrapper);
 
         const panel = toolbar.querySelector(".crm-auto-filter-panel");
         const toggle = toolbar.querySelector(".crm-auto-filter-toggle");
         const clearButton = toolbar.querySelector(".crm-auto-filter-clear");
+        const perPageWrap = toolbar.querySelector(".crm-auto-per-page-wrap");
+        const perPageSelect = toolbar.querySelector(".crm-auto-per-page");
+        const requestedPerPage = new URL(window.location.href).searchParams.get("per_page");
+        if (["10", "25", "50", "100"].includes(requestedPerPage)) perPageSelect.value = requestedPerPage;
         const countBadge = toolbar.querySelector(".badge");
         const card = table.closest(".card");
         const searchInput = card?.querySelector('input[id*="Search"], input[id*="search"], input[type="search"]');
@@ -140,6 +173,8 @@
             controlsRow.classList.remove("justify-content-between");
             controlsRow.classList.add("justify-content-start");
             searchGroup.insertAdjacentElement("afterend", toggle);
+            controlsRow.appendChild(perPageWrap);
+            perPageWrap.classList.add("ms-md-auto");
             controlsRow.insertAdjacentElement("afterend", panel);
             toolbar.remove();
         }
@@ -155,6 +190,15 @@
         clearButton.addEventListener("click", () => {
             panel.querySelectorAll("input, select").forEach(control => { control.value = ""; });
             run();
+        });
+        perPageSelect.addEventListener("change", () => {
+            const url = new URL(window.location.href);
+            url.searchParams.set("per_page", perPageSelect.value);
+            window.history.replaceState({}, "", url);
+            table.dispatchEvent(new CustomEvent("crm:per-page-change", { detail: { perPage: Number(perPageSelect.value) } }));
+            const firstPage = table.closest(".card")?.querySelector('.page-link[data-page="1"]');
+            if (firstPage) firstPage.click();
+            else window.location.reload();
         });
 
         updateSelectOptions(table, panel);

@@ -66,7 +66,7 @@ class TaskController extends ApiBaseController
                       });
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(in_array((int) $request->get('per_page'), [10, 25, 50, 100], true) ? (int) $request->get('per_page') : 10)
             ->withQueryString();
 
         $tasks->getCollection()->transform(function (Task $task) {
