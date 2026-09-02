@@ -10,20 +10,14 @@
                 <h4 class="fw-bold mb-0">Manage Customers</h4>
                 <p class="text-muted small mb-0">View and manage your customer database and communication history.</p>
             </div>
-            <a href="{{ url()->previous() !== url()->current() ? url()->previous() : route('dashboard') }}"
-                class="btn btn-dark-blue customer-back-btn">
-                <i class="fa-solid fa-arrow-left me-1"></i>Back
-            </a>
-        </div>
-        <div class="mb-4">
-            <div class="customer-actions d-flex flex-nowrap gap-2">
+            <div class="customer-actions d-flex flex-nowrap justify-content-end gap-2">
                 @can('customers.create')
                     <button type="button" class="btn btn-outline-dark-blue customer-action-btn" onclick="showImportDialog()">
                         <i class="fa-solid fa-upload me-1"></i>Import CSV
                     </button>
                 @endcan
                 @can('customers.view')
-                    <a href="{{ route('masters.customers.export') }}" class="btn btn-outline-dark-blue customer-action-btn">
+                    <a href="{{ route('masters.customers.export') }}" id="customerExportButton" class="btn btn-outline-dark-blue customer-action-btn">
                         <i class="fa-solid fa-download me-1"></i>Export
                     </a>
                 @endcan
@@ -35,10 +29,52 @@
             </div>
         </div>
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-            <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
-                <span class="input-group-text crm-search-icon border-0"><i class="fa-solid fa-search"></i></span>
-                <input type="text" id="customerSearch" class="form-control crm-search-input border-0"
-                    placeholder="Search customers..." name="search" value="{{ request('search') }}">
+            <div class="d-flex gap-2 flex-grow-1">
+                <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
+                    <span class="input-group-text crm-search-icon border-0"><i class="fa-solid fa-search"></i></span>
+                    <input type="text" id="customerSearch" class="form-control crm-search-input border-0"
+                        placeholder="Search customers..." name="search" value="{{ request('search') }}">
+                </div>
+                <button type="button" id="customerFilterToggle" class="btn btn-outline-dark-blue customer-filter-toggle"
+                    aria-expanded="true" aria-controls="customerFilters">
+                    <i class="fa-solid fa-filter me-1"></i>Filters
+                    <span id="customerFilterCount" class="badge rounded-pill text-bg-primary d-none">0</span>
+                </button>
+            </div>
+            <div class="d-flex align-items-center gap-2 customer-per-page">
+                <label for="customerPerPage" class="small text-muted text-nowrap mb-0">Show per page:</label>
+                <select id="customerPerPage" class="form-select form-select-sm">
+                    @foreach([10, 25, 50, 100] as $size)
+                        <option value="{{ $size }}">{{ $size }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div id="customerFilters" class="customer-filter-panel mt-3">
+            <div class="row g-3 align-items-end">
+                <div class="col-sm-6 col-lg-3"><label for="customerFromDate" class="form-label small fw-semibold">Start Date</label><input type="date" id="customerFromDate" class="form-control form-control-sm"></div>
+                <div class="col-sm-6 col-lg-3"><label for="customerToDate" class="form-label small fw-semibold">End Date</label><input type="date" id="customerToDate" class="form-control form-control-sm"></div>
+                <div class="col-sm-6 col-lg-3">
+                    <label for="customerDateRange" class="form-label small fw-semibold">Date Range</label>
+                    <select id="customerDateRange" class="form-select form-select-sm">
+                        <option value="">Any time</option><option value="today">Today</option><option value="yesterday">Yesterday</option>
+                        <option value="last_7_days">Last 7 days</option><option value="last_30_days">Last 30 days</option>
+                        <option value="this_month">This month</option><option value="last_month">Last month</option><option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <label for="customerTypeFilter" class="form-label small fw-semibold">Customer Type</label>
+                    <select id="customerTypeFilter" class="form-select form-select-sm"><option value="">All types</option>@foreach($customerTypes as $type)<option value="{{ $type }}">{{ $type }}</option>@endforeach</select>
+                </div>
+                <div class="col-sm-6 col-lg-3">
+                    <label for="customerCountryFilter" class="form-label small fw-semibold">Country</label>
+                    <select id="customerCountryFilter" class="form-select form-select-sm"><option value="">All countries</option>@foreach($countries as $country)<option value="{{ $country->id }}">{{ $country->name }}</option>@endforeach</select>
+                </div>
+                <div class="col-sm-6 col-lg-3"><label for="customerCityFilter" class="form-label small fw-semibold">City</label><select id="customerCityFilter" class="form-select form-select-sm" disabled><option value="">All cities</option></select></div>
+                <div class="col-sm-6 col-lg-3"><label for="customerStatusFilter" class="form-label small fw-semibold">Status</label><select id="customerStatusFilter" class="form-select form-select-sm"><option value="">All statuses</option><option value="1">Active</option><option value="0">Inactive</option></select></div>
+                <div class="col-sm-6 col-lg-3 d-flex gap-2">
+                    <button type="button" id="customerClearFilters" class="btn btn-dark-blue btn-sm flex-grow-1"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button>
+                </div>
             </div>
         </div>
     </div>
@@ -75,7 +111,6 @@
             min-width: 0;
         }
 
-        .customer-back-btn,
         .customer-action-btn {
             display: inline-flex;
             align-items: center;
@@ -84,23 +119,38 @@
             white-space: nowrap;
         }
 
-        .customer-back-btn {
-            flex: 0 0 auto;
-        }
-
         .customer-actions {
-            width: 100%;
+            width: auto;
         }
 
         .customer-action-btn {
             height: 38px;
         }
 
+        .customer-filter-toggle { white-space: nowrap; }
+
+        .customer-filter-panel {
+            padding: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+            box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+        }
+
+        .customer-per-page select { width: 78px; }
+
+        [data-theme="dark"] .customer-filter-panel {
+            border-color: rgba(255, 255, 255, .08);
+            background: #172033;
+        }
+
         @media (max-width: 575.98px) {
-            .customer-back-btn {
-                min-height: 34px;
-                padding: 0.35rem 0.55rem;
-                font-size: 0.86rem;
+            .customer-title-row {
+                flex-direction: column;
+            }
+
+            .customer-actions {
+                width: 100%;
             }
 
             .customer-actions {
@@ -116,8 +166,7 @@
                 line-height: 1;
             }
 
-            .customer-action-btn i,
-            .customer-back-btn i {
+            .customer-action-btn i {
                 margin-right: 0.2rem !important;
             }
         }
