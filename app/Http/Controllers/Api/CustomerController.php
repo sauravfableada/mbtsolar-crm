@@ -33,16 +33,28 @@ class CustomerController extends Controller
             });
         }
 
+        $query
+            ->when($request->filled('type'), fn ($q) => $q->where('type', $request->get('type')))
+            ->when($request->filled('country_id'), fn ($q) => $q->where('country_id', (int) $request->get('country_id')))
+            ->when($request->filled('city_id'), fn ($q) => $q->where('city_id', (int) $request->get('city_id')))
+            ->when($request->filled('is_active'), fn ($q) => $q->where('is_active', $request->get('is_active') === '1'))
+            ->when($request->filled('from_date'), fn ($q) => $q->whereDate('created_at', '>=', $request->get('from_date')))
+            ->when($request->filled('to_date'), fn ($q) => $q->whereDate('created_at', '<=', $request->get('to_date')));
+
         $sortableColumns = ['id', 'name', 'email', 'phone', 'created_at'];
         $sortBy = in_array($request->get('sort_by'), $sortableColumns, true)
             ? $request->get('sort_by')
             : 'created_at';
         $sortDirection = $request->get('sort_direction') === 'asc' ? 'asc' : 'desc';
 
+        $perPage = in_array((int) $request->get('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->get('per_page')
+            : 10;
+
         $customers = $query
             ->orderBy($sortBy, $sortDirection)
             ->orderBy('id', $sortDirection)
-            ->paginate(10)
+            ->paginate($perPage)
             ->appends($request->query());
         $isAdmin = auth()->user()?->isAdmin() ?? false;
         $authId = auth()->id();

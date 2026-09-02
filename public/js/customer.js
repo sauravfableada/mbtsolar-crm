@@ -16,9 +16,152 @@
 
         const paginationContainer = document.getElementById("customerPaginationContainer");
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "";
+        const filterPanel = document.getElementById("customerFilters");
+        const filterToggle = document.getElementById("customerFilterToggle");
+        const filterCount = document.getElementById("customerFilterCount");
+        const fromDateInput = document.getElementById("customerFromDate");
+        const toDateInput = document.getElementById("customerToDate");
+        const dateRangeSelect = document.getElementById("customerDateRange");
+        const typeFilter = document.getElementById("customerTypeFilter");
+        const countryFilter = document.getElementById("customerCountryFilter");
+        const cityFilter = document.getElementById("customerCityFilter");
+        const statusFilter = document.getElementById("customerStatusFilter");
+        const perPageSelect = document.getElementById("customerPerPage");
+        const exportButton = document.getElementById("customerExportButton");
         let sortBy = "created_at";
         let sortDirection = "desc";
         let currentPage = 1;
+
+        function formatLocalDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
+
+        function setDateRange(range) {
+            const today = new Date();
+            let start = null;
+            let end = null;
+
+            if (range === "today") start = end = today;
+            if (range === "yesterday") {
+                start = new Date(today);
+                start.setDate(today.getDate() - 1);
+                end = start;
+            }
+            if (range === "last_7_days" || range === "last_30_days") {
+                start = new Date(today);
+                start.setDate(today.getDate() - (range === "last_7_days" ? 6 : 29));
+                end = today;
+            }
+            if (range === "this_month") {
+                start = new Date(today.getFullYear(), today.getMonth(), 1);
+                end = today;
+            }
+            if (range === "last_month") {
+                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                end = new Date(today.getFullYear(), today.getMonth(), 0);
+            }
+
+            if (range !== "custom") {
+                fromDateInput.value = start ? formatLocalDate(start) : "";
+                toDateInput.value = end ? formatLocalDate(end) : "";
+            }
+        }
+
+        function filterParams() {
+            const params = new URLSearchParams();
+            if (searchInput?.value.trim()) params.set("search", searchInput.value.trim());
+            if (fromDateInput?.value) params.set("from_date", fromDateInput.value);
+            if (toDateInput?.value) params.set("to_date", toDateInput.value);
+            if (typeFilter?.value) params.set("type", typeFilter.value);
+            if (countryFilter?.value) params.set("country_id", countryFilter.value);
+            if (cityFilter?.value) params.set("city_id", cityFilter.value);
+            if (statusFilter?.value !== "") params.set("is_active", statusFilter.value);
+            params.set("per_page", perPageSelect?.value || "10");
+            return params;
+        }
+
+        function updateFilterSummary() {
+            const activeValues = [
+                fromDateInput.value || toDateInput.value,
+                typeFilter.value,
+                countryFilter.value,
+                cityFilter.value,
+                statusFilter.value !== "" ? "status" : "",
+            ];
+            const count = activeValues.filter(Boolean).length;
+            filterCount.textContent = String(count);
+            filterCount.classList.toggle("d-none", count === 0);
+
+            if (exportButton) {
+                const exportUrl = new URL(exportButton.href, window.location.origin);
+                exportUrl.search = filterParams().toString();
+                exportUrl.searchParams.delete("per_page");
+                exportButton.href = exportUrl.toString();
+            }
+        }
+
+        async function loadCities(countryId) {
+            cityFilter.innerHTML = '<option value="">All cities</option>';
+            cityFilter.disabled = !countryId;
+            if (!countryId) return;
+
+            try {
+                const response = await fetch(`/masters/cities-by-country/${encodeURIComponent(countryId)}`, {
+                    headers: { "X-Requested-With": "XMLHttpRequest" },
+                });
+                if (!response.ok) throw new Error("Unable to load cities");
+                const cities = await response.json();
+                cities.forEach(city => cityFilter.add(new Option(city.name, city.id)));
+            } catch (error) {
+                cityFilter.disabled = true;
+            }
+        }
+
+        function applyFilterChange() {
+            if (fromDateInput.value && toDateInput.value && fromDateInput.value > toDateInput.value) {
+                if (window.showAlert) {
+                    window.showAlert("error", "Start date cannot be after end date.");
+                } else {
+                    alert("Start date cannot be after end date.");
+                }
+                return;
+            }
+
+            updateFilterSummary();
+            fetchCustomers(1);
+        }
+
+        filterToggle?.addEventListener("click", () => {
+            const willOpen = filterPanel.classList.contains("d-none");
+            filterPanel.classList.toggle("d-none", !willOpen);
+            filterToggle.setAttribute("aria-expanded", String(willOpen));
+        });
+        dateRangeSelect?.addEventListener("change", () => {
+            setDateRange(dateRangeSelect.value);
+            applyFilterChange();
+        });
+        [fromDateInput, toDateInput].forEach(input => input?.addEventListener("change", () => {
+            dateRangeSelect.value = "custom";
+            applyFilterChange();
+        }));
+        [typeFilter, statusFilter, cityFilter].forEach(field => field?.addEventListener("change", applyFilterChange));
+        countryFilter?.addEventListener("change", async () => {
+            await loadCities(countryFilter.value);
+            applyFilterChange();
+        });
+        document.getElementById("customerClearFilters")?.addEventListener("click", () => {
+            [fromDateInput, toDateInput, dateRangeSelect, typeFilter, countryFilter, statusFilter].forEach(field => { if (field) field.value = ""; });
+            cityFilter.innerHTML = '<option value="">All cities</option>';
+            cityFilter.disabled = true;
+            updateFilterSummary();
+            fetchCustomers(1);
+        });
+        perPageSelect?.addEventListener("change", () => {
+            applyFilterChange();
+        });
 
         document.getElementById("customerTable")?.addEventListener("crm:table-sort", event => {
             sortBy = event.detail.column;
@@ -142,7 +285,7 @@
 
                 return `
                 <tr>
-                    <td class="ps-3" data-label="Sr.No">${(currentPage - 1) * 10 + index + 1}</td>
+                    <td class="ps-3" data-label="Sr.No">${(currentPage - 1) * Number(perPageSelect?.value || 10) + index + 1}</td>
                     <td data-label="Customer Name">
                         <div class="fw-bold small">${customer.name}</div>
                     </td>
@@ -226,18 +369,21 @@
         if (searchInput) {
             searchInput.addEventListener("input", () => {
                 clearTimeout(timer);
-                timer = setTimeout(() => fetchCustomers(1), 400);
+                timer = setTimeout(() => {
+                    updateFilterSummary();
+                    fetchCustomers(1);
+                }, 400);
             });
         }
 
         // ✅ FETCH API
         function fetchCustomers(page = 1) {
             currentPage = Number(page) || 1;
-            let url = `/api/customers?page=${currentPage}&sort_by=${encodeURIComponent(sortBy)}&sort_direction=${encodeURIComponent(sortDirection)}`;
-
-            if (searchInput && searchInput.value.trim()) {
-                url += `&search=${encodeURIComponent(searchInput.value.trim())}`;
-            }
+            const params = filterParams();
+            params.set("page", String(currentPage));
+            params.set("sort_by", sortBy);
+            params.set("sort_direction", sortDirection);
+            const url = `/api/customers?${params.toString()}`;
 
             $.ajax({
                 url: url,

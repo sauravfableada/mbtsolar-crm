@@ -14,7 +14,10 @@ class CustomerController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Customer::class);
-        return view('masters.customers.index');
+        $countries = Country::where('is_active', true)->orderBy('name')->get(['id', 'name']);
+        $customerTypes = ['Individual', 'Corporate', 'Government', 'NGO'];
+
+        return view('masters.customers.index', compact('countries', 'customerTypes'));
     }
 
     public function create()
@@ -96,12 +99,8 @@ class CustomerController extends Controller
             ->when(request()->filled('is_active'), fn($q) => $q->where('is_active', request('is_active')))
             ->when(request('country_id'), fn($q) => $q->where('country_id', request('country_id')))
             ->when(request('city_id'), fn($q) => $q->where('city_id', request('city_id')))
-            ->when(request('from_date') && request('to_date'), function ($q) {
-                $q->whereBetween('created_at', [
-                    request('from_date') . ' 00:00:00',
-                    request('to_date') . ' 23:59:59',
-                ]);
-            });
+            ->when(request('from_date'), fn($q) => $q->whereDate('created_at', '>=', request('from_date')))
+            ->when(request('to_date'), fn($q) => $q->whereDate('created_at', '<=', request('to_date')));
 
         $customers = $query->get();
 
