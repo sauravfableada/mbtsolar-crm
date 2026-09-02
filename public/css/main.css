@@ -1035,6 +1035,17 @@
 
 .crm-auto-per-page { width: 78px; }
 
+.crm-auto-filter-field[data-kind="date"] .d-flex > .form-control,
+.crm-auto-filter-field[data-kind="number"] .d-flex > .form-control {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+}
+
+.crm-auto-filter-clear {
+    min-height: 36px;
+}
+
 .crm-native-filter-select {
     position: absolute !important;
     width: 1px !important;
