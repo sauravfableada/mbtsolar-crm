@@ -1033,6 +1033,8 @@
     white-space: nowrap;
 }
 
+.crm-auto-per-page { width: 78px; }
+
 .crm-auto-filter-panel + .table-responsive {
     margin-top: 0;
 }

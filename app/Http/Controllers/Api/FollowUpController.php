@@ -66,7 +66,8 @@ class FollowUpController extends ApiBaseController
                   ->where('created_by', '!=', $user->id);
         }
 
-        $followUps = $query->latest('follow_up_at')->paginate(10);
+        $perPage = in_array((int) $request->get('per_page'), [10, 25, 50, 100], true) ? (int) $request->get('per_page') : 10;
+        $followUps = $query->latest('follow_up_at')->paginate($perPage);
 
         return response()->json([
             'success' => true,
