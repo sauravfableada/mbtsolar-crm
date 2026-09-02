@@ -1043,7 +1043,24 @@
 }
 
 .crm-auto-filter-clear {
-    min-height: 36px;
+    min-height: 40px;
+}
+
+.crm-auto-filter-panel .form-control,
+.crm-auto-filter-panel .form-select,
+.crm-auto-filter-panel .crm-scroll-select-toggle,
+.crm-auto-filter-panel .crm-auto-filter-clear,
+.customer-filter-panel .form-control,
+.customer-filter-panel .form-select,
+.customer-filter-panel .crm-scroll-select-toggle,
+.customer-filter-panel #customerClearFilters,
+.lead-filter-panel .form-control,
+.lead-filter-panel .form-select,
+.lead-filter-panel .crm-scroll-select-toggle,
+.lead-filter-panel #leadsClearFilters {
+    height: 40px !important;
+    min-height: 40px !important;
+    box-sizing: border-box;
 }
 
 .crm-native-filter-select {
