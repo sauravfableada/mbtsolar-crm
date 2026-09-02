@@ -21,8 +21,7 @@ class CustomerController extends Controller
     {
         $this->authorize('viewAny', Customer::class);
 
-        $query = Customer::with(['country', 'city'])
-            ->latest();
+        $query = Customer::with(['country', 'city']);
 
         if ($request->has('search')) {
             $search = $request->get('search');
@@ -34,7 +33,17 @@ class CustomerController extends Controller
             });
         }
 
-        $customers = $query->latest()->paginate(10);
+        $sortableColumns = ['id', 'name', 'email', 'phone', 'created_at'];
+        $sortBy = in_array($request->get('sort_by'), $sortableColumns, true)
+            ? $request->get('sort_by')
+            : 'created_at';
+        $sortDirection = $request->get('sort_direction') === 'asc' ? 'asc' : 'desc';
+
+        $customers = $query
+            ->orderBy($sortBy, $sortDirection)
+            ->orderBy('id', $sortDirection)
+            ->paginate(10)
+            ->appends($request->query());
         $isAdmin = auth()->user()?->isAdmin() ?? false;
         $authId = auth()->id();
 

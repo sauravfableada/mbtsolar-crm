@@ -1194,6 +1194,7 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/table-sort.js') }}?v={{ filemtime(PUBLIC_PATH('js/table-sort.js')) }}"></script>
 
     @stack('scripts')
     @include('crm.estimates.partials.header-quick-estimate-scripts')
