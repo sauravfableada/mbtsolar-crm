@@ -1016,3 +1016,28 @@
 [data-theme="dark"] .crm-table-sort-button.active.sort-desc .sort-down {
     color: #60a5fa;
 }
+.crm-auto-filter-wrap {
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+}
+
+.crm-auto-filter-panel {
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+.crm-auto-filter-toggle {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.crm-auto-filter-panel + .table-responsive {
+    margin-top: 0;
+}
+
+[data-theme="dark"] .crm-auto-filter-panel {
+    border-color: rgba(255, 255, 255, .08);
+    background: #172033;
+}

@@ -123,16 +123,36 @@
         wrapper.parentNode.insertBefore(toolbar, wrapper);
 
         const panel = toolbar.querySelector(".crm-auto-filter-panel");
+        const toggle = toolbar.querySelector(".crm-auto-filter-toggle");
+        const clearButton = toolbar.querySelector(".crm-auto-filter-clear");
         const countBadge = toolbar.querySelector(".badge");
+        const card = table.closest(".card");
+        const searchInput = card?.querySelector('input[id*="Search"], input[id*="search"], input[type="search"]');
+        const searchGroup = searchInput?.closest(".input-group");
+        const controlsRow = searchGroup?.parentElement;
+
+        if (controlsRow && card?.contains(controlsRow)) {
+            Array.from(controlsRow.children).forEach(child => {
+                if (child !== searchGroup && child.matches("h1, h2, h3, h4, h5, h6, p, .section-title")) {
+                    child.remove();
+                }
+            });
+            controlsRow.classList.remove("justify-content-between");
+            controlsRow.classList.add("justify-content-start");
+            searchGroup.insertAdjacentElement("afterend", toggle);
+            controlsRow.insertAdjacentElement("afterend", panel);
+            toolbar.remove();
+        }
+
         const run = () => applyFilters(table, panel, countBadge);
         let timer;
-        toolbar.querySelector(".crm-auto-filter-toggle").addEventListener("click", event => {
+        toggle.addEventListener("click", event => {
             const open = panel.classList.toggle("d-none") === false;
             event.currentTarget.setAttribute("aria-expanded", String(open));
         });
         panel.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 250); });
         panel.addEventListener("change", run);
-        toolbar.querySelector(".crm-auto-filter-clear").addEventListener("click", () => {
+        clearButton.addEventListener("click", () => {
             panel.querySelectorAll("input, select").forEach(control => { control.value = ""; });
             run();
         });
