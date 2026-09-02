@@ -80,7 +80,7 @@
     </div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table id="customerTable" class="table table-hover align-middle mb-0 responsive-table" data-sort-mode="server" data-sort-column="created_at" data-sort-direction="desc">
+            <table id="customerTable" class="table table-hover align-middle mb-0 responsive-table" data-sort-mode="server" data-sort-column="created_at" data-sort-direction="desc" data-no-auto-filter>
                 <thead>
                     <tr>
                         <th class="ps-3" style="width: 90px;"><button type="button" class="customer-sort-button" data-sort="id">Sr.No <span class="customer-sort-indicator" aria-hidden="true"><i class="fa-solid fa-caret-up sort-up"></i><i class="fa-solid fa-caret-down sort-down"></i></span></button></th>
