@@ -1035,6 +1035,77 @@
 
 .crm-auto-per-page { width: 78px; }
 
+.crm-native-filter-select {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.crm-scroll-select {
+    position: relative;
+    width: 100%;
+}
+
+.crm-scroll-select-toggle {
+    width: 100%;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.crm-scroll-select-menu {
+    display: none;
+    position: absolute;
+    z-index: 1080;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 230px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0.35rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    background: #fff;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+}
+
+.crm-scroll-select-menu.show { display: block; }
+
+.crm-scroll-select-option {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    border: 0;
+    border-radius: 0.35rem;
+    background: transparent;
+    color: #0f172a;
+    text-align: left;
+    white-space: normal;
+}
+
+.crm-scroll-select-option:hover,
+.crm-scroll-select-option.active {
+    color: #fff;
+    background: #0b2948;
+}
+
+[data-theme="dark"] .crm-scroll-select-menu {
+    border-color: rgba(255, 255, 255, .12);
+    background: #172033;
+}
+
+[data-theme="dark"] .crm-scroll-select-option { color: #e2e8f0; }
+[data-theme="dark"] .crm-scroll-select-option:hover,
+[data-theme="dark"] .crm-scroll-select-option.active { color: #fff; background: #2563eb; }
+
 .crm-auto-filter-panel + .table-responsive {
     margin-top: 0;
 }

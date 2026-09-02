@@ -39,6 +39,56 @@
         return String(value || "").replace(/\s+/g, " ").trim();
     }
 
+    function enhanceScrollableSelect(select) {
+        if (select.dataset.scrollSelectInitialized === "true") return;
+        select.dataset.scrollSelectInitialized = "true";
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "crm-scroll-select";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "form-select form-select-sm crm-scroll-select-toggle";
+        const menu = document.createElement("div");
+        menu.className = "crm-scroll-select-menu";
+        wrapper.append(button, menu);
+        select.insertAdjacentElement("afterend", wrapper);
+        select.classList.add("crm-native-filter-select");
+
+        function rebuild() {
+            menu.innerHTML = "";
+            Array.from(select.options).forEach(option => {
+                const item = document.createElement("button");
+                item.type = "button";
+                item.className = "crm-scroll-select-option";
+                item.textContent = option.textContent;
+                item.classList.toggle("active", option.selected);
+                item.addEventListener("click", () => {
+                    select.value = option.value;
+                    select.dispatchEvent(new Event("change", { bubbles: true }));
+                    menu.classList.remove("show");
+                    button.setAttribute("aria-expanded", "false");
+                });
+                menu.appendChild(item);
+            });
+            button.textContent = select.selectedOptions[0]?.textContent || select.options[0]?.textContent || "Select";
+            button.disabled = select.disabled;
+        }
+
+        button.setAttribute("aria-expanded", "false");
+        button.addEventListener("click", () => {
+            document.querySelectorAll(".crm-scroll-select-menu.show").forEach(openMenu => { if (openMenu !== menu) openMenu.classList.remove("show"); });
+            const open = menu.classList.toggle("show");
+            button.setAttribute("aria-expanded", String(open));
+        });
+        select.addEventListener("change", rebuild);
+        new MutationObserver(rebuild).observe(select, { childList: true, subtree: true, attributes: true });
+        rebuild();
+    }
+
+    function enhanceAllFilterSelects(root = document) {
+        root.querySelectorAll(".customer-filter-panel select, .lead-filter-panel select, .crm-auto-filter-panel select").forEach(enhanceScrollableSelect);
+    }
+
     function slug(value) {
         return text(value).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
     }
@@ -202,6 +252,7 @@
         });
 
         updateSelectOptions(table, panel);
+        enhanceAllFilterSelects(panel);
         let observing = false;
         const observer = new MutationObserver(() => {
             if (observing) return;
@@ -215,8 +266,14 @@
 
     function initializeAll() {
         document.querySelectorAll("table.table-hover").forEach((table, index) => initialize(table, index));
+        enhanceAllFilterSelects();
     }
 
     window.CrmTableFilter = { initialize, initializeAll };
+    document.addEventListener("click", event => {
+        if (!event.target.closest(".crm-scroll-select")) {
+            document.querySelectorAll(".crm-scroll-select-menu.show").forEach(menu => menu.classList.remove("show"));
+        }
+    });
     document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", initializeAll) : initializeAll();
 })();
