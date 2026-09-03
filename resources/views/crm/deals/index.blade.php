@@ -7,7 +7,7 @@
 @endpush
 
 @section('content')
-    <div class="container-fluid p-0">
+    <div class="container-fluid p-0" id="dealsIndexPage">
         <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
             <div class="card-header border-bottom-0 py-3 px-4">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
@@ -44,7 +44,7 @@
                             <tr>
                                 <th class="text-center">Sr.No</th>
                                 <th class="text-center">Customer Name</th>
-                                <th class="d-none d-md-table-cell text-center">Estimate Name</th>
+                                <th class="d-none d-md-table-cell text-center" data-no-filter>Estimate Name</th>
                                 <th class="d-none d-md-table-cell text-center">Created By</th>
                                 <th class="d-none d-md-table-cell text-center">Estimate Amount</th>
                                 <th class="d-none d-md-table-cell text-center">Status</th>
@@ -65,6 +65,11 @@
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
     <style>
+        @media (min-width: 992px) {
+            #dealsIndexPage .crm-auto-filter-panel .row { flex-wrap: nowrap; }
+            #dealsIndexPage .crm-auto-filter-panel .row > div { flex: 1 1 0; width: auto; max-width: none; }
+        }
+
         .crm-filter-tabs {
             border-bottom: 2px solid #e9ecef;
         }

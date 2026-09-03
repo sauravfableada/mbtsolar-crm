@@ -63,8 +63,8 @@
                     <tr>
                         <td colspan="5" class="text-center py-5">
                             <div class="text-muted mb-3"><i class="bi bi-inbox display-1 opacity-25"></i></div>
-                            <p class="text-muted">No sales found.</p>
-                            ${permissions.create ? '<a href="/sales/create" class="btn btn-dark-blue btn-sm rounded-pill px-4">Add Your First Sale</a>' : ''}
+                            <p class="text-muted">No Material OUT records found.</p>
+                            ${permissions.create ? '<a href="/sales/create" class="btn btn-dark-blue btn-sm rounded-pill px-4">Add Your First Material OUT</a>' : ''}
                         </td>
                     </tr>`;
                 return;

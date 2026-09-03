@@ -27,7 +27,7 @@
 
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 responsive-table" id="inventoryTable">
+                <table class="table table-hover align-middle mb-0 responsive-table" id="inventoryTable" data-no-auto-filter>
                     <thead>
                         <tr>
                             <th class="ps-4 text-center" style="width: 80px;">Sr.No</th>

@@ -473,7 +473,7 @@
             if (!items || items.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="11" class="text-center py-5">
+                        <td colspan="9" class="text-center py-5">
                             <div class="text-muted mb-3"><i class="bi bi-inbox display-1 opacity-25"></i></div>
                             <p class="text-muted">No tasks added yet.</p>
                             ${permissions.create ? '<a href="/tasks/create" class="btn btn-dark-blue btn-sm rounded-pill px-4">Create Your First Task</a>' : ""}
@@ -485,13 +485,11 @@
             tableBody.innerHTML = items.map(function (task, index) {
                 const customerName = escapeHtml(task.customer?.name || task.project?.customer?.name || "-");
                 const staffName = escapeHtml(task.assignedUser?.name || task.owner?.name || "-");
-                const estimateName = escapeHtml(task.estimate?.estimate_name || task.estimate?.estimate_no || "-");
                 const taskTitle = escapeHtml(task.title ?? "-");
                 const taskTypeLabel = escapeHtml(task.task_type || "-");
                 const statusLabel = escapeHtml(formatLabel(normalizeTaskStatus(task.status)));
                 const dueDate = escapeHtml(formatDate(task.due_date));
                 const rowNumber = meta && meta.from ? meta.from + index : index + 1;
-                const actionConfig = getTaskActionConfig(task);
 
                 return `
                     <tr>
@@ -500,7 +498,6 @@
                         </td>
                         <td class="text-center">${customerName}</td>
                         <td class="text-center d-none d-md-table-cell">${staffName}</td>
-                        <td class="text-center d-none d-md-table-cell">${estimateName}</td>
                         <td class="text-center">
                             <div class="fw-bold small">${taskTitle}</div>
                         </td>
@@ -513,11 +510,6 @@
                             <span class="badge crm-status-pill rounded-pill ${statusClass(task.status)}">
                                 ${statusLabel}
                             </span>
-                        </td>
-                        <td class="text-center d-none d-md-table-cell text-nowrap">
-                            ${actionConfig
-                                ? `<button type="button" class="${actionConfig.buttonClass}" data-task-id="${task.id}" data-next-status="${actionConfig.nextStatus}" data-task-type="${escapeHtml(task.task_type || '')}">${actionConfig.label}</button>`
-                                : '<span class="text-muted">-</span>'}
                         </td>
                         <td class="text-center d-none d-md-table-cell text-nowrap">${dueDate}</td>
                         <td class="text-center d-none d-md-table-cell tasks-sticky-action text-nowrap">
@@ -534,7 +526,7 @@
                         </td>
                     </tr>
                     <tr class="details-row d-md-none border-0" id="details-${task.id}" style="display: none;">
-                        <td colspan="11" class="p-0 border">
+                        <td colspan="9" class="p-0 border">
                             <div class="details-content">
                                 <div class="row g-3">
                                     <div class="col-12 d-flex justify-content-between align-items-center gap-3">
@@ -544,10 +536,6 @@
                                     <div class="col-12 d-flex justify-content-between align-items-center gap-3">
                                         <div class="expand-label"><i class="fa-solid fa-user-gear"></i> Staff :</div>
                                         <div class="expand-value text-end">${staffName}</div>
-                                    </div>
-                                    <div class="col-12 d-flex justify-content-between align-items-center gap-3">
-                                        <div class="expand-label"><i class="fa-solid fa-file-lines"></i> Estimate :</div>
-                                        <div class="expand-value text-end">${estimateName}</div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-between align-items-center gap-3">
                                         <div class="expand-label"><i class="fa-solid fa-list-check"></i> Task :</div>
@@ -563,14 +551,6 @@
                                         <div class="expand-label"><i class="fa-solid fa-signal"></i> Status :</div>
                                         <div class="expand-value text-end">
                                             <span class="badge crm-status-pill rounded-pill ${statusClass(task.status)}">${statusLabel}</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-12 d-flex justify-content-between align-items-center gap-3">
-                                        <div class="expand-label"><i class="fa-solid fa-play"></i> Task Action :</div>
-                                        <div class="expand-value text-end">
-                                            ${actionConfig
-                                                ? `<button type="button" class="${actionConfig.buttonClass}" data-task-id="${task.id}" data-next-status="${actionConfig.nextStatus}" data-task-type="${escapeHtml(task.task_type || '')}">${actionConfig.label}</button>`
-                                                : '<span class="text-muted">-</span>'}
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-between align-items-center gap-3">
