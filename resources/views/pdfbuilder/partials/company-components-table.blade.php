@@ -1,14 +1,44 @@
 <?php
+    $genData = [];
+    if (isset($estimate) && $estimate) {
+        $rawGenData = is_array($estimate) ? ($estimate['generation_data'] ?? '[]') : ($estimate->generation_data ?? '[]');
+        $genData = is_array($rawGenData) ? $rawGenData : json_decode((string)$rawGenData, true);
+    } elseif (isset($invoice) && $invoice) {
+        $rawGenData = is_array($invoice) ? ($invoice['generation_data'] ?? '[]') : ($invoice->generation_data ?? '[]');
+        $genData = is_array($rawGenData) ? $rawGenData : json_decode((string)$rawGenData, true);
+    }
+    $genData = $genData ?: [];
+    
+    $customName = $genData['custom_name'] ?? null;
+    $customLogoPath = $genData['custom_logo'] ?? null;
+    $customLogoBase64 = null;
+    if ($customLogoPath) {
+        $diskPath = storage_path('app/public/' . $customLogoPath);
+        if (file_exists($diskPath)) {
+            $customLogoBase64 = 'data:image/' . pathinfo($diskPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($diskPath));
+        }
+    }
+
     // Attempt to grab admin/user phone and email if not already defined
     $adminPhone = $companyPhone ?? data_get($user, 'phone') ?? data_get($user, 'mobile') ?? data_get($profileUser, 'phone') ?? data_get($profileUser, 'mobile') ?? '';
     $adminEmail = $companyEmail ?? data_get($companySettings, 'company_email') ?? data_get($companySettings, 'email') ?? data_get($user, 'company_email') ?? data_get($user, 'email') ?? data_get($profileUser, 'email') ?? '';
-    $adminName = $preparedName ?? data_get($user, 'name') ?? $globalCompanyName ?? 'MBT SOLAR';
+    $adminName = $customName ?: ($globalCompanyName ?? 'MBT SOLAR');
+    
+    \Log::info('PDF GEN DATA DEBUG', [
+        'genData' => $genData,
+        'customName' => $customName,
+        'adminName' => $adminName,
+        'is_estimate_set' => isset($estimate),
+        'is_invoice_set' => isset($invoice),
+    ]);
 ?>
 <div style="page-break-inside: avoid;">
     <div style="text-align: center; margin-bottom: 15px; margin-top: 10px;">
+        <?php if ($adminName): ?>
         <h3 style="color: #2b4c8c; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family:'Montserrat', sans-serif;">
             <?= esc($adminName) ?>
         </h3>
+        <?php endif; ?>
         <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px; font-weight: bold; font-family:'Montserrat', sans-serif; margin-bottom: 5px;">
             <tr>
                 <td align="left">MOBILE NO-<?= esc($adminPhone) ?></td>
@@ -158,4 +188,9 @@
             * INVERTER GUARANTEE/WARRANTY 10 YEARS.
         </div>
     </div>
+    <?php if ($customLogoBase64): ?>
+    <div style="text-align: right; margin-top: 40px; padding-right: 20px;">
+        <img src="<?= $customLogoBase64 ?>" style="max-width: 150px; max-height: 80px; object-fit: contain;">
+    </div>
+    <?php endif; ?>
 </div>

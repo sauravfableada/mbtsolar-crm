@@ -91,10 +91,19 @@ if (!function_exists('normalize_pdf_image')) {
     $plainNumber = static function ($value, int $decimals = 0) {
         return rtrim(rtrim(number_format((float) $value, $decimals), '0'), '.');
     };
-    $companyName = $valueOr($companySettings['company_name'] ?? data_get($preparedUser, 'company') ?? data_get($preparedUser, 'company_name'), 'MBT SOLAR');
+    $genData = [];
+    if (isset($doc) && $doc) {
+        $rawGenData = is_array($doc) ? ($doc['generation_data'] ?? '[]') : ($doc->generation_data ?? '[]');
+        $genData = is_array($rawGenData) ? $rawGenData : json_decode((string)$rawGenData, true);
+        $genData = $genData ?: [];
+    }
+    $customName = $genData['custom_name'] ?? null;
+    $customLogoPath = $genData['custom_logo'] ?? null;
+
+    $companyName = $customName ?: $valueOr($companySettings['company_name'] ?? data_get($preparedUser, 'company') ?? data_get($preparedUser, 'company_name'), 'MBT SOLAR');
     $clientName = $valueOr($clientName, 'Valued Customer');
     $clientAddress = $valueOr($clientAddress, 'the project site');
-    $preparedName = $valueOr(data_get($preparedUser, 'name'), $companyName . ' Team');
+    $preparedName = $customName ?: $valueOr(data_get($preparedUser, 'name'), $companyName);
     $preparedTitle = $valueOr(data_get($preparedUser, 'job_title'), 'Solar Consultant');
     $companyPhone = $valueOr($companySettings['phone'] ?? data_get($preparedUser, 'phone') ?? data_get($preparedUser, 'mobile'));
     $companyEmail = $valueOr($companySettings['email'] ?? data_get($preparedUser, 'email'));
@@ -130,15 +139,26 @@ if (!function_exists('normalize_pdf_image')) {
     $rate2 = $solarStructureValue / $qtyForCalc;
     $actualGstRate = $baseSystemValue > 0 ? round(($gstValue / $baseSystemValue) * 100, 1) : 0;
     $logoBase64 = null;
-    $companyLogoPath = $companySettings['company_logo_path'] ?? null;
-    if ($companyLogoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($companyLogoPath)) {
-        $logoData = \Illuminate\Support\Facades\Storage::disk('public')->get($companyLogoPath);
-        $logoBase64 = 'data:image/' . pathinfo($companyLogoPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($logoData);
-    } elseif (!empty($companySettings['company_logo_path'])) {
-        $diskPath = storage_path('app/public/' . $companySettings['company_logo_path']);
+    
+    if ($customLogoPath) {
+        $diskPath = storage_path('app/public/' . $customLogoPath);
         if (file_exists($diskPath)) {
             $logoData = file_get_contents($diskPath);
             $logoBase64 = 'data:image/' . pathinfo($diskPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($logoData);
+        }
+    }
+    
+    $companyLogoPath = $companySettings['company_logo_path'] ?? null;
+    if (!$logoBase64) {
+        if ($companyLogoPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($companyLogoPath)) {
+            $logoData = \Illuminate\Support\Facades\Storage::disk('public')->get($companyLogoPath);
+            $logoBase64 = 'data:image/' . pathinfo($companyLogoPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($logoData);
+        } elseif (!empty($companySettings['company_logo_path'])) {
+            $diskPath = storage_path('app/public/' . $companySettings['company_logo_path']);
+            if (file_exists($diskPath)) {
+                $logoData = file_get_contents($diskPath);
+                $logoBase64 = 'data:image/' . pathinfo($diskPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($logoData);
+            }
         }
     }
     if (!$logoBase64 && !empty($preparedUser['company_logo'])) {
@@ -433,7 +453,7 @@ if (!function_exists('normalize_pdf_image')) {
                     <p style="margin-bottom: 5px;">Best Regards,</p>
                     <p>
                         <strong>{{ $preparedName }}</strong>@if($preparedTitle && $preparedTitle !== $companyName) <span style="font-weight:normal;">| {{ $preparedTitle }}</span>@endif<br>
-                        {{ $companyName }}@if($companyPhone) | {{ $companyPhone }}@endif@if($companyEmail) | {{ $companyEmail }}@endif
+                        {{ $companyName }}@if($companyPhone) | {{ $companyPhone }}@endif @if($companyEmail) | {{ $companyEmail }}@endif
                     </p>
                 </div>
             @endif

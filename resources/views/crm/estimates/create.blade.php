@@ -472,29 +472,33 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12 estimate-structure-charges-col" id="structure-charges-input" style="display: none;">
-                                    <label class="form-label fw-semibold small">Enter Structure Charges</label>
-                                    <input type="number" min="0" step="1" name="solar_structure_charges"
-                                        id="solar_structure_charges" value="{{ old('solar_structure_charges', 0) }}"
-                                        class="form-control @error('solar_structure_charges') is-invalid @enderror"
-                                        placeholder="0.00">
-                                    <div class="invalid-feedback">
-                                        @error('solar_structure_charges')
-                                            {{ $message }}
-                                        @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="col-12 estimate-meter-charges-col" id="meter-charges-input" style="display: none;">
-                                    <label class="form-label fw-semibold small">Enter Solar Meter Charges</label>
-                                    <input type="number" min="0" step="1" name="solar_meter_charges"
-                                        id="solar_meter_charges" value="{{ old('solar_meter_charges', 0) }}"
-                                        class="form-control @error('solar_meter_charges') is-invalid @enderror"
-                                        placeholder="0.00">
-                                    <div class="invalid-feedback">
-                                        @error('solar_meter_charges')
-                                            {{ $message }}
-                                        @enderror
+                                <div class="col-12 mt-2" id="additional-charges-wrapper">
+                                    <div class="row g-3">
+                                        <div class="col-md-6 estimate-structure-charges-col" id="structure-charges-input" style="display: none;">
+                                            <label class="form-label fw-semibold small">Enter Structure Charges</label>
+                                            <input type="number" min="0" step="1" name="solar_structure_charges"
+                                                id="solar_structure_charges" value="{{ old('solar_structure_charges', 0) }}"
+                                                class="form-control @error('solar_structure_charges') is-invalid @enderror"
+                                                placeholder="0.00">
+                                            <div class="invalid-feedback">
+                                                @error('solar_structure_charges')
+                                                    {{ $message }}
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 estimate-meter-charges-col" id="meter-charges-input" style="display: none;">
+                                            <label class="form-label fw-semibold small">Enter Solar Meter Charges</label>
+                                            <input type="number" min="0" step="1" name="solar_meter_charges"
+                                                id="solar_meter_charges" value="{{ old('solar_meter_charges', 0) }}"
+                                                class="form-control @error('solar_meter_charges') is-invalid @enderror"
+                                                placeholder="0.00">
+                                            <div class="invalid-feedback">
+                                                @error('solar_meter_charges')
+                                                    {{ $message }}
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -583,6 +587,16 @@
                                 </button>
                                 <div class="estimate-bom-instruction" id="products-error" style="display:none;" role="status">
                                     <i class="bi bi-info-circle me-1" aria-hidden="true"></i><span class="products-error-text">Please select at least one BOM.</span>
+                                </div>
+                                <div class="row g-3 mt-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Logo</label>
+                                        <input type="file" name="custom_logo" id="custom_logo" class="form-control" accept="image/*">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Name</label>
+                                        <input type="text" name="custom_name" id="custom_name" class="form-control" placeholder="Enter Name" value="{{ old('custom_name') }}">
+                                    </div>
                                 </div>
                             </div>
                         </div>

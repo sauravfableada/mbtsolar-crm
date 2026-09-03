@@ -102,6 +102,8 @@ class InvoiceController extends ApiBaseController
             'invoice_date' => 'nullable|date',
             'products' => 'nullable|json',
             'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
+            'custom_logo' => 'nullable|file|mimes:jpg,jpeg,png',
+            'custom_name' => 'nullable|string',
         ], [
             'customer_id.required' => 'Please select a customer',
             'invoice_name.required' => 'Please enter invoice name',
@@ -192,9 +194,17 @@ class InvoiceController extends ApiBaseController
             // Generation data (ROI info from reference code)
             $monthlyBill = $request->input('monthly_electricity_bill', 3000);
             $unitRate = $request->input('unit_rate', 8);
+            
+            $customLogoPath = null;
+            if ($request->hasFile('custom_logo')) {
+                $customLogoPath = $request->file('custom_logo')->store('custom_logos', 'public');
+            }
+
             $generationData = [
                 'monthly_electricity_bill' => (float) $monthlyBill,
                 'unit_rate' => (float) $unitRate,
+                'custom_logo' => $customLogoPath,
+                'custom_name' => $request->input('custom_name'),
             ];
 
             // Create invoice
@@ -275,6 +285,8 @@ class InvoiceController extends ApiBaseController
             'invoice_date' => 'nullable|date',
             'products' => 'nullable|json',
             'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
+            'custom_logo' => 'nullable|file|mimes:jpg,jpeg,png',
+            'custom_name' => 'nullable|string',
         ], [
             'customer_id.required' => 'Please select a customer',
             'invoice_name.required' => 'Please enter invoice name',
@@ -365,18 +377,29 @@ class InvoiceController extends ApiBaseController
                 'monthly_electricity_bill' => (float) $monthlyBill,
                 'unit_rate' => (float) $unitRate,
             ];
+            $generationData = is_array($invoice->generation_data) ? $invoice->generation_data : json_decode((string)$invoice->generation_data, true);
+            if (!is_array($generationData)) $generationData = [];
+            
+            $generationData['monthly_electricity_bill'] = (float) $monthlyBill;
+            $generationData['unit_rate'] = (float) $unitRate;
+            
+            if ($request->hasFile('custom_logo')) {
+                $generationData['custom_logo'] = $request->file('custom_logo')->store('custom_logos', 'public');
+            }
+            if ($request->has('custom_name')) {
+                $generationData['custom_name'] = $request->input('custom_name');
+            }
 
             // Update invoice
             $updateData = [
                 'customer_id' => $customerId,
-                'product_id' => $request->input('product_id'),
-                'invoice_date' => $invoiceDate,
                 'invoice_name' => $invoiceName,
                 'type' => $type,
                 'quantity' => $quantity,
                 'price' => $price,
                 'solar_structure_charges' => $solarStructureCharges,
                 'solar_meter_charges' => $solarMeterCharges,
+                'invoice_date' => $invoiceDate,
                 'template_id' => $templateId ?: null,
                 'currency_id' => $currencyId,
                 'product_name' => json_encode($products),

@@ -127,6 +127,8 @@ class EstimateController extends Controller
             'estimate_date' => 'nullable|date',
             'products' => 'nullable|json',
             'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
+            'custom_logo' => 'nullable|file|mimes:jpg,jpeg,png',
+            'custom_name' => 'nullable|string',
         ], [
             'customer_id.required' => 'Please select a customer',
             'estimate_name.required' => 'Please enter estimate name',
@@ -237,10 +239,18 @@ class EstimateController extends Controller
             // Generation data (ROI info from reference code)
             $monthlyBill = $request->input('monthly_electricity_bill', 3000);
             $unitRate = $request->input('unit_rate', 8);
+            
+            $customLogoPath = null;
+            if ($request->hasFile('custom_logo')) {
+                $customLogoPath = $request->file('custom_logo')->store('custom_logos', 'public');
+            }
+
             $generationData = [
                 'monthly_electricity_bill' => (float) $monthlyBill,
                 'unit_rate' => (float) $unitRate,
                 'additional_charges' => $additionalCharges,
+                'custom_logo' => $customLogoPath,
+                'custom_name' => $request->input('custom_name'),
             ];
 
             // Create estimate
@@ -350,6 +360,8 @@ class EstimateController extends Controller
             'estimate_date' => 'nullable|date',
             'products' => 'nullable|json',
             'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
+            'custom_logo' => 'nullable|file|mimes:jpg,jpeg,png',
+            'custom_name' => 'nullable|string',
         ], [
             'customer_id.required' => 'Please select a customer',
             'estimate_name.required' => 'Please enter estimate name',
@@ -454,10 +466,21 @@ class EstimateController extends Controller
             // Generation data
             $monthlyBill = $request->input('monthly_electricity_bill', 3000);
             $unitRate = $request->input('unit_rate', 8);
+            
+            $existingGenerationData = is_array($estimate->generation_data) ? $estimate->generation_data : json_decode((string)$estimate->generation_data, true);
+            if (!is_array($existingGenerationData)) $existingGenerationData = [];
+            
+            $customLogoPath = $existingGenerationData['custom_logo'] ?? null;
+            if ($request->hasFile('custom_logo')) {
+                $customLogoPath = $request->file('custom_logo')->store('custom_logos', 'public');
+            }
+
             $generationData = [
                 'monthly_electricity_bill' => (float) $monthlyBill,
                 'unit_rate' => (float) $unitRate,
                 'additional_charges' => $additionalCharges,
+                'custom_logo' => $customLogoPath,
+                'custom_name' => $request->has('custom_name') ? $request->input('custom_name') : ($existingGenerationData['custom_name'] ?? null),
             ];
 
             // Update estimate

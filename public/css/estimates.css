@@ -35,14 +35,14 @@
         --bs-gutter-x: 0.5rem;
     }
 
-    #quickEstimateModal .row > [class*="col-"],
-    #quickEstimateModal .active-step .row > [class*="col-"] {
+    #quickEstimateModal .row>[class*="col-"],
+    #quickEstimateModal .active-step .row>[class*="col-"] {
         min-width: 0;
     }
 
     #quickEstimateModal label.form-label .crm-label-icon,
-    #quickEstimateModal label.form-label > i.fa-solid,
-    #quickEstimateModal label.form-label > i.bi:not(.bi-info-circle) {
+    #quickEstimateModal label.form-label>i.fa-solid,
+    #quickEstimateModal label.form-label>i.bi:not(.bi-info-circle) {
         display: none !important;
     }
 
@@ -157,10 +157,11 @@
 }
 
 @media (max-width: 767.98px) {
-    #estimateCreateForm .estimate-charges-date-group > .row.g-3,
-    #estimateEditForm .estimate-charges-date-group > .row.g-3,
-    #invoiceCreateForm .estimate-charges-date-group > .row.g-3,
-    #invoiceEditForm .estimate-charges-date-group > .row.g-3 {
+
+    #estimateCreateForm .estimate-charges-date-group>.row.g-3,
+    #estimateEditForm .estimate-charges-date-group>.row.g-3,
+    #invoiceCreateForm .estimate-charges-date-group>.row.g-3,
+    #invoiceEditForm .estimate-charges-date-group>.row.g-3 {
         min-height: 0 !important;
         --bs-gutter-y: 0.75rem;
     }
@@ -189,10 +190,11 @@
 }
 
 @media (min-width: 768px) {
-    #estimateCreateForm .estimate-charges-date-group > .row,
-    #estimateEditForm .estimate-charges-date-group > .row,
-    #invoiceCreateForm .estimate-charges-date-group > .row,
-    #invoiceEditForm .estimate-charges-date-group > .row {
+
+    #estimateCreateForm .estimate-charges-date-group>.row,
+    #estimateEditForm .estimate-charges-date-group>.row,
+    #invoiceCreateForm .estimate-charges-date-group>.row,
+    #invoiceEditForm .estimate-charges-date-group>.row {
         align-items: flex-end;
     }
 
@@ -207,13 +209,13 @@
         min-width: 0;
     }
 
-    #estimateCreateForm .estimate-structure-charges-col,
+    /* #estimateCreateForm .estimate-structure-charges-col,
     #estimateEditForm .estimate-structure-charges-col,
     #invoiceCreateForm .estimate-structure-charges-col,
     #invoiceEditForm .estimate-structure-charges-col {
         flex: 0 0 100%;
         max-width: 100%;
-    }
+    } */
 }
 
 #addCustomerModal .modal-dialog,
@@ -233,6 +235,7 @@
 }
 
 @media (max-width: 767.98px) {
+
     #estimateCreateForm label.form-label,
     #estimateEditForm label.form-label,
     #invoiceCreateForm label.form-label,
@@ -273,15 +276,16 @@
         justify-content: flex-start !important;
     }
 
-    #estimateCreateForm .row.g-3 > [class*="col-"],
-    #estimateEditForm .row.g-3 > [class*="col-"],
-    #invoiceCreateForm .row.g-3 > [class*="col-"],
-    #invoiceEditForm .row.g-3 > [class*="col-"] {
+    #estimateCreateForm .row.g-3>[class*="col-"],
+    #estimateEditForm .row.g-3>[class*="col-"],
+    #invoiceCreateForm .row.g-3>[class*="col-"],
+    #invoiceEditForm .row.g-3>[class*="col-"] {
         min-width: 0;
     }
 }
 
 @media (max-width: 767.98px) {
+
     #addCustomerModal.modal,
     #quickAddBomModal.modal {
         padding-left: 1.25rem !important;
@@ -353,6 +357,7 @@
 }
 
 @media (min-width: 768px) {
+
     #estimateCreateForm .bom-row-grid.estimate-bom-base-grid,
     #estimateEditForm .bom-row-grid.estimate-bom-base-grid {
         grid-template-columns: minmax(180px, 2fr) minmax(130px, 1.2fr) minmax(90px, 0.7fr) minmax(70px, auto);
@@ -360,6 +365,7 @@
 }
 
 @media (max-width: 767.98px) {
+
     #estimateCreateForm .bom-section,
     #estimateEditForm .bom-section {
         padding: 0.75rem !important;
@@ -376,15 +382,15 @@
         gap: 0.75rem;
     }
 
-    #estimateCreateForm .bom-row-grid > div,
-    #estimateEditForm .bom-row-grid > div,
+    #estimateCreateForm .bom-row-grid>div,
+    #estimateEditForm .bom-row-grid>div,
     #estimateCreateForm .bom-row-grid .bom-action-cell,
     #estimateEditForm .bom-row-grid .bom-action-cell {
         grid-column: auto !important;
     }
 
-    #estimateCreateForm .bom-row-grid > div:first-child,
-    #estimateEditForm .bom-row-grid > div:first-child,
+    #estimateCreateForm .bom-row-grid>div:first-child,
+    #estimateEditForm .bom-row-grid>div:first-child,
     #estimateCreateForm .bom-row-grid .estimate-bom-money-col:nth-of-type(n+6),
     #estimateEditForm .bom-row-grid .estimate-bom-money-col:nth-of-type(n+6),
     #estimateCreateForm .bom-row-grid .bom-action-cell,
@@ -416,7 +422,7 @@
     font-size: 0.875rem;
     font-weight: 500;
     line-height: 1.4;
-    margin-top:10px;
+    margin-top: 10px;
 }
 
 #quickEstimateModal .quick-bom-instruction {
@@ -439,6 +445,7 @@
 }
 
 @media (max-width: 767.98px) {
+
     .estimate-header-actions,
     .invoice-header-actions {
         flex-wrap: nowrap;
@@ -564,13 +571,13 @@
     color: #333;
 }
 
-.totals-card .totals-row > .crm-label-with-icon {
+.totals-card .totals-row>.crm-label-with-icon {
     flex: 1 1 auto;
     min-width: 0;
     white-space: nowrap;
 }
 
-.totals-card .totals-row > .input-small {
+.totals-card .totals-row>.input-small {
     flex: 0 0 auto;
     width: 120px;
     min-width: 120px;
@@ -591,7 +598,7 @@
     box-sizing: border-box;
 }
 
-#quickEstimateModal .quick-totals-card .totals-row > .input-small {
+#quickEstimateModal .quick-totals-card .totals-row>.input-small {
     width: 120px;
     min-width: 120px;
     max-width: 160px;
@@ -640,11 +647,11 @@
     transition: 0.3s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: #4f63d2;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translateX(20px);
 }
 
@@ -846,6 +853,7 @@ input:checked + .slider:before {
     .preview-header {
         display: none;
     }
+
     .page-break {
         page-break-before: always;
     }
@@ -855,6 +863,7 @@ input:checked + .slider:before {
     .quotation-box {
         padding: 20px;
     }
+
     .preview-buttons {
         flex-direction: column;
         width: 100%;
