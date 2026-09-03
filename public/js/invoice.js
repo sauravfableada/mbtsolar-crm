@@ -367,6 +367,10 @@
         const structureInputBox = document.getElementById('structure-charges-input');
         const structureInput = document.getElementById('solar_structure_charges');
 
+        const meterCheck = document.getElementById('solar_meter_charges_check');
+        const meterInputBox = document.getElementById('meter-charges-input');
+        const meterInput = document.getElementById('solar_meter_charges');
+
         function autoCalculateSubsidy() {
             if (!typeInput || !qtyInput || !subsidyAmount) return;
 
@@ -420,6 +424,9 @@
             if (structureCheck && structureCheck.checked) {
                 subtotal += (parseFloat(structureInput.value) || 0);
             }
+            if (meterCheck && meterCheck.checked) {
+                subtotal += (parseFloat(meterInput.value) || 0);
+            }
             
             if (subtotalDisplay) subtotalDisplay.innerText = subtotal.toFixed(2);
             if (subtotalInput) subtotalInput.value = subtotal.toFixed(2);
@@ -463,10 +470,10 @@
         }
 
         // Enforce non-negative values on all major numerical inputs
-        [priceInput, qtyInput, gstPercent, discount, subsidyAmount, structureInput].forEach(restrictNegative);
+        [priceInput, qtyInput, gstPercent, discount, subsidyAmount, structureInput, meterInput].forEach(restrictNegative);
 
         // Standard numeric input changes
-        [priceInput, gstPercent, discount, subsidyAmount, structureInput].forEach(el => {
+        [priceInput, gstPercent, discount, subsidyAmount, structureInput, meterInput].forEach(el => {
             if (el) el.addEventListener('input', calculateTotals);
         });
 
@@ -493,6 +500,13 @@
         if (structureCheck) {
             structureCheck.addEventListener('change', function() {
                 if (structureInputBox) structureInputBox.style.display = this.checked ? 'block' : 'none';
+                calculateTotals();
+            });
+        }
+
+        if (meterCheck) {
+            meterCheck.addEventListener('change', function() {
+                if (meterInputBox) meterInputBox.style.display = this.checked ? 'block' : 'none';
                 calculateTotals();
             });
         }

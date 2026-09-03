@@ -99,7 +99,6 @@ class InvoiceController extends ApiBaseController
             'quantity' => 'required|numeric|gt:0',
             'price' => 'required|numeric|gt:0',
             'template_id' => 'nullable|exists:pdf_builder_forms,id',
-            'solar_meter_charges' => 'required|in:as_per_actual,as_per_client_scope,included',
             'invoice_date' => 'nullable|date',
             'products' => 'nullable|json',
             'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
@@ -111,7 +110,6 @@ class InvoiceController extends ApiBaseController
             'quantity.gt' => 'Please enter valid quantity (kW)',
             'price.required' => 'Please enter valid price',
             'price.gt' => 'Please enter valid price',
-            'solar_meter_charges.required' => 'Please select solar meter charges',
         ]);
 
         if ($validator->fails()) {
@@ -131,7 +129,7 @@ class InvoiceController extends ApiBaseController
             $quantity = (float) $request->input('quantity', 0);
             $price = (float) $request->input('price', 0);
             $templateId = (int) $request->input('template_id', 0);
-            $solarMeterCharges = $request->input('solar_meter_charges', '');
+            $solarMeterCharges = (float) ($request->input('solar_meter_charges') ?? 0);
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
             $invoiceDate = $request->input('invoice_date', now()->format('Y-m-d'));
             $comment = $request->input('comment', '');
@@ -274,7 +272,6 @@ class InvoiceController extends ApiBaseController
             'quantity' => 'required|numeric|gt:0',
             'price' => 'required|numeric|gt:0',
             'template_id' => 'nullable|exists:pdf_builder_forms,id',
-            'solar_meter_charges' => 'required|in:as_per_actual,as_per_client_scope,included',
             'invoice_date' => 'nullable|date',
             'products' => 'nullable|json',
             'attach_file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png',
@@ -286,7 +283,6 @@ class InvoiceController extends ApiBaseController
             'quantity.gt' => 'Please enter valid quantity (kW)',
             'price.required' => 'Please enter valid price',
             'price.gt' => 'Please enter valid price',
-            'solar_meter_charges.required' => 'Please select solar meter charges',
         ]);
 
         if ($validator->fails()) {
@@ -305,7 +301,7 @@ class InvoiceController extends ApiBaseController
             $quantity = (float) $request->input('quantity', 0);
             $price = (float) $request->input('price', 0);
             $templateId = (int) $request->input('template_id', 0);
-            $solarMeterCharges = $request->input('solar_meter_charges', '');
+            $solarMeterCharges = (float) ($request->input('solar_meter_charges') ?? 0);
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
             $invoiceDate = $request->input('invoice_date', now()->format('Y-m-d'));
             $comment = $request->input('comment', '');

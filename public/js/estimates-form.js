@@ -283,11 +283,13 @@
         const quantityInput = document.getElementById('quantity');
         const structureCheckbox = document.getElementById('solar_structure_charges_check');
         const structureInput = document.getElementById('solar_structure_charges');
+        const meterCheckbox = document.getElementById('solar_meter_charges_check');
+        const meterInput = document.getElementById('solar_meter_charges');
         const gstCheckbox = document.getElementById('apply_gst');
         const discountInput = document.getElementById('discount');
         const subsidyInput = document.getElementById('subsidy_amount');
 
-        const inputs = [priceInput, quantityInput, structureCheckbox, structureInput, gstCheckbox, discountInput, subsidyInput];
+        const inputs = [priceInput, quantityInput, structureCheckbox, structureInput, meterCheckbox, meterInput, gstCheckbox, discountInput, subsidyInput];
 
         inputs.forEach(input => {
             if (input) {
@@ -300,6 +302,17 @@
         if (structureCheckbox) {
             structureCheckbox.addEventListener('change', function () {
                 const box = document.getElementById('structure-charges-input');
+                if (box) {
+                    box.style.display = this.checked ? 'block' : 'none';
+                }
+                calculateTotals();
+            });
+        }
+
+        // Handle meter charges visibility
+        if (meterCheckbox) {
+            meterCheckbox.addEventListener('change', function () {
+                const box = document.getElementById('meter-charges-input');
                 if (box) {
                     box.style.display = this.checked ? 'block' : 'none';
                 }
@@ -328,12 +341,15 @@
         const structureCharges = document.getElementById('solar_structure_charges_check')?.checked 
             ? parseFloat(document.getElementById('solar_structure_charges')?.value || 0) 
             : 0;
+        const meterCharges = document.getElementById('solar_meter_charges_check')?.checked 
+            ? parseFloat(document.getElementById('solar_meter_charges')?.value || 0) 
+            : 0;
         const applyGst = document.getElementById('apply_gst')?.checked || false;
         const discount = parseFloat(document.getElementById('discount')?.value || 0);
         const subsidy = parseFloat(document.getElementById('subsidy_amount')?.value || 0);
 
-        // Calculate subtotal (price * quantity + structure charges)
-        const subtotal = (price * quantity) + structureCharges;
+        // Calculate subtotal (price * quantity + structure charges + meter charges)
+        const subtotal = (price * quantity) + structureCharges + meterCharges;
 
         // Calculate GST components
         let cgstAmount = 0;

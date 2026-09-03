@@ -473,6 +473,65 @@ if (!function_exists('normalize_pdf_image')) {
                 <li><strong>Step 3: Home Consumption &amp; Net Metering</strong> - Power goes to your appliances first. Any excess surplus electricity generated is instantly directed back into the government utility grid via a specialized bidirectional meter.</li>
                 <li><strong>Step 4: Utility Grid Backup</strong> - At night or during heavily overcast days, this system smoothly pulls electricity back from the utility grid, ensuring uninterrupted power.</li>
             </ul>
+
+            <div style="margin-top: 30px;">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <h3 style="color: #2b4c8c; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">{{ mb_strtoupper($preparedName) }}</h3>
+                    <div style="font-size: 14px; font-weight: bold;">
+                        <span style="margin-right: 20px;">MOBILE NO-{{ $companyPhone }}</span>
+                        <span>E-MAIL ID- {{ $companyEmail }}</span>
+                    </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 14px;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #000; background-color: #ffff00; padding: 8px; color: #ff0000; width: 10%;">NO.</th>
+                            <th style="border: 1px solid #000; background-color: #ffff00; padding: 8px; color: #ff0000; width: 90%;">DETAILS</th>
+                        </tr>
+                    </thead>
+                    <tbody style="color: #ff0000;">
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 8px;">1</td>
+                            <td style="border: 1px solid #000; padding: 8px;">ADANI/WAAREE (TOPCON)-580 TO 635</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 8px;">2</td>
+                            <td style="border: 1px solid #000; padding: 8px;">WIRE-POLYCAB 4 SQ MM DC WIRE<br>POLCAB 4 SQ MM AC WIRE</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 8px;">3</td>
+                            <td style="border: 1px solid #000; padding: 8px;">EARTHING -POLYCAB 2.5 SQ MM (GREEN)</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 8px;">4</td>
+                            <td style="border: 1px solid #000; padding: 8px;">LIGHTING ARRESTER 16 SQ MM DELUXE</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 8px;">5</td>
+                            <td style="border: 1px solid #000; padding: 8px;">ACDB / DCDB L/T</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 8px;">6</td>
+                            <td style="border: 1px solid #000; padding: 8px;">STRUCTURE PIPE HOT DIP GALVANIZED 60 MICRON COTTING 80*40<br>1 WALKWAY/SIDI- 75*25/50*25</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="font-weight: bold; font-size: 14px; text-transform: uppercase;">
+                    <div style="background-color: #00ff00; padding: 3px 6px; display: inline-block; margin-bottom: 8px;">
+                        * MAINTENANCE 6 YEARS FOR GUARANTEE/WARRANTY FREE SERVICE WITHOUT WASHING FROM MBT SOLAR.
+                    </div>
+                    <br>
+                    <div style="background-color: #00ff00; padding: 3px 6px; display: inline-block; margin-bottom: 8px;">
+                        * PANEL PERFORMANCE GUARANTEE 30 YEARS.
+                    </div>
+                    <br>
+                    <div style="background-color: #00ff00; padding: 3px 6px; display: inline-block; margin-bottom: 8px;">
+                        * INVERTER GUARANTEE/WARRANTY 10 YEARS.
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="prop-footer">

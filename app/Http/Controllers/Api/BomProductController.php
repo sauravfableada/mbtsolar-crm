@@ -256,9 +256,7 @@ class BomProductController extends ApiBaseController
             'product_name' => ['required', 'string', 'max:255'],
             'category_id' => ['nullable', 'array'],
             'category_id.*' => ['exists:category,id'],
-            'price' => $isQuickBom
-                ? ['nullable', 'numeric', 'min:0']
-                : ['required', 'numeric', 'min:1'],
+            'price' => ['nullable', 'numeric', 'min:0'],
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif,bmp,webp,avif,svg', 'max:2048'],
             // All other fields are optional - no validation
             'tax_type' => ['nullable'],
