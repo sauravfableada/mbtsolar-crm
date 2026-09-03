@@ -18,8 +18,46 @@
         const csrfToken =
             document.querySelector('meta[name="csrf-token"]')?.getAttribute("content") || "";
         const searchInput = document.getElementById("followUpSearch");
+        const filterPanel = document.getElementById("followUpFilters");
+        const filterToggle = document.getElementById("followUpFilterToggle");
+        const filterCount = document.getElementById("followUpFilterCount");
+        const leadFilter = document.getElementById("followUpLeadFilter");
+        const staffFilter = document.getElementById("followUpStaffFilter");
+        const createdRangeInput = document.getElementById("followUpCreatedRange");
+        const followUpRangeInput = document.getElementById("followUpDateRange");
+        const statusFilter = document.getElementById("followUpStatusFilter");
+        const perPageSelect = document.getElementById("followUpPerPage");
+        const exportButton = document.getElementById("followUpExportButton");
         let currentPageOffset = 0;
         let timer;
+        let createdRange = [];
+        let followUpRange = [];
+
+        function formatLocalDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, "0");
+            const day = String(date.getDate()).padStart(2, "0");
+            return `${year}-${month}-${day}`;
+        }
+
+        function makeRangePicker(input, setRange) {
+            if (!window.flatpickr || !input) return null;
+
+            return window.flatpickr(input, {
+                mode: "range",
+                dateFormat: "d-m-Y",
+                showMonths: 1,
+                disableMobile: true,
+                onChange(selectedDates) {
+                    setRange(selectedDates);
+                    // One date filters from that day onwards; two dates use a closed range.
+                    applyFilterChange();
+                },
+            });
+        }
+
+        const createdRangePicker = makeRangePicker(createdRangeInput, dates => { createdRange = dates; });
+        const followUpRangePicker = makeRangePicker(followUpRangeInput, dates => { followUpRange = dates; });
         
         // Get filter from URL parameter or default to 'created_by_me'
         const urlParams = new URLSearchParams(window.location.search);
@@ -53,8 +91,63 @@
                 newUrl.searchParams.set('filter', currentFilter);
                 window.history.replaceState({}, '', newUrl);
                 
-                fetchFollowUps(1);
+                applyFilterChange();
             });
+        });
+
+        function filterParams() {
+            const params = new URLSearchParams();
+            if (searchInput?.value.trim()) params.set("search", searchInput.value.trim());
+            if (leadFilter?.value.trim()) params.set("lead_name", leadFilter.value.trim());
+            if (staffFilter?.value) params.set("assigned_user_id", staffFilter.value);
+            if (statusFilter?.value) params.set("status", statusFilter.value);
+            if (createdRange[0]) params.set("created_from", formatLocalDate(createdRange[0]));
+            if (createdRange[1]) params.set("created_to", formatLocalDate(createdRange[1]));
+            if (followUpRange[0]) params.set("follow_up_from", formatLocalDate(followUpRange[0]));
+            if (followUpRange[1]) params.set("follow_up_to", formatLocalDate(followUpRange[1]));
+            if (currentFilter) params.set("filter", currentFilter);
+            params.set("per_page", perPageSelect?.value || "10");
+            return params;
+        }
+
+        function updateFilterSummary() {
+            const count = [leadFilter?.value.trim(), staffFilter?.value, createdRange.length, followUpRange.length, statusFilter?.value].filter(Boolean).length;
+            if (filterCount) {
+                filterCount.textContent = String(count);
+                filterCount.classList.toggle("d-none", count === 0);
+            }
+
+            if (exportButton) {
+                const url = new URL(exportButton.href, window.location.origin);
+                url.search = filterParams().toString();
+                url.searchParams.delete("per_page");
+                exportButton.href = url.toString();
+            }
+        }
+
+        function applyFilterChange() {
+            updateFilterSummary();
+            fetchFollowUps(1);
+        }
+
+        filterToggle?.addEventListener("click", () => {
+            const willOpen = filterPanel.classList.contains("d-none");
+            filterPanel.classList.toggle("d-none", !willOpen);
+            filterToggle.setAttribute("aria-expanded", String(willOpen));
+        });
+        [staffFilter, statusFilter, perPageSelect].forEach(field => field?.addEventListener("change", applyFilterChange));
+        leadFilter?.addEventListener("input", () => {
+            clearTimeout(timer);
+            timer = setTimeout(applyFilterChange, 350);
+        });
+        document.getElementById("followUpClearFilters")?.addEventListener("click", () => {
+            if (leadFilter) leadFilter.value = "";
+            [staffFilter, statusFilter].forEach(field => { if (field) field.value = ""; });
+            createdRange = [];
+            followUpRange = [];
+            createdRangePicker?.clear(false);
+            followUpRangePicker?.clear(false);
+            applyFilterChange();
         });
 
         function deleteFollowUp(id, button) {
@@ -262,16 +355,9 @@
         }
 
         function fetchFollowUps(page = 1) {
-            let url = `/api/follow-ups?page=${page}`;
-
-            if (searchInput && searchInput.value.trim()) {
-                url += `&search=${encodeURIComponent(searchInput.value.trim())}`;
-            }
-
-            // Add filter parameter for staff users
-            if (currentFilter) {
-                url += `&filter=${currentFilter}`;
-            }
+            const params = filterParams();
+            params.set("page", page);
+            const url = `/api/follow-ups?${params.toString()}`;
 
             $.ajax({
                 url: url,
@@ -373,6 +459,7 @@
             });
         }
 
+        updateFilterSummary();
         fetchFollowUps();
     }
 })();

@@ -14,7 +14,7 @@
                 </div>
                 <div class="d-flex flex-wrap gap-2">
                     @can('followups.view')
-                    <a href="{{ route('followups.export') }}" class="btn btn-outline-dark-blue">
+                    <a href="{{ route('followups.export') }}" id="followUpExportButton" class="btn btn-outline-dark-blue">
                         <i class="fa-solid fa-download me-1"></i>Export
                     </a>
                     @endcan
@@ -26,10 +26,26 @@
                 </div>
             </div>
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <h6 class="fw-bold mb-0">Active Follow Ups</h6>
-                <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
-                    <span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span>
-                    <input type="text" id="followUpSearch" class="form-control crm-search-input border-0" placeholder="Search follow ups..." name="search" value="{{ request('search') }}">
+                <div class="d-flex gap-2 flex-grow-1">
+                    <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
+                        <span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="followUpSearch" class="form-control crm-search-input border-0" placeholder="Search follow ups..." name="search" value="{{ request('search') }}">
+                    </div>
+                    <button type="button" id="followUpFilterToggle" class="btn btn-outline-dark-blue btn-sm" aria-expanded="true" aria-controls="followUpFilters"><i class="fa-solid fa-filter me-1"></i>Filters <span id="followUpFilterCount" class="badge rounded-pill text-bg-primary d-none">0</span></button>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <label for="followUpPerPage" class="small text-muted text-nowrap mb-0">Show per page:</label>
+                    <select id="followUpPerPage" class="form-select form-select-sm crm-auto-per-page" style="width: 78px;">@foreach([10, 25, 50, 100] as $size)<option value="{{ $size }}">{{ $size }}</option>@endforeach</select>
+                </div>
+            </div>
+            <div id="followUpFilters" class="followup-filter-panel mt-3">
+                <div class="row g-3 align-items-end">
+                    <div class="col-sm-6 col-lg-2"><label for="followUpLeadFilter" class="form-label small fw-semibold">Lead Name</label><input type="search" id="followUpLeadFilter" class="form-control form-control-sm" placeholder="Search lead name"></div>
+                    <div class="col-sm-6 col-lg-2"><label for="followUpStaffFilter" class="form-label small fw-semibold">Staff Name</label><select id="followUpStaffFilter" class="form-select form-select-sm"><option value="">All staff</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
+                    <div class="col-sm-6 col-lg-2"><label for="followUpCreatedRange" class="form-label small fw-semibold">Created At</label><div class="input-group input-group-sm"><span class="input-group-text"><i class="fa-regular fa-calendar"></i></span><input type="text" id="followUpCreatedRange" class="form-control" placeholder="From - To" autocomplete="off" readonly></div></div>
+                    <div class="col-sm-6 col-lg-2"><label for="followUpDateRange" class="form-label small fw-semibold">Follow Up Date</label><div class="input-group input-group-sm"><span class="input-group-text"><i class="fa-regular fa-calendar"></i></span><input type="text" id="followUpDateRange" class="form-control" placeholder="From - To" autocomplete="off" readonly></div></div>
+                    <div class="col-sm-6 col-lg-2"><label for="followUpStatusFilter" class="form-label small fw-semibold">Status</label><select id="followUpStatusFilter" class="form-select form-select-sm"><option value="">All statuses</option><option value="pending">Pending</option><option value="resheduled">Rescheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div>
+                    <div class="col-sm-6 col-lg-2"><button type="button" id="followUpClearFilters" class="btn btn-dark-blue btn-sm w-100"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button></div>
                 </div>
             </div>
         </div>
@@ -51,7 +67,7 @@
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 responsive-table">
+                <table class="table table-hover align-middle mb-0 responsive-table" data-no-auto-filter>
                     <thead>
                         <tr>
                             <th class="ps-4 text-center">Sr.No</th>
@@ -80,6 +96,8 @@
         .crm-filter-tabs {
             border-bottom: 2px solid #e9ecef;
         }
+        .followup-filter-panel { padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; box-shadow: 0 2px 6px rgba(15, 23, 42, .05); }
+        [data-theme="dark"] .followup-filter-panel { border-color: rgba(255,255,255,.08); background: #172033; }
         .crm-filter-tabs .nav-link {
             border: none;
             border-bottom: 3px solid transparent;
@@ -111,5 +129,5 @@
         }
     };
     </script>
-    <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/followup.js') }}"></script>
+    <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/followup.js') }}?v={{ filemtime(public_path('js/followup.js')) }}"></script>
 @endpush

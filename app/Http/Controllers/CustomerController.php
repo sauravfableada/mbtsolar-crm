@@ -14,10 +14,9 @@ class CustomerController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Customer::class);
-        $countries = Country::where('is_active', true)->orderBy('name')->get(['id', 'name']);
         $customerTypes = ['Individual', 'Corporate', 'Government', 'NGO'];
 
-        return view('masters.customers.index', compact('countries', 'customerTypes'));
+        return view('masters.customers.index', compact('customerTypes'));
     }
 
     public function create()

@@ -52,26 +52,18 @@
         </div>
         <div id="customerFilters" class="customer-filter-panel mt-3">
             <div class="row g-3 align-items-end">
-                <div class="col-sm-6 col-lg-3"><label for="customerFromDate" class="form-label small fw-semibold">Start Date</label><input type="date" id="customerFromDate" class="form-control form-control-sm"></div>
-                <div class="col-sm-6 col-lg-3"><label for="customerToDate" class="form-label small fw-semibold">End Date</label><input type="date" id="customerToDate" class="form-control form-control-sm"></div>
                 <div class="col-sm-6 col-lg-3">
-                    <label for="customerDateRange" class="form-label small fw-semibold">Date Range</label>
-                    <select id="customerDateRange" class="form-select form-select-sm">
-                        <option value="">Any time</option><option value="today">Today</option><option value="yesterday">Yesterday</option>
-                        <option value="last_7_days">Last 7 days</option><option value="last_30_days">Last 30 days</option>
-                        <option value="this_month">This month</option><option value="last_month">Last month</option><option value="custom">Custom</option>
-                    </select>
+                    <label for="customerDateRange" class="form-label small fw-semibold">From - To</label>
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text"><i class="fa-regular fa-calendar"></i></span>
+                        <input type="text" id="customerDateRange" class="form-control" placeholder="Select date range" autocomplete="off" readonly>
+                    </div>
                 </div>
+                <div class="col-sm-6 col-lg-3"><label for="customerStatusFilter" class="form-label small fw-semibold">Status</label><select id="customerStatusFilter" class="form-select form-select-sm"><option value="">All statuses</option><option value="1">Active</option><option value="0">Inactive</option></select></div>
                 <div class="col-sm-6 col-lg-3">
                     <label for="customerTypeFilter" class="form-label small fw-semibold">Customer Type</label>
                     <select id="customerTypeFilter" class="form-select form-select-sm"><option value="">All types</option>@foreach($customerTypes as $type)<option value="{{ $type }}">{{ $type }}</option>@endforeach</select>
                 </div>
-                <div class="col-sm-6 col-lg-3">
-                    <label for="customerCountryFilter" class="form-label small fw-semibold">Country</label>
-                    <select id="customerCountryFilter" class="form-select form-select-sm"><option value="">All countries</option>@foreach($countries as $country)<option value="{{ $country->id }}">{{ $country->name }}</option>@endforeach</select>
-                </div>
-                <div class="col-sm-6 col-lg-3"><label for="customerCityFilter" class="form-label small fw-semibold">City</label><select id="customerCityFilter" class="form-select form-select-sm" disabled><option value="">All cities</option></select></div>
-                <div class="col-sm-6 col-lg-3"><label for="customerStatusFilter" class="form-label small fw-semibold">Status</label><select id="customerStatusFilter" class="form-select form-select-sm"><option value="">All statuses</option><option value="1">Active</option><option value="0">Inactive</option></select></div>
                 <div class="col-sm-6 col-lg-3 d-flex gap-2">
                     <button type="button" id="customerClearFilters" class="btn btn-dark-blue btn-sm flex-grow-1"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button>
                 </div>
@@ -276,5 +268,5 @@
             }
         };
     </script>
-    <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/customer.js') }}"></script>
+    <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/customer.js') }}?v={{ filemtime(PUBLIC_PATH('js/customer.js')) }}"></script>
 @endpush

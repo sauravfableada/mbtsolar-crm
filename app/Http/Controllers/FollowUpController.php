@@ -14,7 +14,9 @@ class FollowUpController extends Controller
 {
     public function index()
     {
-        return view('crm.followups.index');
+        $users = User::orderBy('name')->get(['id', 'name']);
+
+        return view('crm.followups.index', compact('users'));
     }
 
     public function create()
@@ -88,6 +90,13 @@ class FollowUpController extends Controller
                         });
                 });
             })
+            ->when($request->filled('lead_name'), fn($query) => $query->whereHas('lead', fn($leadQuery) => $leadQuery->where('name', 'like', '%' . trim((string) $request->lead_name) . '%')))
+            ->when($request->filled('assigned_user_id'), fn($query) => $query->where('assigned_user_id', $request->assigned_user_id))
+            ->when($request->filled('status'), fn($query) => $query->where('status', $request->status))
+            ->when($request->filled('created_from'), fn($query) => $query->whereDate('created_at', '>=', $request->created_from))
+            ->when($request->filled('created_to'), fn($query) => $query->whereDate('created_at', '<=', $request->created_to))
+            ->when($request->filled('follow_up_from'), fn($query) => $query->whereDate('follow_up_at', '>=', $request->follow_up_from))
+            ->when($request->filled('follow_up_to'), fn($query) => $query->whereDate('follow_up_at', '<=', $request->follow_up_to))
             ->get();
 
         $headers = [
@@ -133,4 +142,3 @@ class FollowUpController extends Controller
         return response()->json(['success' => true, 'status' => $followUp->status]);
     }
 }
-

@@ -37,6 +37,14 @@ class FollowUpController extends ApiBaseController
             $query->where('status', $request->status);
         }
 
+        $query
+            ->when($request->filled('lead_name'), fn($q) => $q->whereHas('lead', fn($leadQuery) => $leadQuery->where('name', 'like', '%' . trim((string) $request->lead_name) . '%')))
+            ->when($request->filled('assigned_user_id'), fn($q) => $q->where('assigned_user_id', $request->assigned_user_id))
+            ->when($request->filled('created_from'), fn($q) => $q->whereDate('created_at', '>=', $request->created_from))
+            ->when($request->filled('created_to'), fn($q) => $q->whereDate('created_at', '<=', $request->created_to))
+            ->when($request->filled('follow_up_from'), fn($q) => $q->whereDate('follow_up_at', '>=', $request->follow_up_from))
+            ->when($request->filled('follow_up_to'), fn($q) => $q->whereDate('follow_up_at', '<=', $request->follow_up_to));
+
         // ✅ ADVANCED SEARCH
         if ($request->filled('search')) {
             $search = $request->search;
