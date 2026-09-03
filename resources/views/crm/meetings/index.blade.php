@@ -51,7 +51,7 @@
                 <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold" for="meetingScheduledRange">Scheduled On</label><div class="input-group input-group-sm"><span class="input-group-text"><i class="fa-regular fa-calendar"></i></span><input id="meetingScheduledRange" class="form-control" type="text" placeholder="From - To" readonly></div></div>
                 <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold" for="meetingTypeFilter">Meeting Type</label><select id="meetingTypeFilter" class="form-select form-select-sm"><option value="">All types</option><option value="virtual">Virtual</option><option value="in-person">In-person</option><option value="telephonic">Telephonic</option></select></div>
                 <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold" for="meetingStatusFilter">Status</label><select id="meetingStatusFilter" class="form-select form-select-sm"><option value="">All statuses</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div>
-                <div class="col-sm-6 col-lg-auto"><button id="meetingClearFilters" type="button" class="btn btn-dark-blue btn-sm px-4 w-100">Clear</button></div>
+                <div class="col-sm-6 col-lg-auto"><button id="meetingClearFilters" type="button" class="btn btn-dark-blue btn-sm px-4 w-100 crm-filter-clear-btn"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div>
             </div></div>
         </div>
 

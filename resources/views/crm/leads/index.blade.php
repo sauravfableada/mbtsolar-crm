@@ -42,7 +42,7 @@
                         <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsStage">Lead Stage</label><select id="leadsStage" class="form-select form-select-sm"><option value="">All stages</option>@foreach($stages as $stage)<option value="{{ $stage->id }}">{{ $stage->name }}</option>@endforeach</select></div>
                         <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsCreator">Created By</label><select id="leadsCreator" class="form-select form-select-sm"><option value="">All creators</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
                         <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold" for="leadsAssignee">Assigned To</label><select id="leadsAssignee" class="form-select form-select-sm"><option value="">All assignees</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
-                        <div class="col-sm-6 col-lg-3"><button type="button" id="leadsClearFilters" class="btn btn-dark-blue btn-sm w-100"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button></div>
+                        <div class="col-sm-6 col-lg-3"><button type="button" id="leadsClearFilters" class="btn btn-dark-blue btn-sm w-100 crm-filter-clear-btn"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div>
                     </div>
                 </div>
             </div>

@@ -1046,6 +1046,12 @@
     min-height: 40px;
 }
 
+.crm-filter-clear-btn {
+    height: 40px !important;
+    min-height: 40px !important;
+    box-sizing: border-box;
+}
+
 .crm-auto-filter-panel .form-control,
 .crm-auto-filter-panel .form-select,
 .crm-auto-filter-panel .crm-scroll-select-toggle,

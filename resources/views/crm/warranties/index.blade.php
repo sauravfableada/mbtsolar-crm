@@ -17,6 +17,7 @@
         'fieldLabel' => 'Name',
         'hasDescription' => true,
         'hasImage' => false,
+        'hideFilters' => true,
         'permissions' => [
             'view' => auth()->user()?->hasMatrixPermission('view_warranty'),
             'create' => auth()->user()?->hasMatrixPermission('create_warranty'),

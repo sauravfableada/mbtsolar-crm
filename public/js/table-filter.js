@@ -188,6 +188,7 @@
 
         const tableId = table.id || `table-${sequence}`;
         const fields = Array.from(header.cells).map((cell, index) => {
+            if (cell.dataset.noFilter !== undefined) return null;
             const label = text(cell.textContent);
             if (!label || SKIP.test(label)) return null;
             const kind = DATE_FIELD.test(label) ? "date" : NUMBER_FIELD.test(label) ? "number" : SELECT_FIELD.test(label) ? "select" : "text";
@@ -199,7 +200,7 @@
         const wrapper = table.closest(".table-responsive") || table;
         const toolbar = document.createElement("div");
         toolbar.className = "crm-auto-filter-wrap px-3 pt-3";
-        toolbar.innerHTML = `<div class="d-flex justify-content-between align-items-center gap-3"><button type="button" class="btn btn-outline-dark-blue btn-sm crm-auto-filter-toggle" aria-expanded="true"><i class="fa-solid fa-filter me-1"></i>Filters <span class="badge rounded-pill text-bg-primary d-none">0</span></button><div class="crm-auto-per-page-wrap d-flex align-items-center gap-2"><label class="small text-muted text-nowrap mb-0">Show per page:</label><select class="form-select form-select-sm crm-auto-per-page"><option>10</option><option>25</option><option>50</option><option>100</option></select></div></div><div class="crm-auto-filter-panel mt-3"><div class="row g-3 align-items-end">${fields.map(fieldMarkup).join("")}<div class="col-sm-6 col-lg-3"><button type="button" class="btn btn-dark-blue btn-sm w-100 crm-auto-filter-clear"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button></div></div></div>`;
+        toolbar.innerHTML = `<div class="d-flex justify-content-between align-items-center gap-3"><button type="button" class="btn btn-outline-dark-blue btn-sm crm-auto-filter-toggle" aria-expanded="true"><i class="fa-solid fa-filter me-1"></i>Filters <span class="badge rounded-pill text-bg-primary d-none">0</span></button><div class="crm-auto-per-page-wrap d-flex align-items-center gap-2"><label class="small text-muted text-nowrap mb-0">Show per page:</label><select class="form-select form-select-sm crm-auto-per-page"><option>10</option><option>25</option><option>50</option><option>100</option></select></div></div><div class="crm-auto-filter-panel mt-3"><div class="row g-3 align-items-end">${fields.map(fieldMarkup).join("")}<div class="col-sm-6 col-lg-3"><button type="button" class="btn btn-dark-blue btn-sm w-100 crm-auto-filter-clear crm-filter-clear-btn"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div></div></div>`;
         wrapper.parentNode.insertBefore(toolbar, wrapper);
 
         const panel = toolbar.querySelector(".crm-auto-filter-panel");

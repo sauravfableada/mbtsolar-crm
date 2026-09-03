@@ -5,6 +5,7 @@
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/users.css') }}?v={{ filemtime(public_path('css/users.css')) }}">
+    <style>.customer-filter-panel{padding:1rem;border:1px solid #e2e8f0;border-radius:12px;background:#f8fafc}[data-theme="dark"] .customer-filter-panel{border-color:rgba(255,255,255,.08);background:#172033}</style>
 @endpush
 
 @section('content')
@@ -20,7 +21,7 @@
                         <button type="button" class="btn btn-outline-dark-blue" onclick="showImportDialog()">
                             <i class="fa-solid fa-upload me-1"></i>Import CSV
                         </button>
-                        <a href="{{ route('users.export') }}" class="btn btn-outline-dark-blue">
+                        <a href="{{ route('users.export') }}" id="usersExportButton" class="btn btn-outline-dark-blue">
                             <i class="fa-solid fa-download me-1"></i>Export
                         </a>
                         <button type="button" class="btn btn-dark-blue" id="addStaffBtn" onclick="handleAddStaffClick(event)">
@@ -29,13 +30,20 @@
                     </div>
                 </div>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <h6 class="fw-bold mb-0">Staff</h6>
-                    <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
+                    <div class="d-flex gap-2 flex-grow-1"><div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
                         <span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span>
                         <input type="text" class="form-control crm-search-input border-0" placeholder="Search staff..."
                             id="usersSearch">
-                    </div>
+                    </div><button id="usersFilterToggle" type="button" class="btn btn-outline-dark-blue btn-sm"><i class="fa-solid fa-filter me-1"></i>Filters <span id="usersFilterCount" class="badge rounded-pill text-bg-primary d-none">0</span></button></div>
+                    <div class="d-flex align-items-center gap-2"><label class="small text-muted text-nowrap">Show per page:</label><select id="usersPerPage" class="form-select form-select-sm crm-auto-per-page" style="width:78px"><option>10</option><option>25</option><option>50</option><option>100</option></select></div>
                 </div>
+                <div id="usersFilters" class="customer-filter-panel mt-3"><div class="row g-3 align-items-end">
+                    <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold">Role</label><select id="usersRoleFilter" class="form-select form-select-sm"><option value="">All roles</option>@foreach($roles as $role)<option value="{{ $role->name }}">{{ ucwords(str_replace('-', ' ', $role->name)) }}</option>@endforeach</select></div>
+                    <div class="col-sm-6 col-lg-3"><label class="form-label small fw-semibold">Job Title</label><select id="usersJobTitleFilter" class="form-select form-select-sm"><option value="">All job titles</option>@foreach($jobTitles as $title)<option value="{{ $title }}">{{ $title }}</option>@endforeach</select></div>
+                    <div class="col-sm-6 col-lg-2"><label class="form-label small fw-semibold">Status</label><select id="usersStatusFilter" class="form-select form-select-sm"><option value="">All statuses</option><option value="1">Active</option><option value="0">Inactive</option></select></div>
+                    <div class="col-sm-6 col-lg-2"><label class="form-label small fw-semibold">Created At</label><div class="input-group input-group-sm"><span class="input-group-text"><i class="fa-regular fa-calendar"></i></span><input id="usersDateRange" class="form-control" placeholder="From - To" readonly></div></div>
+                    <div class="col-sm-6 col-lg-2"><button id="usersClearFilters" type="button" class="btn btn-dark-blue btn-sm w-100 crm-filter-clear-btn"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div>
+                </div></div>
             </div>
 
             <form action="{{ route('users.import') }}" method="POST" enctype="multipart/form-data" class="d-none"
@@ -47,7 +55,7 @@
 
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="usersTable">
+                    <table class="table table-hover align-middle mb-0" id="usersTable" data-no-auto-filter>
                         <thead>
                             <tr>
                                 <th style="width: 80px;">Sr.No</th>

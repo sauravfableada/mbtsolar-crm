@@ -18,6 +18,7 @@
         'hasDescription' => false,
         'hasImage' => true,
         'hasDatasheet' => true,
+        'hideFilters' => true,
         'permissions' => [
             'view' => auth()->user()?->hasMatrixPermission('view_make'),
             'create' => auth()->user()?->hasMatrixPermission('create_make'),
