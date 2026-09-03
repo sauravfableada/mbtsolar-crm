@@ -33,6 +33,7 @@
             box-shadow: none;
         }
         .report-reset-btn { min-width: 120px; }
+        .customer-filter-panel { padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
         .lead-converted-badge { background-color: #e6f4ea; color: #2e7d32; font-size: 0.72rem; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
         @media (max-width: 767.98px) {
             .report-filter-panel {
@@ -121,10 +122,19 @@
                         <input type="text" class="form-control crm-search-input border-0" placeholder="Search leads..." id="leadsReportSearch">
                     </div>
                 </div>
+                <div id="leadsReportFilters" class="customer-filter-panel mt-3"><div class="row g-2 align-items-end flex-lg-nowrap">
+                    <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">Created At</label><div class="input-group input-group-sm"><span class="input-group-text"><i class="fa-regular fa-calendar"></i></span><input id="leadsReportDateRange" class="form-control" placeholder="From - To" readonly></div></div>
+                    <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">Status</label><select id="leadsReportStatus" class="form-select form-select-sm"><option value="">All statuses</option><option value="new">New</option><option value="qualified">Qualified</option><option value="working">Working</option><option value="ready_to_close">Ready to Close</option><option value="won">Closed Won</option><option value="lost">Closed Lost</option></select></div>
+                    <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">Lead Source</label><select id="leadsReportSource" class="form-select form-select-sm"><option value="">All sources</option>@foreach($sources as $source)<option value="{{ $source->id }}">{{ $source->name }}</option>@endforeach</select></div>
+                    <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">Lead Stage</label><select id="leadsReportStage" class="form-select form-select-sm"><option value="">All stages</option>@foreach($stages as $stage)<option value="{{ $stage->id }}">{{ $stage->name }}</option>@endforeach</select></div>
+                    <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">Created By</label><select id="leadsReportCreator" class="form-select form-select-sm"><option value="">All creators</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
+                    <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">Assigned To</label><select id="leadsReportAssignee" class="form-select form-select-sm"><option value="">All assignees</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
+                    <div class="col-sm-6 col-lg-auto"><button id="leadsReportClear" class="btn btn-dark-blue btn-sm crm-filter-clear-btn px-3" type="button"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div>
+                </div></div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0" id="leadsReportTable">
+                    <table class="table table-hover align-middle mb-0" id="leadsReportTable" data-no-auto-filter>
                         <thead>
                             <tr>
                                 <th class="ps-4" style="width: 80px;">Sr.No</th>
@@ -153,6 +163,14 @@
             const tableBody = document.getElementById('leadsReportBody');
             const paginationContainer = document.getElementById('leadsReportPagination');
             const searchInput = document.getElementById('leadsReportSearch');
+            const reportFilters = ['leadsReportStatus', 'leadsReportSource', 'leadsReportStage', 'leadsReportCreator', 'leadsReportAssignee'];
+            let reportDateRange = [];
+
+            const localDate = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            const reportDatePicker = window.flatpickr ? window.flatpickr('#leadsReportDateRange', {
+                mode: 'range', dateFormat: 'd-m-Y', showMonths: 1, disableMobile: true,
+                onChange(dates) { reportDateRange = dates; fetchLeadsReport(1); }
+            }) : null;
 
             function statusBadge(status) {
                 return { new: 'bg-info', qualified: 'bg-primary', working: 'bg-warning', ready_to_close: 'bg-dark', won: 'bg-success', lost: 'bg-danger' }[status] || 'bg-secondary';
@@ -175,9 +193,11 @@
                 const url = new URL("{{ route('reports.leads') }}", window.location.origin);
                 url.searchParams.set('page', page);
                 url.searchParams.set('year', $('select[name="year"]').val() || '');
-                url.searchParams.set('from_date', $('input[name="from_date"]').val() || '');
-                url.searchParams.set('to_date', $('input[name="to_date"]').val() || '');
+                url.searchParams.set('from_date', reportDateRange[0] ? localDate(reportDateRange[0]) : ($('input[name="from_date"]').val() || ''));
+                url.searchParams.set('to_date', reportDateRange[1] ? localDate(reportDateRange[1]) : ($('input[name="to_date"]').val() || ''));
                 if (searchInput.value.trim()) url.searchParams.set('search', searchInput.value.trim());
+                const keys = ['status', 'source_id', 'stage_id', 'creator_id', 'assigned_user_id'];
+                reportFilters.forEach(function (id, index) { const value = document.getElementById(id)?.value; if (value) url.searchParams.set(keys[index], value); });
 
                 $.ajax({
                     url: url.toString(), type: 'GET', dataType: 'json', headers: { 'X-Requested-With': 'XMLHttpRequest', Accept: 'application/json' },
@@ -248,6 +268,13 @@
 
             let timer;
             searchInput.addEventListener('input', function () { clearTimeout(timer); timer = setTimeout(function () { fetchLeadsReport(1); }, 400); });
+            reportFilters.forEach(function (id) { document.getElementById(id)?.addEventListener('change', function () { fetchLeadsReport(1); }); });
+            document.getElementById('leadsReportClear')?.addEventListener('click', function () {
+                reportFilters.forEach(function (id) { document.getElementById(id).value = ''; });
+                reportDateRange = [];
+                reportDatePicker?.clear(false);
+                fetchLeadsReport(1);
+            });
             $('select[name="year"], input[name="from_date"], input[name="to_date"]').on('change', function () { $(this).closest('form').submit(); });
 
             const ctx = document.getElementById('leadChart').getContext('2d');
@@ -256,5 +283,3 @@
         });
     </script>
 @endpush
-
-

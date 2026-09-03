@@ -142,6 +142,12 @@ class ReportController extends Controller
             if ($year && !$from_date && !$to_date) {
                 $query->whereYear('created_at', $year);
             }
+            $query
+                ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+                ->when($request->filled('source_id'), fn($q) => $q->where('lead_source_id', $request->source_id))
+                ->when($request->filled('stage_id'), fn($q) => $q->where('lead_stage_id', $request->stage_id))
+                ->when($request->filled('creator_id'), fn($q) => $q->where('created_by', $request->creator_id))
+                ->when($request->filled('assigned_user_id'), fn($q) => $q->where('assigned_user_id', $request->assigned_user_id));
 
             $customers = $query->paginate(10)->appends($request->query());
 
@@ -160,6 +166,9 @@ class ReportController extends Controller
         if ($years->isEmpty()) {
             $years = collect([date('Y')]);
         }
+        $sources = \App\Models\LeadSource::orderBy('name')->get(['id', 'name']);
+        $stages = \App\Models\Stage::orderBy('name')->get(['id', 'name']);
+        $users = \App\Models\User::orderBy('name')->get(['id', 'name']);
 
         // Fetch chart data
         $chartQuery = Customer::select(
@@ -227,6 +236,13 @@ class ReportController extends Controller
                 $query->whereYear('created_at', $year);
             }
 
+            $query
+                ->when($request->status, fn ($q, $status) => $q->where('status', $status))
+                ->when($request->source_id, fn ($q, $sourceId) => $q->where('lead_source_id', $sourceId))
+                ->when($request->stage_id, fn ($q, $stageId) => $q->where('lead_stage_id', $stageId))
+                ->when($request->creator_id, fn ($q, $creatorId) => $q->where('created_by', $creatorId))
+                ->when($request->assigned_user_id, fn ($q, $assignedUserId) => $q->where('assigned_user_id', $assignedUserId));
+
             $leads = $query->paginate(10)->appends($request->query());
 
             return response()->json([
@@ -245,6 +261,10 @@ class ReportController extends Controller
         if ($years->isEmpty()) {
             $years = collect([date('Y')]);
         }
+
+        $sources = \App\Models\LeadSource::orderBy('name')->get(['id', 'name']);
+        $stages = \App\Models\Stage::orderBy('name')->get(['id', 'name']);
+        $users = \App\Models\User::orderBy('name')->get(['id', 'name']);
 
         // ── Chart data ───────────────────────────────────────────
         $chartQuery = Lead::select(
@@ -294,6 +314,7 @@ class ReportController extends Controller
             'to_date',
             'chartData',
             'chartLabels'
+            ,'sources', 'stages', 'users'
         ));
     }
 
