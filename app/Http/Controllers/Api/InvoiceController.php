@@ -181,7 +181,7 @@ class InvoiceController extends ApiBaseController
 
             // Calculate subtotal and GST from BOM-selected taxes.
             $basePrice = $price + $productsTotal;
-            $subtotal = $basePrice + $solarStructureCharges;
+            $subtotal = $basePrice + $solarStructureCharges + $solarMeterChargesAmount;
             $gstBreakdown = $this->buildProductGstBreakdown($products, (bool) $applyCharges);
             $gstPercent = $applyCharges ? $gstBreakdown['tax_rate'] : 0;
             $gstAmount = $applyCharges ? $gstBreakdown['gst_amount'] : 0;
@@ -222,6 +222,7 @@ class InvoiceController extends ApiBaseController
                 'price' => $price,
                 'solar_structure_charges' => $solarStructureCharges,
                 'solar_meter_charges' => $solarMeterCharges,
+                'solar_meter_charges_amount' => $solarMeterChargesAmount,
                 'template_id' => $templateId ?: null,
                 'product_name' => json_encode($products),
                 'status' => 'pending',
@@ -363,7 +364,7 @@ class InvoiceController extends ApiBaseController
 
             // Calculate subtotal and GST from BOM-selected taxes.
             $basePrice = $price + $productsTotal;
-            $subtotal = $basePrice + $solarStructureCharges;
+            $subtotal = $basePrice + $solarStructureCharges + $solarMeterChargesAmount;
             $gstBreakdown = $this->buildProductGstBreakdown($products, (bool) $applyCharges);
             $gstPercent = $applyCharges ? $gstBreakdown['tax_rate'] : 0;
             $gstAmount = $applyCharges ? $gstBreakdown['gst_amount'] : 0;
@@ -399,6 +400,7 @@ class InvoiceController extends ApiBaseController
                 'price' => $price,
                 'solar_structure_charges' => $solarStructureCharges,
                 'solar_meter_charges' => $solarMeterCharges,
+                'solar_meter_charges_amount' => $solarMeterChargesAmount,
                 'invoice_date' => $invoiceDate,
                 'template_id' => $templateId ?: null,
                 'currency_id' => $currencyId,

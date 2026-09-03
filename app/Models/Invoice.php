@@ -32,6 +32,7 @@ class Invoice extends Model
         'price',
         'solar_structure_charges',
         'solar_meter_charges',
+        'solar_meter_charges_amount',
         'other_charges',
         'product_name',
         'total',

@@ -139,9 +139,9 @@ if (!function_exists('normalize_pdf_image')) {
     $rate1 = $baseSystemValue / $qtyForCalc;
     $rate2 = $solarStructureValue / $qtyForCalc;
     $actualGstRate = $baseSystemValue > 0 ? round(($gstValue / $baseSystemValue) * 100, 1) : 0;
-    $logoBase64 = null;
+    $logoBase64 = $custom_logo_base64 ?? null;
     
-    if ($customLogoPath) {
+    if (!$logoBase64 && $customLogoPath) {
         $diskPath = storage_path('app/public/' . $customLogoPath);
         if (file_exists($diskPath)) {
             $logoData = file_get_contents($diskPath);
@@ -426,11 +426,6 @@ if (!function_exists('normalize_pdf_image')) {
                         <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; font-weight: bold; color: #fff;">{{ $companyName }} Proposal</h1>
                         <p style="margin: 5px 0 0 0; font-size: 12px; font-style: italic; color: #e0e0e0;">Clean Energy. Guaranteed Savings. Sustainable Future.</p>
                     </td>
-                    @if (!empty($logoBase64))
-                    <td width="150" valign="middle" align="right" style="padding-left:20px;">
-                        <img src="{{ $logoBase64 }}" alt="Company Logo" style="max-width:150px;max-height:80px;object-fit:contain;background-color:#fff;padding:5px;border-radius:4px;">
-                    </td>
-                    @endif
                 </tr>
             </table>
         </div>
@@ -460,6 +455,7 @@ if (!function_exists('normalize_pdf_image')) {
             @endif
         </div>
         
+        @if(!empty($logoBase64))<div style="position:absolute; bottom:55px; right:40px; z-index:10;"><img src="{{ $logoBase64 }}" style="max-width:120px; max-height:65px; object-fit:contain; background:#fff; border-radius:4px; padding:3px;"></div>@endif
         <div class="prop-footer">
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
@@ -555,6 +551,7 @@ if (!function_exists('normalize_pdf_image')) {
             </div>
         </div>
         
+        @if(!empty($logoBase64))<div style="position:absolute; bottom:55px; right:40px; z-index:10;"><img src="{{ $logoBase64 }}" style="max-width:120px; max-height:65px; object-fit:contain; background:#fff; border-radius:4px; padding:3px;"></div>@endif
         <div class="prop-footer">
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
@@ -603,6 +600,7 @@ if (!function_exists('normalize_pdf_image')) {
             </div>
         </div>
         
+        @if(!empty($logoBase64))<div style="position:absolute; bottom:55px; right:40px; z-index:10;"><img src="{{ $logoBase64 }}" style="max-width:120px; max-height:65px; object-fit:contain; background:#fff; border-radius:4px; padding:3px;"></div>@endif
         <div class="prop-footer">
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
@@ -633,6 +631,7 @@ if (!function_exists('normalize_pdf_image')) {
             </div>
         </div>
         
+        @if(!empty($logoBase64))<div style="position:absolute; bottom:55px; right:40px; z-index:10;"><img src="{{ $logoBase64 }}" style="max-width:120px; max-height:65px; object-fit:contain; background:#fff; border-radius:4px; padding:3px;"></div>@endif
         <div class="prop-footer">
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
@@ -685,6 +684,7 @@ if (!function_exists('normalize_pdf_image')) {
             <p>Solar generation metrics are derived parameters calculated utilizing historical long-term satellite climate records for your specific latitude/longitude. Actual real-time production yields may fluctuate in accordance with variations in seasonal weather cycles, structural micro-climate shading patterns (such as subsequent newly erected adjacent high-rises), and regular panel dust wash upkeep consistency.</p>
         </div>
         
+        @if(!empty($logoBase64))<div style="position:absolute; bottom:55px; right:40px; z-index:10;"><img src="{{ $logoBase64 }}" style="max-width:120px; max-height:65px; object-fit:contain; background:#fff; border-radius:4px; padding:3px;"></div>@endif
         <div class="prop-footer">
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
@@ -752,6 +752,7 @@ if (!function_exists('normalize_pdf_image')) {
             @endforeach
         </div>
         
+        @if(!empty($logoBase64))<div style="position:absolute; bottom:55px; right:40px; z-index:10;"><img src="{{ $logoBase64 }}" style="max-width:120px; max-height:65px; object-fit:contain; background:#fff; border-radius:4px; padding:3px;"></div>@endif
         <div class="prop-footer">
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
@@ -768,6 +769,7 @@ if (!function_exists('normalize_pdf_image')) {
         <div class="content">
             <p>No components specified.</p>
         </div>
+        @if(!empty($logoBase64))<div style="position:absolute; bottom:55px; right:40px; z-index:10;"><img src="{{ $logoBase64 }}" style="max-width:120px; max-height:65px; object-fit:contain; background:#fff; border-radius:4px; padding:3px;"></div>@endif
         <div class="prop-footer">
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
@@ -782,3 +784,4 @@ if (!function_exists('normalize_pdf_image')) {
 
 </body>
 </html>
+

@@ -155,7 +155,8 @@ class EstimateController extends Controller
             $quantity = (float) $request->input('quantity', 0);
             $price = $useBomPrice ? 0 : (float) $request->input('price', 0);
             $templateId = (int) $request->input('template_id', 0);
-            $solarMeterCharges = (float) ($request->input('solar_meter_charges') ?? 0);
+            $solarMeterCharges = $request->input('solar_meter_charges');
+            $solarMeterChargesAmount = (float) ($request->input('solar_meter_charges_amount') ?? 0);
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
             $estimateDate = $request->input('estimate_date', now()->format('Y-m-d'));
             $comment = $request->input('comment', '');
@@ -268,6 +269,7 @@ class EstimateController extends Controller
                 'price_mode' => $priceMode,
                 'solar_structure_charges' => $solarStructureCharges,
                 'solar_meter_charges' => $solarMeterCharges,
+                'solar_meter_charges_amount' => $solarMeterChargesAmount,
                 'template_id' => $templateId,
                 'product_name' => json_encode($products),
                 'status' => 'pending',
@@ -387,7 +389,8 @@ class EstimateController extends Controller
             $quantity = (float) $request->input('quantity', 0);
             $price = $useBomPrice ? 0 : (float) $request->input('price', 0);
             $templateId = (int) $request->input('template_id', 0);
-            $solarMeterCharges = (float) ($request->input('solar_meter_charges') ?? 0);
+            $solarMeterCharges = $request->input('solar_meter_charges');
+            $solarMeterChargesAmount = (float) ($request->input('solar_meter_charges_amount') ?? 0);
             $solarStructureCharges = (float) ($request->input('solar_structure_charges') ?? 0);
             $estimateDate = $request->input('estimate_date', now()->format('Y-m-d'));
             $comment = $request->input('comment', '');
@@ -495,6 +498,7 @@ class EstimateController extends Controller
                 'price_mode' => $priceMode,
                 'solar_structure_charges' => $solarStructureCharges,
                 'solar_meter_charges' => $solarMeterCharges,
+                'solar_meter_charges_amount' => $solarMeterChargesAmount,
                 'template_id' => $templateId,
                 'product_name' => json_encode($products),
                 'comment' => $comment,
@@ -603,6 +607,7 @@ class EstimateController extends Controller
                     'price' => $estimate->price,
                     'solar_structure_charges' => $estimate->solar_structure_charges,
                     'solar_meter_charges' => $estimate->solar_meter_charges,
+                    'solar_meter_charges_amount' => $estimate->solar_meter_charges_amount,
                     'product_name' => $estimate->product_name,
                     'status' => 'unpaid',
                     'comment' => $estimate->comment,

@@ -252,6 +252,21 @@ class EstimateController extends Controller
                 'estimateCommentSection' => $form_data['estimate_comment'] ?? [],
             ];
 
+            // Pre-resolve custom name and logo from generation_data for the qt template
+            $_genData = is_array($estimate->generation_data) ? $estimate->generation_data : json_decode((string)$estimate->generation_data, true);
+            $_genData = $_genData ?: [];
+            if (!empty($_genData['custom_name'])) {
+                $pdfData['custom_name'] = trim($_genData['custom_name']);
+            }
+            if (!empty($_genData['custom_logo'])) {
+                $pdfData['custom_logo_path'] = $_genData['custom_logo'];
+                $_logoFullPath = Storage::disk('public')->path($_genData['custom_logo']);
+                if (file_exists($_logoFullPath)) {
+                    $_logoData = file_get_contents($_logoFullPath);
+                    $pdfData['custom_logo_base64'] = 'data:image/' . pathinfo($_logoFullPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($_logoData);
+                }
+            }
+
             $templateName = Str::lower(trim((string) $template->template_name));
             if ($templateName === 'basic template') {
                 $pdfView = 'pdfbuilder.basic-template-pdf';
