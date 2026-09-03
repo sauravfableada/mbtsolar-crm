@@ -1,10 +1,8 @@
 <?php
     $genData = [];
-    if (isset($estimate) && $estimate) {
-        $rawGenData = is_array($estimate) ? ($estimate['generation_data'] ?? '[]') : ($estimate->generation_data ?? '[]');
-        $genData = is_array($rawGenData) ? $rawGenData : json_decode((string)$rawGenData, true);
-    } elseif (isset($invoice) && $invoice) {
-        $rawGenData = is_array($invoice) ? ($invoice['generation_data'] ?? '[]') : ($invoice->generation_data ?? '[]');
+    $_src = $estimate ?? $passedEstimate ?? $estdata ?? $invoice ?? null;
+    if (isset($_src) && $_src) {
+        $rawGenData = is_array($_src) ? ($_src['generation_data'] ?? '[]') : ($_src->generation_data ?? '[]');
         $genData = is_array($rawGenData) ? $rawGenData : json_decode((string)$rawGenData, true);
     }
     $genData = $genData ?: [];

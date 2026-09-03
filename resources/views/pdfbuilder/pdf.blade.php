@@ -341,21 +341,6 @@ $_rawCompanyName = trim((string) (is_object($companySettings) && method_exists($
     : ($companySettings['company_name'] ?? '')));
 $globalCompanyName = $_rawCompanyName !== '' ? $_rawCompanyName : 'MBT SOLAR';
 
-// Override company name with custom_name from generation_data if present
-$_globalGenData = [];
-if (isset($passedEstimate) && $passedEstimate) {
-    $_rawGD = is_array($passedEstimate) ? ($passedEstimate['generation_data'] ?? '[]') : ($passedEstimate->generation_data ?? '[]');
-    $_globalGenData = is_array($_rawGD) ? $_rawGD : json_decode((string)$_rawGD, true);
-    $_globalGenData = $_globalGenData ?: [];
-} elseif (isset($estimate) && $estimate) {
-    $_rawGD = is_array($estimate) ? ($estimate['generation_data'] ?? '[]') : ($estimate->generation_data ?? '[]');
-    $_globalGenData = is_array($_rawGD) ? $_rawGD : json_decode((string)$_rawGD, true);
-    $_globalGenData = $_globalGenData ?: [];
-}
-if (!empty($_globalGenData['custom_name'])) {
-    $globalCompanyName = trim($_globalGenData['custom_name']);
-}
-
 // Section active helper (if "active" is missing, treat as active)
 $_isActive = static function ($section): bool {
     return !is_array($section) || !array_key_exists('active', $section) || (int) $section['active'] === 1;
