@@ -8,6 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
     <style>
+        @media (min-width: 992px) {
+            #estimatesIndexPage .crm-auto-filter-panel .row { flex-wrap: nowrap; }
+            #estimatesIndexPage .crm-auto-filter-panel .row > div { flex: 1 1 0; width: auto; max-width: none; }
+        }
+
         .crm-filter-tabs {
             border-bottom: 2px solid #e9ecef;
         }
@@ -255,7 +260,7 @@
 @endpush
 
 @section('content')
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" id="estimatesIndexPage">
     <div class="card border-0 shadow-sm overflow-hidden">
         <div class="card-header border-bottom-0 py-3 px-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
@@ -305,8 +310,9 @@
                     <thead>
                         <tr>
                             <th class="ps-4">Sr.No</th>
-                            <th>Customer Name</th>
+                            <th data-no-filter>Customer Name</th>
                             <th class="d-none d-md-table-cell">Estimate No</th>
+                            <th class="d-none d-md-table-cell">Estimate Type</th>
                             <th class="d-none d-md-table-cell">Estimate Date</th>
                             <th class="d-none d-md-table-cell">Status</th>
                             <th class="text-end pe-4 d-none d-md-table-cell" style="width: 150px;">Actions</th>

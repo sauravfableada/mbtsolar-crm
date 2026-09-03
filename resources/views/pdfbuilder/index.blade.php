@@ -30,7 +30,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 responsive-table pdfbuilder-templates-table">
+                <table class="table table-hover align-middle mb-0 responsive-table pdfbuilder-templates-table" data-no-auto-filter>
                     <thead>
                         <tr>
                             <th class="ps-4" style="width: 80px;">Sr.No</th>

@@ -1219,6 +1219,15 @@ hr,
 }
 
 /* Global theme-safe utility replacements */
+/* Quick Estimate is intentionally disabled application-wide. */
+[data-bs-target="#quickEstimateModal"],
+#dealQuickEstimateBtn,
+#taskQuickEstimateBtn,
+.quick-estimate-header-btn,
+#quickEstimateModal {
+    display: none !important;
+}
+
 .crm-action-btn {
     background-color: #FFFFFF;
     border: 1px solid #E2E8F0;

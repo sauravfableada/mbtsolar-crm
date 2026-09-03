@@ -38,7 +38,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="vendorsTable">
+                <table class="table table-hover align-middle mb-0" id="vendorsTable" data-no-auto-filter>
                     <thead>
                         <tr>
                             <th class="ps-4 text-center" style="width: 80px;">Sr.No</th>
