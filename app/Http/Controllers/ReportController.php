@@ -143,11 +143,8 @@ class ReportController extends Controller
                 $query->whereYear('created_at', $year);
             }
             $query
-                ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
-                ->when($request->filled('source_id'), fn($q) => $q->where('lead_source_id', $request->source_id))
-                ->when($request->filled('stage_id'), fn($q) => $q->where('lead_stage_id', $request->stage_id))
-                ->when($request->filled('creator_id'), fn($q) => $q->where('created_by', $request->creator_id))
-                ->when($request->filled('assigned_user_id'), fn($q) => $q->where('assigned_user_id', $request->assigned_user_id));
+                ->when($request->filled('status'), fn ($q) => $q->where('is_active', $request->status))
+                ->when($request->filled('customer_type'), fn ($q) => $q->where('type', $request->customer_type));
 
             $customers = $query->paginate(10)->appends($request->query());
 
@@ -166,9 +163,7 @@ class ReportController extends Controller
         if ($years->isEmpty()) {
             $years = collect([date('Y')]);
         }
-        $sources = \App\Models\LeadSource::orderBy('name')->get(['id', 'name']);
-        $stages = \App\Models\Stage::orderBy('name')->get(['id', 'name']);
-        $users = \App\Models\User::orderBy('name')->get(['id', 'name']);
+        $customerTypes = ['Individual', 'Corporate', 'Government', 'NGO'];
 
         // Fetch chart data
         $chartQuery = Customer::select(
@@ -197,7 +192,7 @@ class ReportController extends Controller
             $chartData[] = $chartDataRaw[$i] ?? 0;
         }
         
-        return view('crm.reports.customers_report', compact('years', 'year', 'from_date', 'to_date', 'chartData'));
+        return view('crm.reports.customers_report', compact('years', 'year', 'from_date', 'to_date', 'chartData', 'customerTypes'));
     }
 
     public function leadsReport(Request $request)
@@ -313,8 +308,10 @@ class ReportController extends Controller
             'from_date',
             'to_date',
             'chartData',
-            'chartLabels'
-            ,'sources', 'stages', 'users'
+            'chartLabels',
+            'sources',
+            'stages',
+            'users'
         ));
     }
 
@@ -392,6 +389,13 @@ class ReportController extends Controller
                 $query->whereYear('created_at', $year);
             }
 
+            $query
+                ->when($request->customer_id, fn ($q, $id) => $q->where('customer_id', $id))
+                ->when($request->creator_id, fn ($q, $id) => $q->where('created_by', $id))
+                ->when($request->status_id, fn ($q, $id) => $q->where('status_id', $id))
+                ->when($request->filled('amount_min'), fn ($q) => $q->where('amount', '>=', $request->amount_min))
+                ->when($request->filled('amount_max'), fn ($q) => $q->where('amount', '<=', $request->amount_max));
+
             $deals = $query->paginate(10)->appends($request->query());
 
             return response()->json([
@@ -410,6 +414,10 @@ class ReportController extends Controller
         if ($years->isEmpty()) {
             $years = collect([date('Y')]);
         }
+
+        $customers = Customer::orderBy('name')->get(['id', 'name']);
+        $users = \App\Models\User::orderBy('name')->get(['id', 'name']);
+        $dealStatuses = \App\Models\Status::orderBy('name')->get(['id', 'name']);
 
         // ── Chart data ───────────────────────────────────────────
         $chartQuery = Deal::select(
@@ -458,7 +466,10 @@ class ReportController extends Controller
             'from_date',
             'to_date',
             'chartData',
-            'chartLabels'
+            'chartLabels',
+            'customers',
+            'users',
+            'dealStatuses'
         ));
     }
 
@@ -670,6 +681,19 @@ class ReportController extends Controller
                 $query->whereYear('created_at', $year);
             }
 
+            $query
+                ->when($request->customer_id, function ($q, $id) {
+                    $q->where(function ($taskQuery) use ($id) {
+                        $taskQuery->where(fn ($direct) => $direct->where('related_type', 'customer')->where('related_id', $id))
+                            ->orWhereHas('project', fn ($project) => $project->where('customer_id', $id));
+                    });
+                })
+                ->when($request->assigned_user_id, fn ($q, $id) => $q->where('assigned_user_id', $id))
+                ->when($request->task_type, fn ($q, $type) => $q->where('task_type', $type))
+                ->when($request->status, fn ($q, $status) => $q->where('status', $status))
+                ->when($request->due_from, fn ($q, $date) => $q->whereDate('due_date', '>=', $date))
+                ->when($request->due_to, fn ($q, $date) => $q->whereDate('due_date', '<=', $date));
+
             $tasks = $query->paginate(10)->appends($request->query());
 
             return response()->json([
@@ -683,6 +707,10 @@ class ReportController extends Controller
         if ($years->isEmpty()) {
             $years = collect([date('Y')]);
         }
+
+        $customers = Customer::orderBy('name')->get(['id', 'name']);
+        $users = \App\Models\User::orderBy('name')->get(['id', 'name']);
+        $taskTypes = Task::whereNotNull('task_type')->where('task_type', '!=', '')->distinct()->orderBy('task_type')->pluck('task_type');
 
         $chartQuery = Task::select(DB::raw('count(*) as total'), DB::raw('YEAR(created_at)  as year_num'), DB::raw('MONTH(created_at) as month_num'));
         if ($from_date) {
@@ -713,7 +741,7 @@ class ReportController extends Controller
             }
         }
 
-        return view('crm.reports.tasks_report', compact('years', 'year', 'from_date', 'to_date', 'chartData', 'chartLabels'));
+        return view('crm.reports.tasks_report', compact('years', 'year', 'from_date', 'to_date', 'chartData', 'chartLabels', 'customers', 'users', 'taskTypes'));
     }
 
     public function tasksExport()
@@ -778,6 +806,14 @@ class ReportController extends Controller
                 $query->whereYear('created_at', $year);
             }
 
+            $query
+                ->when($request->assigned_user_id, fn ($q, $id) => $q->where('assigned_user_id', $id))
+                ->when($request->status, fn ($q, $status) => $q->where('status', $status))
+                ->when($request->created_from, fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
+                ->when($request->created_to, fn ($q, $date) => $q->whereDate('created_at', '<=', $date))
+                ->when($request->follow_up_from, fn ($q, $date) => $q->whereDate('follow_up_at', '>=', $date))
+                ->when($request->follow_up_to, fn ($q, $date) => $q->whereDate('follow_up_at', '<=', $date));
+
             $followups = $query->paginate(10)->appends($request->query());
 
             return response()->json([
@@ -791,6 +827,8 @@ class ReportController extends Controller
         if ($years->isEmpty()) {
             $years = collect([date('Y')]);
         }
+
+        $users = \App\Models\User::orderBy('name')->get(['id', 'name']);
 
         $chartQuery = FollowUp::select(DB::raw('count(*) as total'), DB::raw('YEAR(created_at)  as year_num'), DB::raw('MONTH(created_at) as month_num'));
         if ($from_date) {
@@ -821,7 +859,7 @@ class ReportController extends Controller
             }
         }
 
-        return view('crm.reports.followups_report', compact('years', 'year', 'from_date', 'to_date', 'chartData', 'chartLabels'));
+        return view('crm.reports.followups_report', compact('years', 'year', 'from_date', 'to_date', 'chartData', 'chartLabels', 'users'));
     }
 
     public function followupsExport()

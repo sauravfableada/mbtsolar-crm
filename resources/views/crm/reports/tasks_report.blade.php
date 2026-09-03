@@ -5,6 +5,7 @@
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/users.css') }}?v={{ filemtime(public_path('css/users.css')) }}">
     <style>
+        .customer-filter-panel { padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
         .report-filter-panel {
             display: flex;
             flex-wrap: wrap;
@@ -74,7 +75,8 @@
 
     <div class="card border-0 shadow-sm overflow-hidden">
         <div class="card-header border-bottom-0 py-3 px-4"><div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3"><div><h4 class="fw-bold mb-0">Tasks Report</h4><p class="text-muted small mb-0">View all tasks.</p></div><div class="d-flex flex-wrap gap-2"><a href="{{ route('reports.tasks_report.export', request()->all()) }}" class="btn btn-outline-dark-blue"><i class="fa-solid fa-download me-1"></i>Export</a></div></div><div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3"><h6 class="fw-bold mb-0">Active Tasks</h6><div class="input-group input-group-sm" style="max-width: 300px; width: 100%;"><span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span><input type="text" class="form-control crm-search-input border-0" placeholder="Search tasks..." id="tasksReportSearch"></div></div></div>
-        <div class="card-body p-0"><div class="table-responsive"><table class="table table-hover align-middle mb-0 responsive-table" id="tasksReportTable"><thead><tr><th class="ps-4" style="width: 80px;">Sr.No</th><th>Task Info</th><th class="d-none d-md-table-cell">Project Name</th><th class="d-none d-md-table-cell">Task Type</th><th class="d-none d-md-table-cell">Status</th><th class="d-none d-md-table-cell">Due Date</th><th class="text-end pe-4 d-none d-md-table-cell" style="width: 120px;">Actions</th><th class="text-center d-md-none" style="width: 80px;">Action</th></tr></thead><tbody id="tasksReportBody"></tbody></table></div><div id="tasksReportPagination" class="card-footer border-top-0 py-4 px-4"></div></div>
+        <div class="customer-filter-panel mx-4 mt-3"><div class="row g-2 align-items-end flex-lg-nowrap"><div class="col-lg"><label class="form-label small fw-semibold">Customer Name</label><select id="taskReportCustomer" class="form-select form-select-sm"><option value="">All customer names</option>@foreach($customers as $customer)<option value="{{ $customer->id }}">{{ $customer->name }}</option>@endforeach</select></div><div class="col-lg"><label class="form-label small fw-semibold">Staff</label><select id="taskReportStaff" class="form-select form-select-sm"><option value="">All staff</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div><div class="col-lg"><label class="form-label small fw-semibold">Task Type</label><select id="taskReportType" class="form-select form-select-sm"><option value="">All task types</option>@foreach($taskTypes as $type)<option value="{{ $type }}">{{ $type }}</option>@endforeach</select></div><div class="col-lg"><label class="form-label small fw-semibold">Status</label><select id="taskReportStatus" class="form-select form-select-sm"><option value="">All statuses</option><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select></div><div class="col-lg"><label class="form-label small fw-semibold">Due Date</label><input id="taskReportDueRange" class="form-control form-control-sm" placeholder="From - To" readonly></div><div class="col-lg-auto"><button id="taskReportClear" class="btn btn-dark-blue btn-sm crm-filter-clear-btn px-3" type="button"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div></div></div>
+        <div class="card-body p-0"><div class="table-responsive"><table class="table table-hover align-middle mb-0 responsive-table" id="tasksReportTable" data-no-auto-filter><thead><tr><th class="ps-4" style="width: 80px;">Sr.No</th><th>Task Info</th><th class="d-none d-md-table-cell">Project Name</th><th class="d-none d-md-table-cell">Task Type</th><th class="d-none d-md-table-cell">Status</th><th class="d-none d-md-table-cell">Due Date</th><th class="text-end pe-4 d-none d-md-table-cell" style="width: 120px;">Actions</th><th class="text-center d-md-none" style="width: 80px;">Action</th></tr></thead><tbody id="tasksReportBody"></tbody></table></div><div id="tasksReportPagination" class="card-footer border-top-0 py-4 px-4"></div></div>
     </div>
 </div>
 @endsection
@@ -86,6 +88,19 @@ $(document).ready(function () {
     const tableBody = document.getElementById('tasksReportBody');
     const paginationContainer = document.getElementById('tasksReportPagination');
     const searchInput = document.getElementById('tasksReportSearch');
+    let taskDueRange = [];
+    const taskLocalDate = date => date ? [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-') : '';
+    const taskDuePicker = window.flatpickr ? window.flatpickr('#taskReportDueRange', { mode: 'range', dateFormat: 'Y-m-d', onChange: dates => { taskDueRange = dates; fetchTasksReport(1); } }) : null;
+    $.ajaxPrefilter(function (options) {
+        if (!options.url || !options.url.includes("{{ route('reports.tasks') }}")) return;
+        const url = new URL(options.url, window.location.origin);
+        [['taskReportCustomer','customer_id'],['taskReportStaff','assigned_user_id'],['taskReportType','task_type'],['taskReportStatus','status']].forEach(([id,key]) => { const value = document.getElementById(id)?.value; if (value) url.searchParams.set(key, value); });
+        if (taskDueRange[0]) url.searchParams.set('due_from', taskLocalDate(taskDueRange[0]));
+        if (taskDueRange[1]) url.searchParams.set('due_to', taskLocalDate(taskDueRange[1]));
+        options.url = url.toString();
+    });
+    ['taskReportCustomer','taskReportStaff','taskReportType','taskReportStatus'].forEach(id => document.getElementById(id).addEventListener('change', () => fetchTasksReport(1)));
+    document.getElementById('taskReportClear').addEventListener('click', function () { ['taskReportCustomer','taskReportStaff','taskReportType','taskReportStatus'].forEach(id => document.getElementById(id).value = ''); taskDueRange = []; taskDuePicker?.clear(false); fetchTasksReport(1); });
     function priorityClass(priority) { return { high: 'text-danger', medium: 'text-warning', low: 'text-info' }[priority] || 'text-muted'; }
     function statusClass(status) { return { completed: 'bg-success', in_progress: 'bg-primary', pending: 'bg-warning text-dark' }[status] || 'bg-secondary'; }
     function formatDate(value) { if (!value) return '-'; const date = new Date(value); if (Number.isNaN(date.getTime())) return '-'; return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }); }
@@ -100,5 +115,3 @@ $(document).ready(function () {
 });
 </script>
 @endpush
-
-
