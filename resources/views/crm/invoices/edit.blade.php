@@ -279,31 +279,35 @@
                                     </div>
                                 </div>
 
-                                <div class="col-12 estimate-structure-charges-col" id="structure-charges-input" style="display: none;">
-                                    <label class="form-label fw-semibold small">Enter Structure Charges</label>
-                                    <input type="number" min="0" step="1" name="solar_structure_charges"
-                                        id="solar_structure_charges"
-                                        value="{{ old('solar_structure_charges', $invoice->solar_structure_charges) }}"
-                                        class="form-control @error('solar_structure_charges') is-invalid @enderror"
-                                        placeholder="0.00">
-                                    <div class="invalid-feedback" id="solar_structure_charges-error">
-                                        @error('solar_structure_charges')
-                                            {{ $message }}
-                                        @enderror
-                                    </div>
-                                </div>
-                                
-                                <div class="col-12 estimate-meter-charges-col" id="meter-charges-input" style="display: none;">
-                                    <label class="form-label fw-semibold small">Enter Solar Meter Charges</label>
-                                    <input type="number" min="0" step="1" name="solar_meter_charges"
-                                        id="solar_meter_charges"
-                                        value="{{ old('solar_meter_charges', $invoice->solar_meter_charges) }}"
-                                        class="form-control @error('solar_meter_charges') is-invalid @enderror"
-                                        placeholder="0.00">
-                                    <div class="invalid-feedback" id="solar_meter_charges-error">
-                                        @error('solar_meter_charges')
-                                            {{ $message }}
-                                        @enderror
+                                <div class="col-12 mt-2" id="additional-charges-wrapper">
+                                    <div class="row g-3">
+                                        <div class="col-md-6 estimate-structure-charges-col" id="structure-charges-input" style="display: none;">
+                                            <label class="form-label fw-semibold small">Enter Structure Charges</label>
+                                            <input type="number" min="0" step="1" name="solar_structure_charges"
+                                                id="solar_structure_charges"
+                                                value="{{ old('solar_structure_charges', $invoice->solar_structure_charges) }}"
+                                                class="form-control @error('solar_structure_charges') is-invalid @enderror"
+                                                placeholder="0.00">
+                                            <div class="invalid-feedback" id="solar_structure_charges-error">
+                                                @error('solar_structure_charges')
+                                                    {{ $message }}
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6 estimate-meter-charges-col" id="meter-charges-input" style="display: none;">
+                                            <label class="form-label fw-semibold small">Enter Solar Meter Charges</label>
+                                            <input type="number" min="0" step="1" name="solar_meter_charges"
+                                                id="solar_meter_charges"
+                                                value="{{ old('solar_meter_charges', $invoice->solar_meter_charges) }}"
+                                                class="form-control @error('solar_meter_charges') is-invalid @enderror"
+                                                placeholder="0.00">
+                                            <div class="invalid-feedback" id="solar_meter_charges-error">
+                                                @error('solar_meter_charges')
+                                                    {{ $message }}
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -400,6 +404,30 @@
                                 </button>
                                 <div class="estimate-bom-instruction" id="products-error" style="display:none;" role="status">
                                     <i class="bi bi-info-circle me-1" aria-hidden="true"></i><span class="products-error-text">Please select at least one BOM.</span>
+                                </div>
+
+                                @php
+                                    $generationData = is_array($invoice->generation_data)
+                                        ? $invoice->generation_data
+                                        : json_decode((string) ($invoice->generation_data ?? '[]'), true);
+                                    $savedCustomName = $generationData['custom_name'] ?? '';
+                                    $savedCustomLogo = $generationData['custom_logo'] ?? '';
+                                @endphp
+
+                                <div class="row g-3 mt-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Logo</label>
+                                        <input type="file" name="custom_logo" id="custom_logo" class="form-control" accept="image/*">
+                                        @if($savedCustomLogo)
+                                            <div class="mt-2">
+                                                <img src="{{ Storage::disk('public')->exists($savedCustomLogo) ? asset('storage/' . $savedCustomLogo) : '' }}" alt="Custom Logo" style="max-height: 50px;">
+                                            </div>
+                                        @endif
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold small">Name</label>
+                                        <input type="text" name="custom_name" id="custom_name" class="form-control" placeholder="Enter Name" value="{{ old('custom_name', $savedCustomName) }}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
