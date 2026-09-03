@@ -20,8 +20,8 @@
         const filterCount = document.getElementById("leadsFilterCount");
         const exportButton = document.getElementById("leadsExportButton");
         const perPage = document.getElementById("leadsPerPage");
-        const fromDate = document.getElementById("leadsFromDate");
-        const toDate = document.getElementById("leadsToDate");
+        const dateRangeInput = document.getElementById("leadsDateRange");
+        let dateRange = [];
         const filters = {
             status: document.getElementById("leadsStatus"),
             source_id: document.getElementById("leadsSource"),
@@ -37,14 +37,14 @@
         function requestParams(page) {
             const params = new URLSearchParams({ page: String(page), per_page: perPage.value, filter: currentFilter });
             if (searchInput.value.trim()) params.set("search", searchInput.value.trim());
-            if (fromDate.value) params.set("from_date", fromDate.value);
-            if (toDate.value) params.set("to_date", toDate.value);
+            if (dateRange[0]) params.set("from_date", localDate(dateRange[0]));
+            if (dateRange[1]) params.set("to_date", localDate(dateRange[1]));
             Object.entries(filters).forEach(([key, field]) => { if (field.value !== "") params.set(key, field.value); });
             return params;
         }
 
         function updateFilterState() {
-            const count = [fromDate.value || toDate.value, ...Object.values(filters).map(field => field.value !== "" ? "active" : "")].filter(Boolean).length;
+            const count = [dateRange.length, ...Object.values(filters).map(field => field.value !== "" ? "active" : "")].filter(Boolean).length;
             filterCount.textContent = String(count);
             filterCount.classList.toggle("d-none", count === 0);
             if (exportButton) {
@@ -57,22 +57,28 @@
         }
 
         function filtersChanged() {
-            if (fromDate.value && toDate.value && fromDate.value > toDate.value) {
-                if (window.showAlert) window.showAlert("error", "Start date cannot be after end date.");
-                return;
-            }
             updateFilterState();
             fetchLeads(1);
         }
+
+        function localDate(date) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        }
+
+        const dateRangePicker = window.flatpickr ? window.flatpickr(dateRangeInput, {
+            mode: "range", dateFormat: "d-m-Y", showMonths: 1, disableMobile: true,
+            onChange(dates) { dateRange = dates; filtersChanged(); },
+        }) : null;
 
         filterToggle.addEventListener("click", () => {
             const open = filterPanel.classList.toggle("d-none") === false;
             filterToggle.setAttribute("aria-expanded", String(open));
         });
-        [fromDate, toDate].forEach(field => field.addEventListener("change", filtersChanged));
         [...Object.values(filters), perPage].forEach(field => field.addEventListener("change", filtersChanged));
         document.getElementById("leadsClearFilters").addEventListener("click", () => {
-            [fromDate, toDate, ...Object.values(filters)].forEach(field => { field.value = ""; });
+            Object.values(filters).forEach(field => { field.value = ""; });
+            dateRange = [];
+            dateRangePicker?.clear(false);
             updateFilterState();
             fetchLeads(1);
         });

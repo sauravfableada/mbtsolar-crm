@@ -1234,7 +1234,7 @@ hr,
 
 .crm-search-input,
 .crm-search-icon {
-    background-color: #F8FAFC !important;
+    background-color: #f0f0f0 !important;
     color: var(--crm-text-body) !important;
     border-color: transparent !important;
 }

@@ -26,7 +26,7 @@
                         @endcan
                     @endif
                     @can('meetings.view')
-                    <a href="{{ route('meetings.export') }}" class="btn btn-outline-dark-blue">
+                    <a href="{{ route('meetings.export') }}" id="meetingExportButton" class="btn btn-outline-dark-blue">
                         <i class="fa-solid fa-download me-1"></i>Export
                     </a>
                     @endcan
@@ -39,12 +39,20 @@
             </div>
             
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <h6 class="fw-bold mb-0">All Meetings</h6>
-                <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
+                <div class="d-flex gap-2 flex-grow-1"><div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
                     <span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span>
                     <input type="text" class="form-control crm-search-input border-0" placeholder="Search meetings..." id="meetingsSearch" value="{{ request('search') }}">
-                </div>
+                </div><button type="button" id="meetingFilterToggle" class="btn btn-outline-dark-blue btn-sm" aria-expanded="true"><i class="fa-solid fa-filter me-1"></i>Filters <span id="meetingFilterCount" class="badge rounded-pill text-bg-primary d-none">0</span></button></div>
+                <div class="d-flex align-items-center gap-2"><label for="meetingPerPage" class="small text-muted text-nowrap mb-0">Show per page:</label><select id="meetingPerPage" class="form-select form-select-sm crm-auto-per-page" style="width:78px;">@foreach([10,25,50,100] as $size)<option>{{ $size }}</option>@endforeach</select></div>
             </div>
+            <div id="meetingFilters" class="meeting-filter-panel mt-3"><div class="row g-2 align-items-end flex-lg-nowrap">
+                <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold" for="meetingCustomerFilter">Customer</label><select id="meetingCustomerFilter" class="form-select form-select-sm"><option value="">All customers</option>@foreach($customers as $customer)<option value="{{ $customer->id }}">{{ $customer->name }}</option>@endforeach</select></div>
+                <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold" for="meetingStaffFilter">Staff</label><select id="meetingStaffFilter" class="form-select form-select-sm"><option value="">All staff</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
+                <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold" for="meetingScheduledRange">Scheduled On</label><div class="input-group input-group-sm"><span class="input-group-text"><i class="fa-regular fa-calendar"></i></span><input id="meetingScheduledRange" class="form-control" type="text" placeholder="From - To" readonly></div></div>
+                <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold" for="meetingTypeFilter">Meeting Type</label><select id="meetingTypeFilter" class="form-select form-select-sm"><option value="">All types</option><option value="virtual">Virtual</option><option value="in-person">In-person</option><option value="telephonic">Telephonic</option></select></div>
+                <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold" for="meetingStatusFilter">Status</label><select id="meetingStatusFilter" class="form-select form-select-sm"><option value="">All statuses</option><option value="scheduled">Scheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div>
+                <div class="col-sm-6 col-lg-auto"><button id="meetingClearFilters" type="button" class="btn btn-dark-blue btn-sm px-4 w-100">Clear</button></div>
+            </div></div>
         </div>
 
         <div class="card-body p-0">
@@ -65,7 +73,7 @@
             </div>
             @endif
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 responsive-table">
+                <table class="table table-hover align-middle mb-0 responsive-table" data-no-auto-filter>
                     <thead class="bg-light">
                         <tr>
                             <th class="text-center">Sr.No</th>
@@ -114,6 +122,8 @@
             border-bottom-color: #0d6efd;
             background-color: transparent;
         }
+        .meeting-filter-panel { padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
+        [data-theme="dark"] .meeting-filter-panel { border-color: rgba(255,255,255,.08); background: #172033; }
     </style>
 @endpush
 
@@ -129,5 +139,5 @@
         }
     };
     </script>
-    <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/meeting.js') }}"></script>
+    <script src="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'js/meeting.js') }}?v={{ filemtime(public_path('js/meeting.js')) }}"></script>
 @endpush

@@ -104,7 +104,7 @@
         const label = `<label class="form-label small fw-semibold" for="${id}">${field.label}</label>`;
 
         if (field.kind === "date") {
-            return `<div class="col-sm-6 col-lg-3 crm-auto-filter-field" data-column="${field.index}" data-kind="date">${label}<div class="d-flex gap-2"><input id="${id}" type="date" class="form-control form-control-sm" data-bound="from" aria-label="${field.label} from"><input type="date" class="form-control form-control-sm" data-bound="to" aria-label="${field.label} to"></div></div>`;
+            return `<div class="col-sm-6 col-lg-3 crm-auto-filter-field" data-column="${field.index}" data-kind="date">${label}<div class="input-group input-group-sm"><span class="input-group-text"><i class="fa-regular fa-calendar"></i></span><input id="${id}" type="text" class="form-control crm-auto-date-range" placeholder="From - To" autocomplete="off" readonly></div></div>`;
         }
         if (field.kind === "number") {
             return `<div class="col-sm-6 col-lg-3 crm-auto-filter-field" data-column="${field.index}" data-kind="number">${label}<div class="d-flex gap-2"><input id="${id}" type="number" class="form-control form-control-sm" data-bound="min" placeholder="Min"><input type="number" class="form-control form-control-sm" data-bound="max" placeholder="Max"></div></div>`;
@@ -145,8 +145,9 @@
             }
             if (field.dataset.kind === "date") {
                 const timestamp = Date.parse(cellText);
-                const from = field.querySelector('[data-bound="from"]').value;
-                const to = field.querySelector('[data-bound="to"]').value;
+                const rangeInput = field.querySelector('.crm-auto-date-range');
+                const from = rangeInput.dataset.from || "";
+                const to = rangeInput.dataset.to || "";
                 if (!from && !to) return true;
                 if (!Number.isFinite(timestamp)) return false;
                 if (from && timestamp < new Date(`${from}T00:00:00`).getTime()) return false;
@@ -230,6 +231,21 @@
         }
 
         const run = () => applyFilters(table, panel, countBadge);
+        panel.querySelectorAll('.crm-auto-date-range').forEach(input => {
+            if (!window.flatpickr) return;
+            input._rangePicker = window.flatpickr(input, {
+                mode: "range",
+                dateFormat: "d-m-Y",
+                showMonths: 1,
+                disableMobile: true,
+                onChange(dates) {
+                    const format = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+                    input.dataset.from = dates[0] ? format(dates[0]) : "";
+                    input.dataset.to = dates[1] ? format(dates[1]) : "";
+                    run();
+                },
+            });
+        });
         let timer;
         toggle.addEventListener("click", event => {
             const open = panel.classList.toggle("d-none") === false;
@@ -238,7 +254,14 @@
         panel.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(run, 250); });
         panel.addEventListener("change", run);
         clearButton.addEventListener("click", () => {
-            panel.querySelectorAll("input, select").forEach(control => { control.value = ""; });
+            panel.querySelectorAll("input, select").forEach(control => {
+                control.value = "";
+                if (control.classList.contains("crm-auto-date-range")) {
+                    control.dataset.from = "";
+                    control.dataset.to = "";
+                    control._rangePicker?.clear(false);
+                }
+            });
             run();
         });
         perPageSelect.addEventListener("change", () => {

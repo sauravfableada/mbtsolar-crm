@@ -13,7 +13,10 @@ class MeetingController extends Controller
 {
     public function index()
     {
-        return view('crm.meetings.index');
+        $customers = $this->visibleCustomers();
+        $users = $this->selectableUsers(['admin', 'manager', 'staff']);
+
+        return view('crm.meetings.index', compact('customers', 'users'));
     }
 
     public function create()
@@ -67,12 +70,9 @@ class MeetingController extends Controller
             ->when($request->status, fn($q) => $q->where('status', $request->status))
             ->when($request->customer_id, fn($q) => $q->where('customer_id', $request->customer_id))
             ->when($request->assigned_user_id, fn($q) => $q->where('assigned_user_id', $request->assigned_user_id))
-            ->when($request->from_date && $request->to_date, function ($q) use ($request) {
-                $q->whereBetween('created_at', [
-                    $request->from_date . ' 00:00:00',
-                    $request->to_date . ' 23:59:59',
-                ]);
-            });
+            ->when($request->meeting_type, fn($q) => $q->where('meeting_type', $request->meeting_type))
+            ->when($request->scheduled_from, fn($q) => $q->whereDate('scheduled_at', '>=', $request->scheduled_from))
+            ->when($request->scheduled_to, fn($q) => $q->whereDate('scheduled_at', '<=', $request->scheduled_to));
 
         $meetings = $query->get();
 
