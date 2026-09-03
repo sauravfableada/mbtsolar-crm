@@ -1639,7 +1639,8 @@
                 formData.set('discount', document.getElementById('quick_discount')?.value || '0');
                 formData.set('subsidy_amount', document.getElementById('quick_subsidy_amount')?.value || '0');
                 formData.set('solar_structure_charges', '0');
-                formData.set('solar_meter_charges', '0');
+                formData.set('solar_meter_charges_amount', '0');
+                formData.set('solar_meter_charges', 'No');
                 formData.set('comment', form.comment.value || '');
 
                 const originalHtml = submitBtn.innerHTML;
@@ -2157,7 +2158,7 @@
             formData.set('total', document.getElementById('subtotal')?.value || '0');
             formData.set('final_total', document.getElementById('final_total')?.value || '0');
             formData.set('solar_structure_charges', document.getElementById('solar_structure_charges_check')?.checked ? (document.getElementById('solar_structure_charges')?.value || '0') : '0');
-            formData.set('solar_meter_charges', document.getElementById('solar_meter_charges_check')?.checked ? (document.getElementById('solar_meter_charges')?.value || '0') : '0');
+            formData.set('solar_meter_charges_amount', document.getElementById('solar_meter_charges_check')?.checked ? (document.getElementById('solar_meter_charges_amount')?.value || '0') : '0');
 
             btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
 
@@ -3699,7 +3700,7 @@
             ? parseFloat(document.getElementById('solar_structure_charges')?.value || 0)
             : 0;
         const meterCharges = document.getElementById('solar_meter_charges_check')?.checked
-            ? parseFloat(document.getElementById('solar_meter_charges')?.value || 0)
+            ? parseFloat(document.getElementById('solar_meter_charges_amount')?.value || 0)
             : 0;
         const discount = parseFloat(document.getElementById('discount')?.value || 0);
         const subsidy = parseFloat(document.getElementById('subsidy_amount')?.value || 0);
@@ -3859,7 +3860,7 @@
         }
 
         // Attach robust listeners to all key fields
-        const inputs = ['price', 'solar_structure_charges', 'solar_meter_charges', 'discount', 'subsidy_amount'];
+        const inputs = ['price', 'solar_structure_charges', 'solar_meter_charges_amount', 'discount', 'subsidy_amount'];
         inputs.forEach(function (id) {
             const input = document.getElementById(id);
             if (input) {

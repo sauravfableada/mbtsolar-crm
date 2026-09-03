@@ -297,13 +297,13 @@
                                         
                                         <div class="col-md-6 estimate-meter-charges-col" id="meter-charges-input" style="display: none;">
                                             <label class="form-label fw-semibold small">Enter Solar Meter Charges</label>
-                                            <input type="number" min="0" step="1" name="solar_meter_charges"
-                                                id="solar_meter_charges"
-                                                value="{{ old('solar_meter_charges', $invoice->solar_meter_charges) }}"
-                                                class="form-control @error('solar_meter_charges') is-invalid @enderror"
+                                            <input type="number" min="0" step="1" name="solar_meter_charges_amount"
+                                                id="solar_meter_charges_amount"
+                                                value="{{ old('solar_meter_charges_amount', $invoice->solar_meter_charges_amount) }}"
+                                                class="form-control @error('solar_meter_charges_amount') is-invalid @enderror"
                                                 placeholder="0.00">
-                                            <div class="invalid-feedback" id="solar_meter_charges-error">
-                                                @error('solar_meter_charges')
+                                            <div class="invalid-feedback" id="solar_meter_charges_amount-error">
+                                                @error('solar_meter_charges_amount')
                                                     {{ $message }}
                                                 @enderror
                                             </div>

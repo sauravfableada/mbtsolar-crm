@@ -391,6 +391,7 @@ if (!function_exists('base_url')) {
                     $discount = (float) ($invoice->discount ?? 0);
                     $subsidy = (float) ($invoice->subsidy_amount ?? 0);
                     $solarStructureCharges = (float) ($invoice->solar_structure_charges ?? 0);
+                    $solarMeterChargesAmount = (float) ($invoice->solar_meter_charges_amount ?? 0);
                     $gstBreakdown = is_array($invoice->gst_breakdown ?? null)
                         ? $invoice->gst_breakdown
                         : (json_decode((string) ($invoice->gst_breakdown ?? ''), true) ?: []);
@@ -398,7 +399,7 @@ if (!function_exists('base_url')) {
                     $gstAmount = isset($invoice->gst_amount)
                         ? (float) $invoice->gst_amount
                         : $subtotal * ($gstRate / 100);
-                    $totalPayable = $subtotal + $solarStructureCharges + $gstAmount - $discount;
+                    $totalPayable = $subtotal + $solarStructureCharges + $solarMeterChargesAmount + $gstAmount - $discount;
                     $lendingCost = $totalPayable - $subsidy;
                 @endphp
                 <tr>
@@ -406,6 +407,13 @@ if (!function_exists('base_url')) {
                     <td style="text-align: right; border: 1px solid #333; font-weight: normal; padding: 8px 12px; color: #333; font-family: sans-serif;">Base Price</td>
                     <td style="text-align: right; border: 1px solid #333; padding: 8px 12px; color: #333; font-family: sans-serif;">{{ number_format($subtotal, 2) }}</td>
                 </tr>
+                @if($solarMeterChargesAmount > 0)
+                <tr>
+                    <td style="border: 1px solid #333; background-color: #fff;"></td>
+                    <td style="text-align: right; border: 1px solid #333; font-weight: normal; padding: 8px 12px; color: #333; font-family: sans-serif;">Solar Meter Charges</td>
+                    <td style="text-align: right; border: 1px solid #333; padding: 8px 12px; color: #333; font-family: sans-serif;">{{ number_format($solarMeterChargesAmount, 2) }}</td>
+                </tr>
+                @endif
                 @if($solarStructureCharges > 0)
                 <tr>
                     <td style="border: 1px solid #333; background-color: #fff;"></td>

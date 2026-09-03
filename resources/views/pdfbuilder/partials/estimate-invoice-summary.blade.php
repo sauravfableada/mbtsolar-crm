@@ -15,7 +15,7 @@ $summaryGstRate = ($estdata && isset($estdata->gst)) ? (float) $estdata->gst : 0
 $summaryDiscount = ($estdata && isset($estdata->discount)) ? (float) $estdata->discount : 0;
 $summarySubsidy = ($estdata && isset($estdata->subsidy_amount)) ? (float) $estdata->subsidy_amount : 0;
 $summarySolarStructureCharges = ($estdata && isset($estdata->solar_structure_charges)) ? (float) $estdata->solar_structure_charges : 0;
-$summarySolarMeterCharges = ($estdata && isset($estdata->solar_meter_charges)) ? (float) $estdata->solar_meter_charges : 0;
+$summarySolarMeterCharges = ($estdata && isset($estdata->solar_meter_charges_amount)) ? (float) $estdata->solar_meter_charges_amount : 0;
 $summaryAdditionalChargesBreakdown = [];
 $summaryAdditionalChargesTotal = ($estdata && isset($estdata->additional_charges_total)) ? (float) $estdata->additional_charges_total : 0;
 if ($estdata && isset($estdata->other_charges) && is_numeric($estdata->other_charges)) {
@@ -303,6 +303,18 @@ $summaryLendingCost = $summaryTotalPayable;
         </td>
         <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summaryBaseCost, 2) ?></td>
     </tr>
+    <?php if ($summarySolarMeterCharges > 0): ?>
+    <tr>
+        <td style="<?= $summaryCellStyle ?>">Solar Meter Charges</td>
+        <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summarySolarMeterCharges, 2) ?></td>
+    </tr>
+    <?php endif; ?>
+    <?php if ($summarySolarStructureCharges > 0): ?>
+    <tr>
+        <td style="<?= $summaryCellStyle ?>">Solar Structure Charges</td>
+        <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summarySolarStructureCharges, 2) ?></td>
+    </tr>
+    <?php endif; ?>
     <?php if ($summaryBomTotal > 0): ?>
     <tr>
         <td style="<?= $summaryCellStyle ?>">Bill of Materials (BOM) Items</td>
@@ -345,18 +357,6 @@ $summaryLendingCost = $summaryTotalPayable;
     <tr>
         <td style="<?= $summaryCellStyle ?>"><strong><?= $summaryUsesGlobalTax ? 'Total Global Tax' : 'Total Taxes on BOM' ?></strong></td>
         <td style="<?= $summaryRightCellStyle ?>"><strong><?= number_format($summaryBomTaxTotal, 2) ?></strong></td>
-    </tr>
-    <?php endif; ?>
-    <?php if ($summarySolarMeterCharges > 0): ?>
-    <tr>
-        <td style="<?= $summaryCellStyle ?>">Solar Meter Charges</td>
-        <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summarySolarMeterCharges, 2) ?></td>
-    </tr>
-    <?php endif; ?>
-    <?php if ($summarySolarStructureCharges > 0): ?>
-    <tr>
-        <td style="<?= $summaryCellStyle ?>">Solar Structure Charges</td>
-        <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summarySolarStructureCharges, 2) ?></td>
     </tr>
     <?php endif; ?>
     <?php if ($summaryDiscount > 0): ?>

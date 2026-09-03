@@ -30,6 +30,7 @@ class Estimate extends Model
         'price_mode',
         'solar_structure_charges',
         'solar_meter_charges',
+        'solar_meter_charges_amount',
         'total',
         'gst',
         'gst_amount',

@@ -9,8 +9,8 @@
     
     $customName = $genData['custom_name'] ?? null;
     $customLogoPath = $genData['custom_logo'] ?? null;
-    $customLogoBase64 = null;
-    if ($customLogoPath) {
+    $customLogoBase64 = $custom_logo_base64 ?? null;
+    if (!$customLogoBase64 && $customLogoPath) {
         $diskPath = storage_path('app/public/' . $customLogoPath);
         if (file_exists($diskPath)) {
             $customLogoBase64 = 'data:image/' . pathinfo($diskPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode(file_get_contents($diskPath));
@@ -186,9 +186,4 @@
             * INVERTER GUARANTEE/WARRANTY 10 YEARS.
         </div>
     </div>
-    <?php if ($customLogoBase64): ?>
-    <div style="text-align: right; margin-top: 40px; padding-right: 20px;">
-        <img src="<?= $customLogoBase64 ?>" style="max-width: 150px; max-height: 80px; object-fit: contain;">
-    </div>
-    <?php endif; ?>
 </div>

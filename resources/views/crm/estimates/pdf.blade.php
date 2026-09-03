@@ -552,6 +552,12 @@ $lendingCost = $totalPayable - $subsidy;
                         </td>
                     </tr>
                     <?php endif; ?>
+                    <?php if (!empty($estdata->solar_meter_charges_amount) && $estdata->solar_meter_charges_amount > 0): ?>
+                    <tr>
+                        <th>Solar Meter Charges Amount</th>
+                        <td><?php echo number_format((float) $estdata->solar_meter_charges_amount, 2); ?></td>
+                    </tr>
+                    <?php endif; ?>
                 </table>
             </div>
 
