@@ -123,6 +123,8 @@ function getMeetingIdFromUrl() {
 // ==================== MEETINGS TABLE ====================
 const MeetingTable = {
     currentFilter: null,
+    scheduledRange: [],
+    scheduledPicker: null,
 
     init() {
         // Get filter from URL parameter or default to 'created_by_me'
@@ -150,7 +152,84 @@ const MeetingTable = {
         this.initTabs();
         this.load();
         this.initSearch();
+        this.initFilters();
         this.initPagination();
+    },
+
+    initFilters() {
+        const panel = document.getElementById("meetingFilters");
+        const toggle = document.getElementById("meetingFilterToggle");
+        toggle?.addEventListener("click", () => {
+            const willOpen = panel.classList.contains("d-none");
+            panel.classList.toggle("d-none", !willOpen);
+            toggle.setAttribute("aria-expanded", String(willOpen));
+        });
+
+        if (window.flatpickr) {
+            this.scheduledPicker = window.flatpickr("#meetingScheduledRange", {
+                mode: "range",
+                dateFormat: "d-m-Y",
+                showMonths: 1,
+                disableMobile: true,
+                onChange: dates => {
+                    this.scheduledRange = dates;
+                    this.filtersChanged();
+                },
+            });
+        }
+
+        ["#meetingCustomerFilter", "#meetingStaffFilter", "#meetingTypeFilter", "#meetingStatusFilter", "#meetingPerPage"].forEach(selector => {
+            $(selector).on("change", () => this.filtersChanged());
+        });
+        $("#meetingClearFilters").on("click", () => {
+            ["#meetingCustomerFilter", "#meetingStaffFilter", "#meetingTypeFilter", "#meetingStatusFilter"].forEach(selector => $(selector).val(""));
+            this.scheduledRange = [];
+            this.scheduledPicker?.clear(false);
+            this.filtersChanged();
+        });
+        this.updateFilterSummary();
+    },
+
+    localDate(date) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    },
+
+    filterData(page = 1) {
+        const data = {
+            page,
+            search: $("#meetingsSearch").val(),
+            filter: this.currentFilter,
+            per_page: $("#meetingPerPage").val() || 10,
+            customer_id: $("#meetingCustomerFilter").val(),
+            assigned_user_id: $("#meetingStaffFilter").val(),
+            meeting_type: $("#meetingTypeFilter").val(),
+            status: $("#meetingStatusFilter").val(),
+        };
+        if (this.scheduledRange[0]) data.scheduled_from = this.localDate(this.scheduledRange[0]);
+        if (this.scheduledRange[1]) data.scheduled_to = this.localDate(this.scheduledRange[1]);
+        return data;
+    },
+
+    updateFilterSummary() {
+        const active = [$("#meetingCustomerFilter").val(), $("#meetingStaffFilter").val(), this.scheduledRange.length, $("#meetingTypeFilter").val(), $("#meetingStatusFilter").val()].filter(Boolean).length;
+        $("#meetingFilterCount").text(active).toggleClass("d-none", active === 0);
+        const exportButton = document.getElementById("meetingExportButton");
+        if (exportButton) {
+            const url = new URL(exportButton.href, window.location.origin);
+            const params = new URLSearchParams(this.filterData());
+            params.delete("page");
+            params.delete("per_page");
+            url.search = params.toString();
+            exportButton.href = url.toString();
+        }
+    },
+
+    filtersChanged() {
+        this.updateFilterSummary();
+        this.load(1);
     },
 
     initTabs() {
@@ -164,7 +243,7 @@ const MeetingTable = {
                 newUrl.searchParams.set('filter', this.currentFilter);
                 window.history.replaceState({}, '', newUrl);
                 
-                this.load(1);
+                this.filtersChanged();
             });
         });
     },
@@ -173,7 +252,7 @@ const MeetingTable = {
         let searchTimer;
         $("#meetingsSearch").on("keyup", () => {
             clearTimeout(searchTimer);
-            searchTimer = setTimeout(() => this.load(), 500);
+            searchTimer = setTimeout(() => this.filtersChanged(), 500);
         });
     },
 
@@ -186,19 +265,13 @@ const MeetingTable = {
     },
 
     load(page = 1) {
-        let search = $("#meetingsSearch").val();
-
         // Show loading state
         $("tbody").html(this.getLoadingTemplate());
 
         $.ajax({
             url: API_CONFIG.meetings,
             type: "GET",
-            data: { 
-                page, 
-                search,
-                filter: this.currentFilter // Add filter parameter
-            },
+            data: this.filterData(page),
             dataType: "json",
             xhrFields: {
                 withCredentials: true,

@@ -66,6 +66,12 @@ class MeetingController extends ApiBaseController
             $query->where('meeting_type', $request->meeting_type);
         }
 
+        $query
+            ->when($request->filled('customer_id'), fn($q) => $q->where('customer_id', $request->customer_id))
+            ->when($request->filled('assigned_user_id'), fn($q) => $q->where('assigned_user_id', $request->assigned_user_id))
+            ->when($request->filled('scheduled_from'), fn($q) => $q->whereDate('scheduled_at', '>=', $request->scheduled_from))
+            ->when($request->filled('scheduled_to'), fn($q) => $q->whereDate('scheduled_at', '<=', $request->scheduled_to));
+
         // Apply filter for staff users only
         if (!$user->isAdmin() && $filter === 'created_by_me') {
             // All records I created (regardless of assignment)
