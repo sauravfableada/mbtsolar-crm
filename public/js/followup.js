@@ -21,7 +21,6 @@
         const filterPanel = document.getElementById("followUpFilters");
         const filterToggle = document.getElementById("followUpFilterToggle");
         const filterCount = document.getElementById("followUpFilterCount");
-        const leadFilter = document.getElementById("followUpLeadFilter");
         const staffFilter = document.getElementById("followUpStaffFilter");
         const createdRangeInput = document.getElementById("followUpCreatedRange");
         const followUpRangeInput = document.getElementById("followUpDateRange");
@@ -98,7 +97,6 @@
         function filterParams() {
             const params = new URLSearchParams();
             if (searchInput?.value.trim()) params.set("search", searchInput.value.trim());
-            if (leadFilter?.value.trim()) params.set("lead_name", leadFilter.value.trim());
             if (staffFilter?.value) params.set("assigned_user_id", staffFilter.value);
             if (statusFilter?.value) params.set("status", statusFilter.value);
             if (createdRange[0]) params.set("created_from", formatLocalDate(createdRange[0]));
@@ -111,7 +109,7 @@
         }
 
         function updateFilterSummary() {
-            const count = [leadFilter?.value.trim(), staffFilter?.value, createdRange.length, followUpRange.length, statusFilter?.value].filter(Boolean).length;
+            const count = [staffFilter?.value, createdRange.length, followUpRange.length, statusFilter?.value].filter(Boolean).length;
             if (filterCount) {
                 filterCount.textContent = String(count);
                 filterCount.classList.toggle("d-none", count === 0);
@@ -136,12 +134,7 @@
             filterToggle.setAttribute("aria-expanded", String(willOpen));
         });
         [staffFilter, statusFilter, perPageSelect].forEach(field => field?.addEventListener("change", applyFilterChange));
-        leadFilter?.addEventListener("input", () => {
-            clearTimeout(timer);
-            timer = setTimeout(applyFilterChange, 350);
-        });
         document.getElementById("followUpClearFilters")?.addEventListener("click", () => {
-            if (leadFilter) leadFilter.value = "";
             [staffFilter, statusFilter].forEach(field => { if (field) field.value = ""; });
             createdRange = [];
             followUpRange = [];

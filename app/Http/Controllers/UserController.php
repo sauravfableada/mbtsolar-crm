@@ -59,8 +59,10 @@ class UserController extends Controller
     public function index()
     {
         $subscriptionMeta = $this->getSubscriptionStaffMeta(auth()->user());
+        $roles = Role::whereNotIn('name', ['admin', 'super-admin'])->orderBy('name')->get(['name']);
+        $jobTitles = User::query()->nonAdmin()->whereNotNull('job_title')->where('job_title', '!=', '')->distinct()->orderBy('job_title')->pluck('job_title');
 
-        return view('crm.users.index', $subscriptionMeta);
+        return view('crm.users.index', array_merge($subscriptionMeta, compact('roles', 'jobTitles')));
     }
 
     public function create()
@@ -118,12 +120,10 @@ class UserController extends Controller
             ->when($request->role, function ($q) use ($request) {
                 $q->whereHas('roles', fn($role) => $role->where('name', $request->role));
             })
-            ->when($request->from_date && $request->to_date, function ($q) use ($request) {
-                $q->whereBetween('created_at', [
-                    $request->from_date . ' 00:00:00',
-                    $request->to_date . ' 23:59:59',
-                ]);
-            });
+            ->when($request->job_title, fn($q) => $q->where('job_title', $request->job_title))
+            ->when($request->filled('is_active'), fn($q) => $q->where('is_active', $request->is_active === '1'))
+            ->when($request->from_date, fn($q) => $q->whereDate('created_at', '>=', $request->from_date))
+            ->when($request->to_date, fn($q) => $q->whereDate('created_at', '<=', $request->to_date));
 
         $users = $query->get();
 

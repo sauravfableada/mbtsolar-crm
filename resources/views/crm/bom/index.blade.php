@@ -7,6 +7,10 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
 <style>
+    @media (min-width: 992px) {
+        #bomIndexPage .crm-auto-filter-panel .row { flex-wrap: nowrap; }
+        #bomIndexPage .crm-auto-filter-panel .row > div { flex: 1 1 0; width: auto; max-width: none; }
+    }
     #quickBomModal .select2-container { width: 100% !important; }
     #quickBomModal .select2-selection { min-height: 38px; }
     #quickBomModal .select2-selection--multiple { padding-bottom: 2px; }
@@ -18,7 +22,7 @@
 @endpush
 
 @section('content')
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" id="bomIndexPage">
     <div class="card border-0 shadow-sm overflow-hidden rounded-4">
         <div class="card-header bg-white border-bottom py-3 px-3 px-md-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
@@ -53,7 +57,7 @@
                     <thead>
                         <tr>
                             <th class="ps-4" style="width: 80px;">Sr.No</th>
-                            <th>Name</th>
+                            <th data-no-filter>Name</th>
                             <th class="d-none d-md-table-cell">Make</th>
                             <th class="d-none d-md-table-cell">Technology</th>
                             <th class="d-none d-md-table-cell">Warranty</th>

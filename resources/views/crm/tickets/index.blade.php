@@ -5,6 +5,18 @@
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
     <style>
+        @media (min-width: 992px) {
+            #ticketsPage .crm-auto-filter-panel .row {
+                flex-wrap: nowrap;
+            }
+
+            #ticketsPage .crm-auto-filter-panel .row > div {
+                flex: 1 1 0;
+                width: auto;
+                max-width: none;
+            }
+        }
+
         .crm-filter-tabs {
             border-bottom: 2px solid #e9ecef;
         }
@@ -29,7 +41,7 @@
 @endpush
 
 @section('content')
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" id="ticketsPage">
     <div class="card border-0 shadow-sm overflow-hidden">
         <div class="card-header border-bottom-0 py-3 px-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
@@ -67,7 +79,7 @@
                         <tr>
                             <th class="ps-4 text-nowrap text-center" style="min-width: 90px;">Sr.No</th>
                             <th class="d-none d-md-table-cell text-center">Customer Name</th>
-                            <th class="text-center">Ticket Name</th>
+                            <th class="text-center" data-no-filter>Ticket Name</th>
                             <th class="d-none d-md-table-cell text-center">Priority</th>
                             <th class="d-none d-md-table-cell text-center">Status</th>
                             <th class="d-none d-md-table-cell text-center">Created At</th>

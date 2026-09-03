@@ -24,7 +24,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 responsive-table" id="{{ $moduleKey }}Table">
+                <table class="table table-hover align-middle mb-0 responsive-table" id="{{ $moduleKey }}Table" @if($hideFilters ?? false) data-no-auto-filter @endif>
                     <thead>
                         <tr>
                             <th class="ps-4" style="width: 80px;">Sr.No</th>

@@ -65,7 +65,7 @@
                     <select id="customerTypeFilter" class="form-select form-select-sm"><option value="">All types</option>@foreach($customerTypes as $type)<option value="{{ $type }}">{{ $type }}</option>@endforeach</select>
                 </div>
                 <div class="col-sm-6 col-lg-3 d-flex gap-2">
-                    <button type="button" id="customerClearFilters" class="btn btn-dark-blue btn-sm flex-grow-1"><i class="fa-solid fa-rotate-left me-1"></i>Clear Filters</button>
+                    <button type="button" id="customerClearFilters" class="btn btn-dark-blue btn-sm flex-grow-1 crm-filter-clear-btn"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button>
                 </div>
             </div>
         </div>

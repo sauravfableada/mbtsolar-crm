@@ -152,6 +152,12 @@
         const tableBody = document.querySelector("#usersTable tbody");
         const paginationContainer = document.getElementById("usersPagination");
         const searchInput = document.getElementById("usersSearch");
+        const roleFilter = document.getElementById("usersRoleFilter");
+        const jobTitleFilter = document.getElementById("usersJobTitleFilter");
+        const statusFilter = document.getElementById("usersStatusFilter");
+        const perPage = document.getElementById("usersPerPage");
+        const filterPanel = document.getElementById("usersFilters");
+        let dateRange = [];
         const permissionsModalElement = document.getElementById("permissionsModal");
         const permissionsModalBody = document.getElementById("permissionsModalBody");
         const permissionsTitle = document.getElementById("permissionsModalLabel");
@@ -170,6 +176,39 @@
         const permissionsModal = permissionsModalElement && window.bootstrap ? new bootstrap.Modal(permissionsModalElement) : null;
         let activePermissionUserId = null;
         let permissionsSaveTimer = null;
+
+        const localDate = date => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+        const datePicker = window.flatpickr ? window.flatpickr("#usersDateRange", {
+            mode: "range", dateFormat: "d-m-Y", showMonths: 1, disableMobile: true,
+            onChange(dates) { dateRange = dates; filtersChanged(); },
+        }) : null;
+
+        function filterParams(page = 1) {
+            const params = new URLSearchParams({ page: String(page), per_page: perPage?.value || "10" });
+            if (searchInput?.value.trim()) params.set("search", searchInput.value.trim());
+            if (roleFilter?.value) params.set("role", roleFilter.value);
+            if (jobTitleFilter?.value) params.set("job_title", jobTitleFilter.value);
+            if (statusFilter?.value !== "") params.set("is_active", statusFilter.value);
+            if (dateRange[0]) params.set("from_date", localDate(dateRange[0]));
+            if (dateRange[1]) params.set("to_date", localDate(dateRange[1]));
+            return params;
+        }
+
+        function filtersChanged() {
+            const count = [roleFilter?.value, jobTitleFilter?.value, statusFilter?.value !== "" ? "status" : "", dateRange.length].filter(Boolean).length;
+            document.getElementById("usersFilterCount")?.classList.toggle("d-none", count === 0);
+            if (document.getElementById("usersFilterCount")) document.getElementById("usersFilterCount").textContent = count;
+            const exportButton = document.getElementById("usersExportButton");
+            if (exportButton) { const url = new URL(exportButton.href, location.origin); url.search = filterParams().toString(); url.searchParams.delete("page"); url.searchParams.delete("per_page"); exportButton.href = url; }
+            fetchUsers(1);
+        }
+
+        document.getElementById("usersFilterToggle")?.addEventListener("click", () => filterPanel?.classList.toggle("d-none"));
+        [roleFilter, jobTitleFilter, statusFilter, perPage].forEach(field => field?.addEventListener("change", filtersChanged));
+        document.getElementById("usersClearFilters")?.addEventListener("click", () => {
+            [roleFilter, jobTitleFilter, statusFilter].forEach(field => { if (field) field.value = ""; });
+            dateRange = []; datePicker?.clear(false); filtersChanged();
+        });
 
         function formatDate(dateValue) {
             if (!dateValue) return "-";
@@ -472,10 +511,7 @@
         }
 
         function fetchUsers(page = 1) {
-            let url = `/api/users?page=${page}`;
-            if (searchInput && searchInput.value.trim()) {
-                url += `&search=${encodeURIComponent(searchInput.value.trim())}`;
-            }
+            const url = `/api/users?${filterParams(page).toString()}`;
 
             $.ajax({
                 url,
@@ -643,7 +679,7 @@
             searchInput.addEventListener("input", function () {
                 clearTimeout(timer);
                 timer = setTimeout(function () {
-                    fetchUsers(1);
+                    filtersChanged();
                 }, 350);
             });
         }

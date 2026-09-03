@@ -94,8 +94,13 @@ class UserController extends ApiBaseController
                         ->orWhere('address', 'like', "%{$search}%");
                 });
             })
+            ->when($request->filled('role'), fn($query) => $query->whereHas('roles', fn($roleQuery) => $roleQuery->where('name', $request->role)))
+            ->when($request->filled('job_title'), fn($query) => $query->where('job_title', $request->job_title))
+            ->when($request->filled('is_active'), fn($query) => $query->where('is_active', $request->is_active === '1'))
+            ->when($request->filled('from_date'), fn($query) => $query->whereDate('created_at', '>=', $request->from_date))
+            ->when($request->filled('to_date'), fn($query) => $query->whereDate('created_at', '<=', $request->to_date))
             ->latest()
-            ->paginate(10);
+            ->paginate(in_array((int) $request->per_page, [10, 25, 50, 100], true) ? (int) $request->per_page : 10);
 
         return response()->json([
             'success' => true,
