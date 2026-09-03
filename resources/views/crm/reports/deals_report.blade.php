@@ -5,6 +5,7 @@
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/users.css') }}?v={{ filemtime(public_path('css/users.css')) }}">
     <style>
+        .customer-filter-panel { padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
         .report-filter-panel {
             display: flex;
             flex-wrap: wrap;
@@ -137,10 +138,17 @@
                             id="dealsReportSearch">
                     </div>
                 </div>
+                <div class="customer-filter-panel mt-3"><div class="row g-2 align-items-end flex-lg-nowrap">
+                    <div class="col-lg"><label class="form-label small fw-semibold">Customer Name</label><select id="dealReportCustomer" class="form-select form-select-sm"><option value="">All customer names</option>@foreach($customers as $customer)<option value="{{ $customer->id }}">{{ $customer->name }}</option>@endforeach</select></div>
+                    <div class="col-lg"><label class="form-label small fw-semibold">Created By</label><select id="dealReportCreator" class="form-select form-select-sm"><option value="">All staff</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div>
+                    <div class="col-lg"><label class="form-label small fw-semibold">Estimate Amount</label><div class="d-flex gap-1"><input id="dealReportMin" type="number" class="form-control form-control-sm" placeholder="Min"><input id="dealReportMax" type="number" class="form-control form-control-sm" placeholder="Max"></div></div>
+                    <div class="col-lg"><label class="form-label small fw-semibold">Status</label><select id="dealReportStatus" class="form-select form-select-sm"><option value="">All statuses</option>@foreach($dealStatuses as $status)<option value="{{ $status->id }}">{{ $status->name }}</option>@endforeach</select></div>
+                    <div class="col-lg-auto"><button id="dealReportClear" type="button" class="btn btn-dark-blue btn-sm crm-filter-clear-btn px-3"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div>
+                </div></div>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 responsive-table" id="dealsReportTable">
+                    <table class="table table-hover align-middle mb-0 responsive-table" id="dealsReportTable" data-no-auto-filter>
                         <thead>
                             <tr>
                                 <th class="ps-4 d-none d-md-table-cell">Sr.No</th>
@@ -371,6 +379,7 @@
                 url.searchParams.set('year', $('select[name="year"]').val() || '');
                 url.searchParams.set('from_date', $('input[name="from_date"]').val() || '');
                 url.searchParams.set('to_date', $('input[name="to_date"]').val() || '');
+                [['dealReportCustomer','customer_id'],['dealReportCreator','creator_id'],['dealReportStatus','status_id'],['dealReportMin','amount_min'],['dealReportMax','amount_max']].forEach(([id,key]) => { const value = document.getElementById(id).value; if (value !== '') url.searchParams.set(key, value); });
 
                 if (searchInput.value.trim()) {
                     url.searchParams.set('search', searchInput.value.trim());
@@ -415,6 +424,8 @@
                     fetchDealsReport(1);
                 }, 400);
             });
+            ['dealReportCustomer','dealReportCreator','dealReportStatus','dealReportMin','dealReportMax'].forEach(id => document.getElementById(id).addEventListener('change', () => fetchDealsReport(1)));
+            document.getElementById('dealReportClear').addEventListener('click', function () { ['dealReportCustomer','dealReportCreator','dealReportStatus','dealReportMin','dealReportMax'].forEach(id => document.getElementById(id).value = ''); fetchDealsReport(1); });
 
             $('select[name="year"], input[name="from_date"], input[name="to_date"]').on('change', function () {
                 $(this).closest('form').submit();
@@ -498,5 +509,3 @@
         });
     </script>
 @endpush
-
-

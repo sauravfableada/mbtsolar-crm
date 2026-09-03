@@ -137,11 +137,19 @@
                             placeholder="Search customers...">
                     </div>
                 </div>
+                <div class="customer-filter-panel mt-3">
+                    <div class="row g-2 align-items-end flex-lg-nowrap">
+                        <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">From - To</label><div class="input-group input-group-sm"><span class="input-group-text"><i class="fa-regular fa-calendar"></i></span><input id="customerReportDateRange" class="form-control" placeholder="Select date range" readonly></div></div>
+                        <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">Status</label><select id="customerReportStatus" class="form-select form-select-sm"><option value="">All statuses</option><option value="1">Active</option><option value="0">Inactive</option></select></div>
+                        <div class="col-sm-6 col-lg"><label class="form-label small fw-semibold">Customer Type</label><select id="customerReportType" class="form-select form-select-sm"><option value="">All types</option>@foreach($customerTypes as $type)<option value="{{ $type }}">{{ $type }}</option>@endforeach</select></div>
+                        <div class="col-sm-6 col-lg"><button id="customerReportClear" type="button" class="btn btn-dark-blue btn-sm w-100 crm-filter-clear-btn"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div>
+                    </div>
+                </div>
             </div>
 
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table id="customersReport" class="table table-hover align-middle mb-0">
+                    <table id="customersReport" class="table table-hover align-middle mb-0" data-no-auto-filter>
                         <thead>
                             <tr>
                                 <th class="ps-4" style="width: 80px;">Sr.No</th>
@@ -170,6 +178,9 @@
             const tableBody = document.getElementById('customersReportBody');
             const paginationContainer = document.getElementById('customerReportPagination');
             const searchInput = document.getElementById('customerReportSearch');
+            let customerReportRange = [];
+            const customerReportPicker = window.flatpickr ? window.flatpickr('#customerReportDateRange', { mode: 'range', dateFormat: 'Y-m-d', onChange: function (dates) { customerReportRange = dates; fetchCustomersReport(1); } }) : null;
+            const localDate = date => date ? [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-') : '';
 
             function escapeHtml(value) {
                 if (value === null || value === undefined) {
@@ -343,6 +354,12 @@
                 url.searchParams.set("year", $('select[name="year"]').val() || "");
                 url.searchParams.set("from_date", $('input[name="from_date"]').val() || "");
                 url.searchParams.set("to_date", $('input[name="to_date"]').val() || "");
+                if (customerReportRange[0]) url.searchParams.set('from_date', localDate(customerReportRange[0]));
+                if (customerReportRange[1]) url.searchParams.set('to_date', localDate(customerReportRange[1]));
+                const status = document.getElementById('customerReportStatus').value;
+                const type = document.getElementById('customerReportType').value;
+                if (status !== '') url.searchParams.set('status', status);
+                if (type) url.searchParams.set('customer_type', type);
 
                 if (searchInput.value.trim()) {
                     url.searchParams.set("search", searchInput.value.trim());
@@ -386,6 +403,15 @@
                 searchTimer = setTimeout(function () {
                     fetchCustomersReport(1);
                 }, 400);
+            });
+
+            ['customerReportStatus', 'customerReportType'].forEach(id => document.getElementById(id).addEventListener('change', () => fetchCustomersReport(1)));
+            document.getElementById('customerReportClear').addEventListener('click', function () {
+                document.getElementById('customerReportStatus').value = '';
+                document.getElementById('customerReportType').value = '';
+                customerReportRange = [];
+                customerReportPicker?.clear(false);
+                fetchCustomersReport(1);
             });
 
             $('select[name="year"], input[name="from_date"], input[name="to_date"]').on('change', function() {
@@ -501,5 +527,4 @@
         });
     </script>
 @endpush
-
 

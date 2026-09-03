@@ -5,6 +5,7 @@
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/users.css') }}?v={{ filemtime(public_path('css/users.css')) }}">
     <style>
+        .customer-filter-panel { padding: 1rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
         .report-filter-panel {
             display: flex;
             flex-wrap: wrap;
@@ -77,7 +78,8 @@
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3"><div><h4 class="fw-bold mb-0">Followups Report</h4><p class="text-muted small mb-0">View all followups.</p></div><div class="d-flex flex-wrap gap-2"><a href="{{ route('reports.followups_report.export', request()->all()) }}" class="btn btn-outline-dark-blue"><i class="fa-solid fa-download me-1"></i>Export</a></div></div>
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3"><h6 class="fw-bold mb-0">Active Followups</h6><div class="input-group input-group-sm" style="max-width: 300px; width: 100%;"><span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span><input type="text" id="followupsReportSearch" class="form-control crm-search-input border-0" placeholder="Search follow ups..."></div></div>
         </div>
-        <div class="card-body p-0"><div class="table-responsive"><table class="table table-hover align-middle mb-0 responsive-table"><thead><tr><th class="ps-4">Purpose & Target</th><th class="text-start">Follow Up At</th><th class="d-none d-md-table-cell">Priority</th><th class="d-none d-md-table-cell">Staff</th><th class="d-none d-md-table-cell">Status</th><th class="text-end pe-4 d-none d-md-table-cell" style="width: 120px;">Actions</th><th class="text-center d-md-none" style="width: 80px;">Action</th></tr></thead><tbody id="followupsReportBody"></tbody></table></div><div id="followupsReportPagination" class="px-4 pb-3 pt-0"></div></div>
+        <div class="customer-filter-panel mx-4 mt-3"><div class="row g-2 align-items-end flex-lg-nowrap"><div class="col-lg"><label class="form-label small fw-semibold">Staff</label><select id="followupReportStaff" class="form-select form-select-sm"><option value="">All staff</option>@foreach($users as $user)<option value="{{ $user->id }}">{{ $user->name }}</option>@endforeach</select></div><div class="col-lg"><label class="form-label small fw-semibold">Created At</label><input id="followupReportCreatedRange" class="form-control form-control-sm" placeholder="From - To" readonly></div><div class="col-lg"><label class="form-label small fw-semibold">Follow Up Date</label><input id="followupReportDateRange" class="form-control form-control-sm" placeholder="From - To" readonly></div><div class="col-lg"><label class="form-label small fw-semibold">Status</label><select id="followupReportStatus" class="form-select form-select-sm"><option value="">All statuses</option><option value="pending">Pending</option><option value="resheduled">Rescheduled</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></div><div class="col-lg-auto"><button id="followupReportClear" class="btn btn-dark-blue btn-sm crm-filter-clear-btn px-3" type="button"><i class="fa-solid fa-rotate-left me-1"></i>Clear</button></div></div></div>
+        <div class="card-body p-0"><div class="table-responsive"><table class="table table-hover align-middle mb-0 responsive-table" data-no-auto-filter><thead><tr><th class="ps-4">Purpose & Target</th><th class="text-start">Follow Up At</th><th class="d-none d-md-table-cell">Priority</th><th class="d-none d-md-table-cell">Staff</th><th class="d-none d-md-table-cell">Status</th><th class="text-end pe-4 d-none d-md-table-cell" style="width: 120px;">Actions</th><th class="text-center d-md-none" style="width: 80px;">Action</th></tr></thead><tbody id="followupsReportBody"></tbody></table></div><div id="followupsReportPagination" class="px-4 pb-3 pt-0"></div></div>
     </div>
 </div>
 @endsection
@@ -89,6 +91,21 @@ $(document).ready(function () {
     const tableBody = document.getElementById('followupsReportBody');
     const paginationContainer = document.getElementById('followupsReportPagination');
     const searchInput = document.getElementById('followupsReportSearch');
+    let followupCreatedRange = [], followupDateRange = [];
+    const followupLocalDate = date => date ? [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-') : '';
+    const followupCreatedPicker = window.flatpickr ? window.flatpickr('#followupReportCreatedRange', { mode: 'range', dateFormat: 'Y-m-d', onChange: dates => { followupCreatedRange = dates; fetchFollowupsReport(1); } }) : null;
+    const followupDatePicker = window.flatpickr ? window.flatpickr('#followupReportDateRange', { mode: 'range', dateFormat: 'Y-m-d', onChange: dates => { followupDateRange = dates; fetchFollowupsReport(1); } }) : null;
+    $.ajaxPrefilter(function (options) {
+        if (!options.url || !options.url.includes("{{ route('reports.followups') }}")) return;
+        const url = new URL(options.url, window.location.origin);
+        const staff = document.getElementById('followupReportStaff').value, status = document.getElementById('followupReportStatus').value;
+        if (staff) url.searchParams.set('assigned_user_id', staff); if (status) url.searchParams.set('status', status);
+        if (followupCreatedRange[0]) url.searchParams.set('created_from', followupLocalDate(followupCreatedRange[0])); if (followupCreatedRange[1]) url.searchParams.set('created_to', followupLocalDate(followupCreatedRange[1]));
+        if (followupDateRange[0]) url.searchParams.set('follow_up_from', followupLocalDate(followupDateRange[0])); if (followupDateRange[1]) url.searchParams.set('follow_up_to', followupLocalDate(followupDateRange[1]));
+        options.url = url.toString();
+    });
+    ['followupReportStaff','followupReportStatus'].forEach(id => document.getElementById(id).addEventListener('change', () => fetchFollowupsReport(1)));
+    document.getElementById('followupReportClear').addEventListener('click', function () { document.getElementById('followupReportStaff').value = ''; document.getElementById('followupReportStatus').value = ''; followupCreatedRange = []; followupDateRange = []; followupCreatedPicker?.clear(false); followupDatePicker?.clear(false); fetchFollowupsReport(1); });
 
     function fetchFollowupsReport(page = 1) {
         const url = new URL("{{ route('reports.followups') }}", window.location.origin);
@@ -125,5 +142,3 @@ $(document).ready(function () {
 });
 </script>
 @endpush
-
-
