@@ -19,12 +19,8 @@
         const filterPanel = document.getElementById("customerFilters");
         const filterToggle = document.getElementById("customerFilterToggle");
         const filterCount = document.getElementById("customerFilterCount");
-        const fromDateInput = document.getElementById("customerFromDate");
-        const toDateInput = document.getElementById("customerToDate");
-        const dateRangeSelect = document.getElementById("customerDateRange");
+        const dateRangeInput = document.getElementById("customerDateRange");
         const typeFilter = document.getElementById("customerTypeFilter");
-        const countryFilter = document.getElementById("customerCountryFilter");
-        const cityFilter = document.getElementById("customerCityFilter");
         const statusFilter = document.getElementById("customerStatusFilter");
         const perPageSelect = document.getElementById("customerPerPage");
         const exportButton = document.getElementById("customerExportButton");
@@ -39,45 +35,29 @@
             return `${year}-${month}-${day}`;
         }
 
-        function setDateRange(range) {
-            const today = new Date();
-            let start = null;
-            let end = null;
+        let selectedDateRange = [];
 
-            if (range === "today") start = end = today;
-            if (range === "yesterday") {
-                start = new Date(today);
-                start.setDate(today.getDate() - 1);
-                end = start;
-            }
-            if (range === "last_7_days" || range === "last_30_days") {
-                start = new Date(today);
-                start.setDate(today.getDate() - (range === "last_7_days" ? 6 : 29));
-                end = today;
-            }
-            if (range === "this_month") {
-                start = new Date(today.getFullYear(), today.getMonth(), 1);
-                end = today;
-            }
-            if (range === "last_month") {
-                start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                end = new Date(today.getFullYear(), today.getMonth(), 0);
-            }
-
-            if (range !== "custom") {
-                fromDateInput.value = start ? formatLocalDate(start) : "";
-                toDateInput.value = end ? formatLocalDate(end) : "";
-            }
-        }
+        const dateRangePicker = window.flatpickr && dateRangeInput
+            ? window.flatpickr(dateRangeInput, {
+                mode: "range",
+                dateFormat: "d-m-Y",
+                showMonths: 1,
+                disableMobile: true,
+                onChange(selectedDates) {
+                    selectedDateRange = selectedDates;
+                    // A single selected date means "from this date onwards".
+                    // Selecting the second date narrows it to a closed range.
+                    applyFilterChange();
+                },
+            })
+            : null;
 
         function filterParams() {
             const params = new URLSearchParams();
             if (searchInput?.value.trim()) params.set("search", searchInput.value.trim());
-            if (fromDateInput?.value) params.set("from_date", fromDateInput.value);
-            if (toDateInput?.value) params.set("to_date", toDateInput.value);
+            if (selectedDateRange[0]) params.set("from_date", formatLocalDate(selectedDateRange[0]));
+            if (selectedDateRange[1]) params.set("to_date", formatLocalDate(selectedDateRange[1]));
             if (typeFilter?.value) params.set("type", typeFilter.value);
-            if (countryFilter?.value) params.set("country_id", countryFilter.value);
-            if (cityFilter?.value) params.set("city_id", cityFilter.value);
             if (statusFilter?.value !== "") params.set("is_active", statusFilter.value);
             params.set("per_page", perPageSelect?.value || "10");
             return params;
@@ -85,10 +65,8 @@
 
         function updateFilterSummary() {
             const activeValues = [
-                fromDateInput.value || toDateInput.value,
+                selectedDateRange.length,
                 typeFilter.value,
-                countryFilter.value,
-                cityFilter.value,
                 statusFilter.value !== "" ? "status" : "",
             ];
             const count = activeValues.filter(Boolean).length;
@@ -103,33 +81,7 @@
             }
         }
 
-        async function loadCities(countryId) {
-            cityFilter.innerHTML = '<option value="">All cities</option>';
-            cityFilter.disabled = !countryId;
-            if (!countryId) return;
-
-            try {
-                const response = await fetch(`/masters/cities-by-country/${encodeURIComponent(countryId)}`, {
-                    headers: { "X-Requested-With": "XMLHttpRequest" },
-                });
-                if (!response.ok) throw new Error("Unable to load cities");
-                const cities = await response.json();
-                cities.forEach(city => cityFilter.add(new Option(city.name, city.id)));
-            } catch (error) {
-                cityFilter.disabled = true;
-            }
-        }
-
         function applyFilterChange() {
-            if (fromDateInput.value && toDateInput.value && fromDateInput.value > toDateInput.value) {
-                if (window.showAlert) {
-                    window.showAlert("error", "Start date cannot be after end date.");
-                } else {
-                    alert("Start date cannot be after end date.");
-                }
-                return;
-            }
-
             updateFilterSummary();
             fetchCustomers(1);
         }
@@ -139,23 +91,11 @@
             filterPanel.classList.toggle("d-none", !willOpen);
             filterToggle.setAttribute("aria-expanded", String(willOpen));
         });
-        dateRangeSelect?.addEventListener("change", () => {
-            setDateRange(dateRangeSelect.value);
-            applyFilterChange();
-        });
-        [fromDateInput, toDateInput].forEach(input => input?.addEventListener("change", () => {
-            dateRangeSelect.value = "custom";
-            applyFilterChange();
-        }));
-        [typeFilter, statusFilter, cityFilter].forEach(field => field?.addEventListener("change", applyFilterChange));
-        countryFilter?.addEventListener("change", async () => {
-            await loadCities(countryFilter.value);
-            applyFilterChange();
-        });
+        [typeFilter, statusFilter].forEach(field => field?.addEventListener("change", applyFilterChange));
         document.getElementById("customerClearFilters")?.addEventListener("click", () => {
-            [fromDateInput, toDateInput, dateRangeSelect, typeFilter, countryFilter, statusFilter].forEach(field => { if (field) field.value = ""; });
-            cityFilter.innerHTML = '<option value="">All cities</option>';
-            cityFilter.disabled = true;
+            [typeFilter, statusFilter].forEach(field => { if (field) field.value = ""; });
+            selectedDateRange = [];
+            dateRangePicker?.clear(false);
             updateFilterSummary();
             fetchCustomers(1);
         });
