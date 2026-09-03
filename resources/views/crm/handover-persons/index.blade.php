@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" id="handoverPersonTable">
+                <table class="table table-hover align-middle mb-0" id="handoverPersonTable" data-no-auto-filter>
                     <thead>
                         <tr>
                             <th class="ps-4" style="width: 80px;">Sr.No</th>

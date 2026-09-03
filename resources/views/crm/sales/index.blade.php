@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('page_title', 'Sales')
+@section('page_title', 'Material OUT')
 
 @push('styles')
     <link rel="stylesheet"
@@ -13,7 +13,7 @@
             <div class="card-header border-bottom-0 py-3 px-4">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                     <div>
-                        <h4 class="fw-bold mb-0">Manage Sales</h4>
+                        <h4 class="fw-bold mb-0">Manage Material OUT</h4>
                         <p class="text-muted small mb-0">Track all material OUT transactions.</p>
                     </div>
                     <div class="d-flex flex-wrap gap-2">
@@ -30,10 +30,10 @@
                     </div>
                 </div>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <h6 class="fw-bold mb-0">Sales List</h6>
+                    <h6 class="fw-bold mb-0">Material OUT List</h6>
                     <div class="input-group input-group-sm" style="max-width: 300px; width: 100%;">
                         <span class="input-group-text crm-search-icon border-0"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control crm-search-input border-0" placeholder="Search sales..."
+                        <input type="text" class="form-control crm-search-input border-0" placeholder="Search Material OUT..."
                             id="salesSearch" value="{{ request('search') }}">
                     </div>
                 </div>
@@ -41,7 +41,7 @@
 
             <div class="card-body p-0">
                 <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 responsive-table" id="salesTable">
+                <table class="table table-hover align-middle mb-0 responsive-table" id="salesTable" data-no-auto-filter>
                     <thead>
                         <tr>
                             <th class="ps-4 text-center" style="width: 60px;">Sr.No</th>

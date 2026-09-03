@@ -63,8 +63,8 @@
                     <tr>
                         <td colspan="5" class="text-center py-5">
                             <div class="text-muted mb-3"><i class="bi bi-inbox display-1 opacity-25"></i></div>
-                            <p class="text-muted">No purchases found.</p>
-                            ${permissions.create ? '<a href="/purchases/create" class="btn btn-dark-blue btn-sm rounded-pill px-4">Add Your First Purchase</a>' : ''}
+                            <p class="text-muted">No Material IN records found.</p>
+                            ${permissions.create ? '<a href="/purchases/create" class="btn btn-dark-blue btn-sm rounded-pill px-4">Add Your First Material IN</a>' : ''}
                         </td>
                     </tr>`;
                 return;
@@ -240,7 +240,7 @@
         }
 
         function deletePurchase(id, button) {
-            window.showDeleteConfirm('This purchase will be deleted!').then(function (result) {
+            window.showDeleteConfirm('This Material IN record will be deleted!').then(function (result) {
                 if (!result.isConfirmed) {
                     return;
                 }
@@ -261,7 +261,7 @@
                     success: function (response) {
                         if (response.success) {
                             if (typeof window.showAlert === 'function') {
-                                window.showAlert('success', response.message || 'Purchase deleted successfully.');
+                                window.showAlert('success', response.message || 'Material IN deleted successfully.');
                             }
                             fetchPurchases(1);
                         } else {
@@ -274,7 +274,7 @@
                     },
                     error: function () {
                         if (typeof window.showAlert === 'function') {
-                            window.showAlert('error', 'Something went wrong while deleting the purchase.');
+                            window.showAlert('error', 'Something went wrong while deleting the Material IN record.');
                         }
                         button.innerHTML = originalHtml;
                         button.disabled = false;

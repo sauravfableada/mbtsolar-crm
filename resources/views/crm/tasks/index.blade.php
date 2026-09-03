@@ -5,6 +5,11 @@
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/main.css') }}?v={{ filemtime(public_path('css/main.css')) }}">
     <style>
+        @media (min-width: 992px) {
+            #tasksIndexPage .crm-auto-filter-panel .row { flex-wrap: nowrap; }
+            #tasksIndexPage .crm-auto-filter-panel .row > div { flex: 1 1 0; width: auto; max-width: none; }
+        }
+
         @media (min-width: 768px) {
             #tasksTable .tasks-sticky-action {
                 position: sticky;
@@ -53,7 +58,7 @@
 @endpush
 
 @section('content')
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" id="tasksIndexPage">
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="card-header border-bottom-0 py-3 px-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
@@ -106,11 +111,9 @@
                             <th class="ps-4 text-center" style="width: 80px;">Sr.No</th>
                             <th class="text-center">Customer Name</th>
                             <th class="text-center d-none d-md-table-cell">Staff Name</th>
-                            <th class="text-center d-none d-md-table-cell">Estimate Name</th>
-                            <th class="text-center">Task Title</th>
+                            <th class="text-center" data-no-filter>Task Title</th>
                             <th class="text-center d-none d-md-table-cell" style="width: 1%; white-space: nowrap;">Task Type</th>
                             <th class="text-center d-none d-md-table-cell" style="width: 1%; white-space: nowrap;">Status</th>
-                            <th class="text-center d-none d-md-table-cell" style="width: 1%; white-space: nowrap;">Task Action</th>
                             <th class="text-center d-none d-md-table-cell" style="width: 1%; white-space: nowrap;">Due Date</th>
                             <th class="text-center d-none d-md-table-cell tasks-sticky-action" style="width: 100px;">Action</th>
                             <th class="text-center d-md-none" style="width: 80px;">Action</th>
