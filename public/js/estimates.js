@@ -1911,6 +1911,7 @@
                 const srNo = meta && meta.from ? meta.from + index : index + 1;
                 const customerName = escapeHtml(estimate.customer?.name || '-');
                 const estimateNo = escapeHtml(estimate.estimate_no || '-');
+                const estimateType = escapeHtml(estimate.type ? String(estimate.type).replace(/\b\w/g, char => char.toUpperCase()) : '-');
                 const estimateDate = escapeHtml(formatDate(estimate.estimate_date));
                 const statusValue = String(estimate.status || '').toLowerCase();
                 const statusBadge = permissions.edit
@@ -1939,6 +1940,7 @@
                             <div class="fw-bold small text-dark">${customerName}</div>
                         </td>
                         <td class="d-none d-md-table-cell" data-label="Estimate No">${estimateNo}</td>
+                        <td class="d-none d-md-table-cell" data-label="Estimate Type">${estimateType}</td>
                         <td class="d-none d-md-table-cell" data-label="Estimate Date">${estimateDate}</td>
                         <td class="d-none d-md-table-cell" data-label="Status">${statusBadge}</td>
                         <td class="text-end pe-4 d-none d-md-table-cell" data-label="Actions">${actionsHtml}</td>

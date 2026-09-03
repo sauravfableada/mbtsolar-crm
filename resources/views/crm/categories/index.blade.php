@@ -17,6 +17,7 @@
         'fieldLabel' => 'Name',
         'hasDescription' => false,
         'hasImage' => true,
+        'hideFilters' => true,
         'permissions' => [
             'view' => auth()->user()?->hasMatrixPermission('view_categories'),
             'create' => auth()->user()?->hasMatrixPermission('create_categories'),

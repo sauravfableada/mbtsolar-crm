@@ -149,6 +149,7 @@
                     <td class="text-center d-none d-md-table-cell" data-label="Invoice No">
                         <span class="badge bg-soft-info text-info rounded-pill px-3">#${invoice.invoice_no ?? '-'}</span>
                     </td>
+                    <td class="text-center d-none d-md-table-cell text-capitalize" data-label="Invoice Type">${invoice.type ?? '-'}</td>
                     <td class="text-center d-none d-md-table-cell" data-label="Invoice Date">${formatDate(invDate)}</td>
                     <td class="text-center d-none d-md-table-cell" data-label="Due Date">${formatDate(dueDate)}</td>
                     <td class="text-center d-none d-md-table-cell" data-label="Status">

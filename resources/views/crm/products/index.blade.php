@@ -4,10 +4,16 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ url((env('PUBLIC_PATH') ? rtrim(env('PUBLIC_PATH'), '/') . '/' : '') . 'css/users.css') }}?v={{ filemtime(public_path('css/users.css')) }}">
+    <style>
+        @media (min-width: 992px) {
+            #productsIndexPage .crm-auto-filter-panel .row { flex-wrap: nowrap; }
+            #productsIndexPage .crm-auto-filter-panel .row > div { flex: 1 1 0; width: auto; max-width: none; }
+        }
+    </style>
 @endpush
 
 @section('content')
-<div class="container-fluid p-0">
+<div class="container-fluid p-0" id="productsIndexPage">
     <div class="card border-0 shadow-sm overflow-hidden">
         <div class="card-header border-bottom-0 py-3 px-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
@@ -43,7 +49,7 @@
                     <thead>
                         <tr>
                             <th class="ps-4 text-center" style="width: 80px;">Sr.No</th>
-                            <th class="text-center">Product Info</th>
+                            <th class="text-center" data-no-filter>Product Info</th>
                             <th class="d-none d-md-table-cell text-center">Category</th>
                             <th class="d-none d-md-table-cell text-center">Qty</th>
                             <th class="d-none d-md-table-cell text-center">Created At</th>
