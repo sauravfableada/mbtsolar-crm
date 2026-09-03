@@ -1,15 +1,30 @@
+<?php
+    // Attempt to grab admin/user phone and email if not already defined
+    $adminPhone = $companyPhone ?? data_get($user, 'phone') ?? data_get($user, 'mobile') ?? data_get($profileUser, 'phone') ?? data_get($profileUser, 'mobile') ?? '';
+    $adminEmail = $companyEmail ?? data_get($companySettings, 'company_email') ?? data_get($companySettings, 'email') ?? data_get($user, 'company_email') ?? data_get($user, 'email') ?? data_get($profileUser, 'email') ?? '';
+    $adminName = $preparedName ?? data_get($user, 'name') ?? $globalCompanyName ?? 'MBT SOLAR';
+?>
 <div style="page-break-inside: avoid;">
-<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin:10px 0 18px; border:1px solid #cfe0cf; font-family:'Montserrat', sans-serif; page-break-inside: avoid;">
+    <div style="text-align: center; margin-bottom: 15px; margin-top: 10px;">
+        <h3 style="color: #2b4c8c; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; font-family:'Montserrat', sans-serif;">
+            <?= esc($adminName) ?>
+        </h3>
+        <table width="100%" cellpadding="0" cellspacing="0" style="font-size: 14px; font-weight: bold; font-family:'Montserrat', sans-serif; margin-bottom: 5px;">
+            <tr>
+                <td align="left">MOBILE NO-<?= esc($adminPhone) ?></td>
+                <td align="right">E-MAIL ID- <?= esc($adminEmail) ?></td>
+            </tr>
+        </table>
+    </div>
+
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin:10px 0 18px; border:1px solid #000; font-family:'Montserrat', sans-serif; page-break-inside: avoid;">
     <thead>
-        <tr style="background-color:#4b9349; border-bottom:2px solid #3d7a3b;">
-            <th width="6%" style="padding:14px 10px; font-weight:bold; font-size:14px; color:#fff; text-align:center; font-family:'Montserrat',sans-serif; border: 1px solid #3d7a3b;">
-                Sr. No.
+        <tr>
+            <th width="10%" style="background-color:#ffff00; padding:12px 10px; font-weight:bold; font-size:14px; color:#ff0000; text-align:center; border: 1px solid #000;">
+                NO.
             </th>
-            <th width="54%" style="padding:14px 16px; font-weight:bold; font-size:14px; color:#fff; text-align:left; font-family:'Montserrat',sans-serif; border: 1px solid #3d7a3b;">
-                Component Type
-            </th>
-            <th width="40%" style="padding:14px 16px; font-weight:bold; font-size:14px; color:#fff; text-align:left; font-family:'Montserrat',sans-serif; border: 1px solid #3d7a3b;">
-                Approved Brand / Make
+            <th width="90%" style="background-color:#ffff00; padding:12px 16px; font-weight:bold; font-size:14px; color:#ff0000; text-align:center; border: 1px solid #000;">
+                DETAILS
             </th>
         </tr>
     </thead>
@@ -72,22 +87,75 @@
         $componentRowIndex++;
     ?>
     <tr style="page-break-inside:avoid; background:<?= $rowBg ?>;">
-        <td style="padding:12px 10px; font-size:14px; color:#222; border:1px solid #dfe9df; font-family:'DejaVu Sans',sans-serif; text-align:center; vertical-align:top;">
+        <td style="padding:12px 10px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
             <?= $componentRowIndex ?>
         </td>
-        <td style="padding:12px 14px; font-size:14px; color:#222; border:1px solid #dfe9df; font-family:'DejaVu Sans',sans-serif; vertical-align:top;">
+        <td style="padding:12px 14px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
             <?php if (!empty($productImagePath)): ?>
                 <div style="text-align: center; margin-bottom: 8px;">
                     <img src="<?= $productImagePath ?>" alt="<?= esc($component['name'] ?? 'Product') ?>" style="width:60px; height:60px; object-fit:contain; border:1px solid #d4e4d4; padding:4px; background:#fff; display: block; margin: 0 auto;">
                 </div>
             <?php endif; ?>
-            <div style="font-weight:bold; margin-bottom:4px;"><?= esc($component['name'] ?? '--') ?></div>
+            <?= esc($component['name'] ?? '--') ?> <?= $makeWithSpecs !== '—' && $makeWithSpecs !== '' ? ' - ' . esc($makeWithSpecs) : '' ?>
         </td>
-        <td style="padding:12px 14px; font-size:14px; color:#222; border:1px solid #dfe9df; font-family:'DejaVu Sans',sans-serif; vertical-align:top;">
-            <?= esc($makeWithSpecs) ?>
+    </tr>
+    <?php endforeach; ?>
+
+    <?php
+    $additionalChargesBreakdown = [];
+    if (isset($estdata) && !empty($estdata->generation_data)) {
+        $decodedAdditionalCharges = is_array($estdata->generation_data)
+            ? $estdata->generation_data
+            : json_decode((string) $estdata->generation_data, true);
+
+        $rawAdditionalCharges = [];
+        if (is_array($decodedAdditionalCharges) && !empty($decodedAdditionalCharges['additional_charges'])) {
+            $rawAdditionalCharges = (array) $decodedAdditionalCharges['additional_charges'];
+        }
+
+        if (!empty($rawAdditionalCharges)) {
+            $additionalChargesBreakdown = array_values(array_filter(array_map(function ($charge) {
+                if (!is_array($charge)) {
+                    return null;
+                }
+                $name = trim((string) ($charge['name'] ?? ''));
+                $price = (float) ($charge['price'] ?? 0);
+                if ($name === '' || $price <= 0) {
+                    return null;
+                }
+                return ['name' => $name];
+            }, $rawAdditionalCharges)));
+        }
+    }
+    ?>
+
+    <?php foreach ($additionalChargesBreakdown as $additionalCharge): 
+        $rowBg = '#ffffff';
+        $componentRowIndex++;
+    ?>
+    <tr style="page-break-inside:avoid; background:<?= $rowBg ?>;">
+        <td style="padding:12px 10px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
+            <?= $componentRowIndex ?>
+        </td>
+        <td style="padding:12px 14px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
+            <?= esc($additionalCharge['name']) ?>
         </td>
     </tr>
     <?php endforeach; ?>
     </tbody>
 </table>
+
+    <div style="font-weight: bold; font-size: 14px; text-transform: uppercase; margin-top: 15px; font-family:'Montserrat', sans-serif;">
+        <div style="background-color: #00ff00; padding: 4px 8px; display: inline-block; margin-bottom: 8px;">
+            * MAINTENANCE 6 YEARS FOR GUARANTEE/WARRANTY FREE SERVICE WITHOUT WASHING FROM MBT SOLAR.
+        </div>
+        <br>
+        <div style="background-color: #00ff00; padding: 4px 8px; display: inline-block; margin-bottom: 8px;">
+            * PANEL PERFORMANCE GUARANTEE 30 YEARS.
+        </div>
+        <br>
+        <div style="background-color: #00ff00; padding: 4px 8px; display: inline-block; margin-bottom: 8px;">
+            * INVERTER GUARANTEE/WARRANTY 10 YEARS.
+        </div>
+    </div>
 </div>

@@ -1639,6 +1639,7 @@
                 formData.set('discount', document.getElementById('quick_discount')?.value || '0');
                 formData.set('subsidy_amount', document.getElementById('quick_subsidy_amount')?.value || '0');
                 formData.set('solar_structure_charges', '0');
+                formData.set('solar_meter_charges', '0');
                 formData.set('comment', form.comment.value || '');
 
                 const originalHtml = submitBtn.innerHTML;
@@ -2154,6 +2155,7 @@
             formData.set('total', document.getElementById('subtotal')?.value || '0');
             formData.set('final_total', document.getElementById('final_total')?.value || '0');
             formData.set('solar_structure_charges', document.getElementById('solar_structure_charges_check')?.checked ? (document.getElementById('solar_structure_charges')?.value || '0') : '0');
+            formData.set('solar_meter_charges', document.getElementById('solar_meter_charges_check')?.checked ? (document.getElementById('solar_meter_charges')?.value || '0') : '0');
 
             btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
 
@@ -3694,12 +3696,15 @@
         const structureCharges = document.getElementById('solar_structure_charges_check')?.checked
             ? parseFloat(document.getElementById('solar_structure_charges')?.value || 0)
             : 0;
+        const meterCharges = document.getElementById('solar_meter_charges_check')?.checked
+            ? parseFloat(document.getElementById('solar_meter_charges')?.value || 0)
+            : 0;
         const discount = parseFloat(document.getElementById('discount')?.value || 0);
         const subsidy = parseFloat(document.getElementById('subsidy_amount')?.value || 0);
         const additionalCharges = parseFloat(document.getElementById('additional_charges_total')?.value || 0);
 
         const basePrice = getDocumentPriceMode() === 'base' ? price : price + productsTotal;
-        const subtotal = basePrice + structureCharges + additionalCharges;
+        const subtotal = basePrice + structureCharges + meterCharges + additionalCharges;
         const taxBreakdown = document.getElementById('apply_gst')?.checked
             ? getSelectedTaxBreakdown(basePrice)
             : getSelectedTaxBreakdown(0);
@@ -3852,7 +3857,7 @@
         }
 
         // Attach robust listeners to all key fields
-        const inputs = ['price', 'solar_structure_charges', 'discount', 'subsidy_amount'];
+        const inputs = ['price', 'solar_structure_charges', 'solar_meter_charges', 'discount', 'subsidy_amount'];
         inputs.forEach(function (id) {
             const input = document.getElementById(id);
             if (input) {
@@ -3882,6 +3887,7 @@
         });
 
         const structureCheckbox = document.getElementById('solar_structure_charges_check');
+        const meterCheckbox = document.getElementById('solar_meter_charges_check');
         const gstCheckbox = document.getElementById('apply_gst');
         document.getElementById('global_tax_rate')?.addEventListener('change', calculateTotals);
 
@@ -3897,6 +3903,21 @@
             const box = document.getElementById('structure-charges-input');
             if (box) {
                 box.style.display = structureCheckbox.checked ? 'block' : 'none';
+            }
+        }
+
+        if (meterCheckbox) {
+            meterCheckbox.addEventListener('change', function () {
+                const box = document.getElementById('meter-charges-input');
+                if (box) {
+                    box.style.display = this.checked ? 'block' : 'none';
+                }
+                calculateTotals();
+            });
+
+            const box = document.getElementById('meter-charges-input');
+            if (box) {
+                box.style.display = meterCheckbox.checked ? 'block' : 'none';
             }
         }
 

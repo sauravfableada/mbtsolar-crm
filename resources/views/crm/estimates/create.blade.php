@@ -431,13 +431,20 @@
                             <div class="row g-3">
                                     <div class="col-12 {{ $estimatePriceMode === 'base' ? 'col-md-4' : 'col-md-8' }} estimate-charges-col">
                                     <label class="form-label fw-semibold">Charges</label>
-                                    <div class="form-control d-flex align-items-center bg-light"
+                                    <div class="form-control d-flex flex-column gap-2 bg-light"
                                         style="min-height: 38px; padding: 0.375rem 0.75rem;">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" id="solar_structure_charges_check"
                                                 value="1" @checked(old('solar_structure_charges_check'))>
                                             <label class="form-check-label small" for="solar_structure_charges_check">
                                                 Solar Structure Charges
+                                            </label>
+                                        </div>
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="checkbox" id="solar_meter_charges_check"
+                                                value="1" @checked(old('solar_meter_charges_check'))>
+                                            <label class="form-check-label small" for="solar_meter_charges_check">
+                                                Solar Meter Charges
                                             </label>
                                         </div>
                                     </div>
@@ -473,6 +480,19 @@
                                         placeholder="0.00">
                                     <div class="invalid-feedback">
                                         @error('solar_structure_charges')
+                                            {{ $message }}
+                                        @enderror
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 estimate-meter-charges-col" id="meter-charges-input" style="display: none;">
+                                    <label class="form-label fw-semibold small">Enter Solar Meter Charges</label>
+                                    <input type="number" min="0" step="1" name="solar_meter_charges"
+                                        id="solar_meter_charges" value="{{ old('solar_meter_charges', 0) }}"
+                                        class="form-control @error('solar_meter_charges') is-invalid @enderror"
+                                        placeholder="0.00">
+                                    <div class="invalid-feedback">
+                                        @error('solar_meter_charges')
                                             {{ $message }}
                                         @enderror
                                     </div>

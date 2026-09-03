@@ -229,6 +229,12 @@
                 <td class="summary-cell summary-cell-right">{{ number_format($summaryBomTotal, 2) }}</td>
             </tr>
         @endif
+        @if (($summarySolarMeterCharges ?? 0) > 0)
+            <tr>
+                <td class="summary-cell">Solar Meter Charges</td>
+                <td class="summary-cell summary-cell-right">{{ number_format($summarySolarMeterCharges, 2) }}</td>
+            </tr>
+        @endif
         @if (($summarySolarStructureCharges ?? 0) > 0)
             <tr>
                 <td class="summary-cell">Solar Structure Charges</td>
@@ -241,36 +247,16 @@
                 <td class="summary-cell summary-cell-right">-{{ number_format($summaryDiscount, 2) }}</td>
             </tr>
         @endif
-        @if (($summaryAdditionalChargesTotal ?? 0) > 0)
-            @if (!empty($summaryAdditionalChargesBreakdown))
-                @foreach ($summaryAdditionalChargesBreakdown as $additionalCharge)
-                    <tr style="background-color: #eef2f6;">
-                        <td class="summary-cell" style="background-color: #eef2f6; font-weight: 500; padding-left: 20px;">
-                            {{ $additionalCharge['name'] ?? 'Additional Charge' }} (Additional Charge)
-                        </td>
-                        <td class="summary-cell summary-cell-right" style="background-color: #eef2f6; font-weight: 500;">
-                            +{{ number_format((float) ($additionalCharge['price'] ?? 0), 2) }}
-                        </td>
-                    </tr>
-                @endforeach
-            @else
-                <tr style="background-color: #eef2f6;">
-                    <td class="summary-cell" style="background-color: #eef2f6; font-weight: 500; padding-left: 20px;">
-                        Additional Charges
-                    </td>
-                    <td class="summary-cell summary-cell-right" style="background-color: #eef2f6; font-weight: 500;">
-                        +{{ number_format($summaryAdditionalChargesTotal, 2) }}
-                    </td>
-                </tr>
-            @endif
-        @endif
+
         @php
-            $subtotalBoth = ($summaryBaseCost ?? 0) + ($summaryBomTotal ?? 0) + ($summarySolarStructureCharges ?? 0) - ($summaryDiscount ?? 0) + ($summaryAdditionalChargesTotal ?? 0);
+            $subtotalBoth = ($summaryBaseCost ?? 0) + ($summaryBomTotal ?? 0) + ($summarySolarStructureCharges ?? 0) + ($summarySolarMeterCharges ?? 0) - ($summaryDiscount ?? 0);
             $subtotalTaxIncl = $subtotalBoth + ($summaryBomTaxTotal ?? 0);
-            $summaryNetPayable = $subtotalTaxIncl - ($summarySubsidy ?? 0);
+            $summaryNetPayableBeforeAdditional = $subtotalTaxIncl - ($summarySubsidy ?? 0);
+            $summaryConsumerNetPayable = $summaryNetPayableBeforeAdditional + ($summaryAdditionalChargesTotal ?? 0);
             
             $subtotalFormulaText = 'Base Price';
             if (($summaryBomTotal ?? 0) > 0) $subtotalFormulaText .= ' + BOM';
+            if (($summarySolarMeterCharges ?? 0) > 0) $subtotalFormulaText .= ' + Solar Meter Charges';
             if (($summarySolarStructureCharges ?? 0) > 0) $subtotalFormulaText .= ' + Solar Structure Charges';
             if (($summaryDiscount ?? 0) > 0) $subtotalFormulaText .= ' - Discount';
             if (($summaryAdditionalChargesTotal ?? 0) > 0) $subtotalFormulaText .= ' + Additional Charges';
@@ -319,27 +305,55 @@
                 <td class="summary-cell summary-cell-right"><strong>{{ number_format($summaryBomTaxTotal ?? 0, 2) }}</strong></td>
             </tr>
         @endif
+
+        @if (($summarySubsidy ?? 0) > 0)
+            <tr>
+                <td class="summary-cell" style="font-weight: bold; background-color: #f1f5f9;">Subsidy</td>
+                <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #f1f5f9; color: #dc3545;">-{{ number_format($summarySubsidy, 2) }}</td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #4b9349; color: #fff;">
+                <td class="summary-cell" style="font-weight: bold; background-color: #4b9349; color: #fff;">Amount After Subsidy</td>
+                <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #4b9349; color: #fff;"><strong>{{ number_format($summaryNetPayableBeforeAdditional, 2) }}</strong></td>
+            </tr>
+        @endif
+        @if (($summaryAdditionalChargesTotal ?? 0) > 0)
+            @if (!empty($summaryAdditionalChargesBreakdown))
+                @foreach ($summaryAdditionalChargesBreakdown as $additionalCharge)
+                    <tr style="background-color: #eef2f6;">
+                        <td class="summary-cell" style="background-color: #eef2f6; font-weight: 500; padding-left: 20px;">
+                            {{ $additionalCharge['name'] ?? 'Additional Charge' }}
+                        </td>
+                        <td class="summary-cell summary-cell-right" style="background-color: #eef2f6; font-weight: 500;">
+                            +{{ number_format((float) ($additionalCharge['price'] ?? 0), 2) }}
+                        </td>
+                    </tr>
+                @endforeach
+            @else
+                <tr style="background-color: #eef2f6;">
+                    <td class="summary-cell" style="background-color: #eef2f6; font-weight: 500; padding-left: 20px;">
+                        Additional Charges
+                    </td>
+                    <td class="summary-cell summary-cell-right" style="background-color: #eef2f6; font-weight: 500;">
+                        +{{ number_format($summaryAdditionalChargesTotal, 2) }}
+                    </td>
+                </tr>
+            @endif
+        @endif
         <tr style="font-weight: bold; background-color: #f8fafc;">
             <td class="summary-cell" style="font-weight: bold; background-color: #f8fafc;">
-                Subtotal (Tax Incl.)
+                Consumer Net Payable
                 <span style="font-style:italic;font-weight:normal;font-size:13px;color:#555;">(Subtotal + Taxes)</span>
             </td>
             <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #f8fafc;"><strong>{{ number_format($subtotalTaxIncl, 2) }}</strong></td>
         </tr>
-        @if (($summarySubsidy ?? 0) > 0)
-            <tr>
-                <td class="summary-cell">Subsidy</td>
-                <td class="summary-cell summary-cell-right">-{{ number_format($summarySubsidy, 2) }}</td>
-            </tr>
-        @endif
         <tr>
             <td class="summary-cell">
                 @if (!empty(trim((string) ($summaryEstimateDescription ?? ''))))
                     <div style="font-size:12px;line-height:1.35;color:#4c4c4c;white-space:pre-line;margin-bottom:4px;">{{ $summaryEstimateDescription }}</div>
                 @endif
-                <strong>Net Amount Payable</strong>
+                <strong>Total Payable Amount</strong>
             </td>
-            <td class="summary-cell summary-highlight"><strong>{{ number_format($summaryNetPayable ?? 0, 2) }}</strong></td>
+            <td class="summary-cell summary-highlight"><strong>{{ number_format($summaryConsumerNetPayable ?? 0, 2) }}</strong></td>
         </tr>
     </table>
 

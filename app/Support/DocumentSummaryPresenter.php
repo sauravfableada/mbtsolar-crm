@@ -126,6 +126,7 @@ class DocumentSummaryPresenter
         $summaryDiscount = isset($estdata->discount) ? (float) $estdata->discount : 0;
         $summarySubsidy = isset($estdata->subsidy_amount) ? (float) $estdata->subsidy_amount : 0;
         $summarySolarStructureCharges = isset($estdata->solar_structure_charges) ? (float) $estdata->solar_structure_charges : 0;
+        $summarySolarMeterCharges = isset($estdata->solar_meter_charges) ? (float) $estdata->solar_meter_charges : 0;
         $summaryAdditionalChargesBreakdown = [];
         $summaryAdditionalChargesTotal = isset($estdata->additional_charges_total) ? (float) $estdata->additional_charges_total : 0;
         if ($summaryAdditionalChargesTotal <= 0 && isset($estdata->other_charges) && is_numeric($estdata->other_charges)) {
@@ -314,7 +315,7 @@ class DocumentSummaryPresenter
         $summaryGstRateText = is_numeric($summaryGstRate) ? rtrim(rtrim(number_format((float) $summaryGstRate, 2, '.', ''), '0'), '.') : '';
         $summaryShowGst = ((float) $summaryGstAmount > 0) || ((float) $summaryGstRate > 0);
         $summaryShowBomTaxes = !empty($summaryBreakupLines) && $summaryBomTaxTotal > 0;
-        $summaryInvoiceSubtotal = $summaryBaseCost + $summaryBomTotal + $summaryBomTaxTotal + $summarySolarStructureCharges + $summaryAdditionalChargesTotal - $summaryDiscount;
+        $summaryInvoiceSubtotal = $summaryBaseCost + $summaryBomTotal + $summaryBomTaxTotal + $summarySolarStructureCharges + $summarySolarMeterCharges + $summaryAdditionalChargesTotal - $summaryDiscount;
         $summaryNetPayable = $summaryInvoiceSubtotal - $summarySubsidy;
 
         $summaryBankFields = array_values(array_filter([
@@ -346,6 +347,7 @@ class DocumentSummaryPresenter
             'summaryGstRateText' => $summaryGstRateText,
             'summaryBomTaxTotal' => $summaryBomTaxTotal,
             'summarySolarStructureCharges' => $summarySolarStructureCharges,
+            'summarySolarMeterCharges' => $summarySolarMeterCharges,
             'summaryAdditionalChargesBreakdown' => $summaryAdditionalChargesBreakdown,
             'summaryAdditionalChargesTotal' => $summaryAdditionalChargesTotal,
             'summaryEstimateDescription' => $summaryEstimateDescription,
