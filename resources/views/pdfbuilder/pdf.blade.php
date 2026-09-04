@@ -3173,7 +3173,7 @@ if (!$_customLogoBase64ForPages && !empty($logoBase64) && str_starts_with($logoB
     $componentsRowCount = count($componentsData);
     $componentsPageClass = $_pageClass('p6');
     $componentsList = array_values($componentsData);
-    $componentsContinuationRowsPerPage = 4;
+    $componentsContinuationRowsPerPage = 7;
     $componentsPages = [];
     
     if ($componentsRowCount === 0) {
@@ -3186,11 +3186,15 @@ if (!$_customLogoBase64ForPages && !empty($logoBase64) && str_starts_with($logoB
             $componentsPages[] = ['layout' => 'combined', 'rows' => $componentsList];
         }
     } else {
-        $firstPageRowCount = $componentsIntroLength > 420 ? 3 : 4;
-    
-        if ($firstPageRowCount >= $componentsRowCount) {
-            $componentsPages[] = ['layout' => 'combined', 'rows' => $componentsList];
+        if ($componentsIntroLength > 420) {
+            // Keep a long introduction on its own page, then show up to seven
+            // selected BOM items together in the details table.
+            $componentsPages[] = ['layout' => 'intro_block', 'rows' => []];
+            foreach (array_chunk($componentsList, $componentsContinuationRowsPerPage) as $componentsChunkRows) {
+                $componentsPages[] = ['layout' => 'table', 'rows' => $componentsChunkRows];
+            }
         } else {
+            $firstPageRowCount = 4;
             $componentsPages[] = [
                 'layout' => 'combined',
                 'rows' => array_slice($componentsList, 0, $firstPageRowCount),
@@ -3262,12 +3266,14 @@ if (!$_customLogoBase64ForPages && !empty($logoBase64) && str_starts_with($logoB
             @include('pdfbuilder.partials.company-components-table', [
                 'componentsTableRows' => $componentsPage['rows'] ?? [],
                 'componentsTableStartIndex' => $componentsTableStartIndex,
+                'includeAdditionalCharges' => $isLastComponentsPage,
             ])
             <?php else: ?>
             @include('pdfbuilder.partials.company-components-title')
             @include('pdfbuilder.partials.company-components-table', [
                 'componentsTableRows' => $componentsPage['rows'] ?? [],
                 'componentsTableStartIndex' => $componentsTableStartIndex,
+                'includeAdditionalCharges' => $isLastComponentsPage,
             ])
             <?php endif; ?>
         </div>
@@ -4003,4 +4009,3 @@ if (!$_customLogoBase64ForPages && !empty($logoBase64) && str_starts_with($logoB
 </body>
 
 </html>
-

@@ -50,7 +50,7 @@
         </tr>
     </thead>
     <tbody>
-    <?php $componentRowIndex = 0; ?>
+    <?php $componentRowIndex = (int) ($componentsTableStartIndex ?? 0); ?>
     <?php foreach ($componentsTableRows ?? $componentsData as $componentKey => $component):
         $specs = $component['specifications'] ?? [];
         $make = trim((string) ($component['category'] ?? ''));
@@ -119,7 +119,7 @@
 
     <?php
     $additionalChargesBreakdown = [];
-    if (isset($estdata) && !empty($estdata->generation_data)) {
+    if (($includeAdditionalCharges ?? true) && isset($estdata) && !empty($estdata->generation_data)) {
         $decodedAdditionalCharges = is_array($estdata->generation_data)
             ? $estdata->generation_data
             : json_decode((string) $estdata->generation_data, true);
