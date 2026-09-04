@@ -324,20 +324,20 @@
 
                         <div style="margin-top: 40px;">
                             <h2
-                                style="text-align: center; color: #4b9349; margin-bottom: 30px; text-decoration: underline; font-weight: bold; font-family: sans-serif;">
+                                style="text-align: center; color: #2b4c8c; margin-bottom: 14px; font-weight: bold; font-family: sans-serif;">
                                 BILL OF MATERIALS (BOM)
                             </h2>
                             <div class="table-responsive-wrapper">
                             <table class="quotation-table table table-bordered"
                                 style="border: 1px solid #333; border-collapse: collapse; width: 100%; font-family: sans-serif;">
-                                <thead style="background-color: #4b9349; color: #fff;">
+                                <thead style="background-color: #ffff00; color: #ff0000;">
                                     <tr>
                                         <th
-                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: center; width: 8%; background-color: #4b9349 !important; color: #ffffff !important;">
-                                            Sr. No.</th>
+                                            style="padding: 6px 8px; line-height: 1.1; font-weight: bold; font-size: 16px; border: 1px solid #000; text-align: center; width: 10%; background-color: #ffff00 !important; color: #ff0000 !important;">
+                                            NO.</th>
                                         <th
-                                            style="padding: 12px 10px; font-weight: bold; font-size: 14px; border: 1px solid #333; text-align: left; width: 92%; background-color: #4b9349 !important; color: #ffffff !important;">
-                                            Product Name</th>
+                                            style="padding: 6px 10px; line-height: 1.1; font-weight: bold; font-size: 16px; border: 1px solid #000; text-align: center; width: 90%; background-color: #ffff00 !important; color: #ff0000 !important;">
+                                            DETAILS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -345,13 +345,21 @@
                                         $allproduct = is_array($estimate->product_name)
                                             ? $estimate->product_name
                                             : json_decode($estimate->product_name, true);
+                                        $generationData = is_array($estimate->generation_data)
+                                            ? $estimate->generation_data
+                                            : json_decode((string) $estimate->generation_data, true);
+                                        $additionalCharges = collect($generationData['additional_charges'] ?? [])
+                                            ->filter(fn ($charge) => is_array($charge)
+                                                && trim((string) ($charge['name'] ?? '')) !== ''
+                                                && (float) ($charge['price'] ?? 0) > 0)
+                                            ->values();
                                     @endphp
                                     @if (is_array($allproduct) && !empty($allproduct))
                                         @foreach ($allproduct as $index => $item)
                                             @php
                                                 $product_id = $item['product_id'] ?? null;
                                                 $product_name_display = $item['name'] ?? 'Product name not found';
-                                                $product_name_display = ucwords(strtolower($product_name_display));
+                                                $product_name_display = trim((string) $product_name_display);
                                                 $product_category_makes = $item['category_name'] ?? '';
 
                                                 $full_product_details = null;
@@ -412,12 +420,22 @@
                                                 $specification_text = implode(' / ', $specification_parts);
                                             @endphp
                                             <tr>
-                                                <td style="padding: 12px 10px; border: 1px solid #333; color: #333; font-weight: bold; vertical-align: top; text-align: center;">{{ $index + 1 }}</td>
-                                                <td style="padding: 12px 10px; border: 1px solid #333; vertical-align: top;">
-                                                    <div style="font-weight: bold; color: #333; margin-bottom: 4px;">{{ $product_name_display }}</div>
+                                                <td style="padding: 5px 7px; border: 1px solid #000; color: #ff0000; font-size: 16px; line-height: 1.15; font-weight: bold; vertical-align: middle; text-align: center;">{{ $index + 1 }}</td>
+                                                <td style="padding: 5px 8px; border: 1px solid #000; color: #ff0000; font-size: 16px; line-height: 1.15; font-weight: bold; vertical-align: middle; text-align: center; text-transform: uppercase; white-space: nowrap;">
+                                                    <span>{{ $product_name_display }}</span>
                                                     @if (!empty($specification_text))
-                                                        <div style="font-size: 12px; line-height: 1.5; color: #333;">({{ $specification_text }})</div>
+                                                        <span> - {{ $specification_text }}</span>
                                                     @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        @foreach ($additionalCharges as $chargeIndex => $additionalCharge)
+                                            <tr>
+                                                <td style="padding: 5px 7px; border: 1px solid #000; color: #ff0000; font-size: 16px; line-height: 1.15; font-weight: bold; vertical-align: middle; text-align: center;">
+                                                    {{ count($allproduct) + $chargeIndex + 1 }}
+                                                </td>
+                                                <td style="padding: 5px 8px; border: 1px solid #000; color: #ff0000; font-size: 16px; line-height: 1.15; font-weight: bold; vertical-align: middle; text-align: center; text-transform: uppercase; white-space: nowrap;">
+                                                    {{ $additionalCharge['name'] }}
                                                 </td>
                                             </tr>
                                         @endforeach
