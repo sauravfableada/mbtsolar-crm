@@ -22,13 +22,6 @@
     $adminEmail = $companyEmail ?? data_get($companySettings, 'company_email') ?? data_get($companySettings, 'email') ?? data_get($user, 'company_email') ?? data_get($user, 'email') ?? data_get($profileUser, 'email') ?? '';
     $adminName = $customName ?: ($globalCompanyName ?? 'MBT SOLAR');
     
-    \Log::info('PDF GEN DATA DEBUG', [
-        'genData' => $genData,
-        'customName' => $customName,
-        'adminName' => $adminName,
-        'is_estimate_set' => isset($estimate),
-        'is_invoice_set' => isset($invoice),
-    ]);
 ?>
 <div style="page-break-inside: avoid;">
     <div style="text-align: center; margin-bottom: 15px; margin-top: 10px;">

@@ -335,8 +335,12 @@ if (!$logoBase64 && !empty($user['company_logo'])) {
     }
 }
 
+// Override with custom logo if provided
+if (!empty($custom_logo_base64)) {
+    $logoBase64 = $custom_logo_base64;
+}
 // Resolve company name dynamically from settings table (company_name)
-$_rawCompanyName = trim((string) (is_object($companySettings) && method_exists($companySettings, 'get')
+$_rawCompanyName = (!empty($custom_name)) ? $custom_name : trim((string) (is_object($companySettings) && method_exists($companySettings, 'get')
     ? ($companySettings->get('company_name') ?? '')
     : ($companySettings['company_name'] ?? '')));
 $globalCompanyName = $_rawCompanyName !== '' ? $_rawCompanyName : 'MBT SOLAR';
