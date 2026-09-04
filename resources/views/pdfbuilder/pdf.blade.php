@@ -3023,7 +3023,7 @@ if (!$_customLogoBase64ForPages && !empty($logoBase64) && str_starts_with($logoB
                 if (empty(trim($product_name_display))) {
                     $product_name_display = 'Product name not found';
                 }
-                $product_name_display = ucfirst(strtolower($product_name_display));
+                $product_name_display = trim((string) $product_name_display);
     
                 // Robust Make (category) fallback
                 if (empty(trim($product_category_makes)) && $full_product_details && !empty($full_product_details['categories'])) {

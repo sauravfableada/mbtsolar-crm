@@ -38,13 +38,13 @@
         </table>
     </div>
 
-<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin:10px 0 18px; border:1px solid #000; font-family:'Montserrat', sans-serif; page-break-inside: avoid;">
+<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse; margin:8px 0 14px; border:1px solid #000; font-family:'Montserrat', sans-serif; page-break-inside: avoid;">
     <thead>
         <tr>
-            <th width="10%" style="background-color:#ffff00; padding:12px 10px; font-weight:bold; font-size:14px; color:#ff0000; text-align:center; border: 1px solid #000;">
+            <th width="10%" style="background-color:#ffff00; padding:6px 8px; font-weight:bold; font-size:16px; line-height:1.1; color:#ff0000; text-align:center; border: 1px solid #000;">
                 NO.
             </th>
-            <th width="90%" style="background-color:#ffff00; padding:12px 16px; font-weight:bold; font-size:14px; color:#ff0000; text-align:center; border: 1px solid #000;">
+            <th width="90%" style="background-color:#ffff00; padding:6px 10px; font-weight:bold; font-size:16px; line-height:1.1; color:#ff0000; text-align:center; border: 1px solid #000;">
                 DETAILS
             </th>
         </tr>
@@ -108,10 +108,10 @@
         $componentRowIndex++;
     ?>
     <tr style="page-break-inside:avoid; background:<?= $rowBg ?>;">
-        <td style="padding:12px 10px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
+        <td style="padding:5px 7px; font-size:16px; line-height:1.15; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
             <?= $componentRowIndex ?>
         </td>
-        <td style="padding:12px 14px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
+        <td style="padding:5px 8px; font-size:16px; line-height:1.15; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle; text-transform:uppercase;">
             <?= esc($component['name'] ?? '--') ?> <?= $makeWithSpecs !== '—' && $makeWithSpecs !== '' ? ' - ' . esc($makeWithSpecs) : '' ?>
         </td>
     </tr>
@@ -150,10 +150,10 @@
         $componentRowIndex++;
     ?>
     <tr style="page-break-inside:avoid; background:<?= $rowBg ?>;">
-        <td style="padding:12px 10px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
+        <td style="padding:5px 7px; font-size:16px; line-height:1.15; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
             <?= $componentRowIndex ?>
         </td>
-        <td style="padding:12px 14px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
+        <td style="padding:5px 8px; font-size:16px; line-height:1.15; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle; text-transform:uppercase;">
             <?= esc($additionalCharge['name']) ?>
         </td>
     </tr>
