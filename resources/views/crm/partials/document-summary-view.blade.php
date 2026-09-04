@@ -203,7 +203,8 @@
     @php
         $kwQuantity = (float) ($estdata->quantity ?? $quantity ?? 0);
         $pricePerKw = $kwQuantity > 0 ? ($summaryBaseCost ?? 0) / $kwQuantity : 0;
-        $summarySystemSubtotal = ($summaryBaseCost ?? 0) + ($summaryBomTotal ?? 0) + ($summaryBomTaxTotal ?? 0) + ($summarySolarStructureCharges ?? 0) - ($summaryDiscount ?? 0);
+        $summarySystemSubtotal = ($summaryBaseCost ?? 0) + ($summaryBomTotal ?? 0) + ($summaryBomTaxTotal ?? 0) + ($summarySolarMeterCharges ?? 0) + ($summarySolarStructureCharges ?? 0) - ($summaryDiscount ?? 0);
+        $summaryAmountAfterSubsidy = ($summaryBaseCost ?? 0) - ($summarySubsidy ?? 0);
         $summaryNetPayable = $summarySystemSubtotal + ($summaryAdditionalChargesTotal ?? 0) - ($summarySubsidy ?? 0);
     @endphp
 
@@ -223,10 +224,14 @@
             </td>
             <td class="summary-cell summary-cell-right">{{ number_format($summaryBaseCost ?? 0, 2) }}</td>
         </tr>
-        @if (($summaryBomTotal ?? 0) > 0)
+        @if (($summarySubsidy ?? 0) > 0)
             <tr>
-                <td class="summary-cell">Bill of Materials (BOM) Items</td>
-                <td class="summary-cell summary-cell-right">{{ number_format($summaryBomTotal, 2) }}</td>
+                <td class="summary-cell" style="font-weight: bold; background-color: #f1f5f9;">Subsidy</td>
+                <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #f1f5f9; color: #dc3545;">-{{ number_format($summarySubsidy, 2) }}</td>
+            </tr>
+            <tr style="font-weight: bold; background-color: #4b9349; color: #fff;">
+                <td class="summary-cell" style="font-weight: bold; background-color: #4b9349; color: #fff;">Amount After Subsidy</td>
+                <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #4b9349; color: #fff;"><strong>{{ number_format($summaryAmountAfterSubsidy, 2) }}</strong></td>
             </tr>
         @endif
         @if (($summarySolarMeterCharges ?? 0) > 0)
@@ -241,13 +246,12 @@
                 <td class="summary-cell summary-cell-right">{{ number_format($summarySolarStructureCharges, 2) }}</td>
             </tr>
         @endif
-        @if (($summaryDiscount ?? 0) > 0)
+        @if (($summaryBomTotal ?? 0) > 0)
             <tr>
-                <td class="summary-cell">Discount</td>
-                <td class="summary-cell summary-cell-right">-{{ number_format($summaryDiscount, 2) }}</td>
+                <td class="summary-cell">Bill of Materials (BOM) Items</td>
+                <td class="summary-cell summary-cell-right">{{ number_format($summaryBomTotal, 2) }}</td>
             </tr>
         @endif
-
         @php
             $subtotalBoth = ($summaryBaseCost ?? 0) + ($summaryBomTotal ?? 0) + ($summarySolarStructureCharges ?? 0) + ($summarySolarMeterCharges ?? 0) - ($summaryDiscount ?? 0);
             $subtotalTaxIncl = $subtotalBoth + ($summaryBomTaxTotal ?? 0);
@@ -261,13 +265,6 @@
             if (($summaryDiscount ?? 0) > 0) $subtotalFormulaText .= ' - Discount';
             if (($summaryAdditionalChargesTotal ?? 0) > 0) $subtotalFormulaText .= ' + Additional Charges';
         @endphp
-        <tr style="font-weight: bold; background-color: #f8fafc;">
-            <td class="summary-cell" style="font-weight: bold; background-color: #f8fafc;">
-                Subtotal (Excl. Tax)
-                <span style="font-style:italic;font-weight:normal;font-size:13px;color:#555;">({{ $subtotalFormulaText }})</span>
-            </td>
-            <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #f8fafc;"><strong>{{ number_format($subtotalBoth, 2) }}</strong></td>
-        </tr>
         @if (!empty($summaryShowBomTaxes))
             <tr>
                 <td class="summary-cell"><strong>{{ !empty($summaryUsesGlobalTax) ? 'Global Tax on Base Price' : 'Taxes on Bill of Materials (BOM Only)' }}</strong></td>
@@ -306,16 +303,13 @@
             </tr>
         @endif
 
-        @if (($summarySubsidy ?? 0) > 0)
+        @if (($summaryDiscount ?? 0) > 0)
             <tr>
-                <td class="summary-cell" style="font-weight: bold; background-color: #f1f5f9;">Subsidy</td>
-                <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #f1f5f9; color: #dc3545;">-{{ number_format($summarySubsidy, 2) }}</td>
-            </tr>
-            <tr style="font-weight: bold; background-color: #4b9349; color: #fff;">
-                <td class="summary-cell" style="font-weight: bold; background-color: #4b9349; color: #fff;">Amount After Subsidy</td>
-                <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #4b9349; color: #fff;"><strong>{{ number_format($summaryNetPayableBeforeAdditional, 2) }}</strong></td>
+                <td class="summary-cell">Discount</td>
+                <td class="summary-cell summary-cell-right">-{{ number_format($summaryDiscount, 2) }}</td>
             </tr>
         @endif
+
         @if (($summaryAdditionalChargesTotal ?? 0) > 0)
             @if (!empty($summaryAdditionalChargesBreakdown))
                 @foreach ($summaryAdditionalChargesBreakdown as $additionalCharge)
@@ -342,9 +336,9 @@
         <tr style="font-weight: bold; background-color: #f8fafc;">
             <td class="summary-cell" style="font-weight: bold; background-color: #f8fafc;">
                 Consumer Net Payable
-                <span style="font-style:italic;font-weight:normal;font-size:13px;color:#555;">(Subtotal + Taxes)</span>
+                <span style="font-style:italic;font-weight:normal;font-size:13px;color:#555;">(Amount After Subsidy + applicable charges)</span>
             </td>
-            <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #f8fafc;"><strong>{{ number_format($subtotalTaxIncl, 2) }}</strong></td>
+            <td class="summary-cell summary-cell-right" style="font-weight: bold; background-color: #f8fafc;"><strong>{{ number_format($summaryConsumerNetPayable, 2) }}</strong></td>
         </tr>
         <tr>
             <td class="summary-cell">

@@ -230,6 +230,7 @@ if (empty($summaryBreakupLines) && $summaryGstRate > 0 && $summaryBomTaxTotal > 
 $summaryShowBomTaxes = !empty($summaryBreakupLines) && $summaryBomTaxTotal > 0;
 $summarySystemSubtotal = $summaryBaseCost + $summaryBomTotal + $summaryBomTaxTotal + $summarySolarStructureCharges + $summarySolarMeterCharges - $summaryDiscount;
 $summaryInvoiceSubtotal = $summarySystemSubtotal; // For backward compatibility
+$summaryAmountAfterSubsidy = $summaryBaseCost - $summarySubsidy;
 $summaryNetPayableBeforeAdditional = $summarySystemSubtotal - $summarySubsidy;
 $summaryConsumerNetPayable = $summaryNetPayableBeforeAdditional + $summaryAdditionalChargesTotal;
 $summaryNetPayable = $summarySystemSubtotal + $summaryAdditionalChargesTotal - $summarySubsidy; // keep for backward compatibility
@@ -303,6 +304,24 @@ $summaryLendingCost = $summaryTotalPayable;
         </td>
         <td style="<?= $summaryRightCellStyle ?>"><?= number_format($summaryBaseCost, 2) ?></td>
     </tr>
+    <?php if ($summarySubsidy > 0): ?>
+    <tr>
+        <td style="<?= $summaryCellStyle ?>font-weight: bold; background-color: #f1f5f9;">
+            Subsidy
+        </td>
+        <td style="<?= $summaryRightCellStyle ?>font-weight: bold; background-color: #f1f5f9; color: #dc3545;">
+            -<?= number_format($summarySubsidy, 2) ?>
+        </td>
+    </tr>
+    <tr style="font-weight: bold; background-color: #4b9349; color: #fff;">
+        <td style="<?= $summaryCellStyle ?>font-weight: bold; background-color: #4b9349; color: #fff;">
+            Amount After Subsidy
+        </td>
+        <td style="<?= $summaryRightCellStyle ?>font-weight: bold; background-color: #4b9349; color: #fff;">
+            <strong><?= number_format($summaryAmountAfterSubsidy, 2) ?></strong>
+        </td>
+    </tr>
+    <?php endif; ?>
     <?php if ($summarySolarMeterCharges > 0): ?>
     <tr>
         <td style="<?= $summaryCellStyle ?>">Solar Meter Charges</td>
@@ -378,24 +397,6 @@ $summaryLendingCost = $summaryTotalPayable;
         }
     ?>
 
-    <?php if ($summarySubsidy > 0): ?>
-    <tr>
-        <td style="<?= $summaryCellStyle ?>font-weight: bold; background-color: #f1f5f9;">
-            Subsidy
-        </td>
-        <td style="<?= $summaryRightCellStyle ?>font-weight: bold; background-color: #f1f5f9; color: #dc3545;">
-            -<?= number_format($summarySubsidy, 2) ?>
-        </td>
-    </tr>
-    <tr style="font-weight: bold; background-color: #4b9349; color: #fff;">
-        <td style="<?= $summaryCellStyle ?>font-weight: bold; background-color: #4b9349; color: #fff;">
-            Amount After Subsidy
-        </td>
-        <td style="<?= $summaryRightCellStyle ?>font-weight: bold; background-color: #4b9349; color: #fff;">
-            <strong><?= number_format($summaryNetPayableBeforeAdditional, 2) ?></strong>
-        </td>
-    </tr>
-    <?php endif; ?>
     <?php if ($summaryAdditionalChargesTotal > 0): ?>
         <?php if (!empty($summaryAdditionalChargesBreakdown)): ?>
             <?php foreach ($summaryAdditionalChargesBreakdown as $additionalCharge): ?>
@@ -422,9 +423,9 @@ $summaryLendingCost = $summaryTotalPayable;
     <tr style="font-weight: bold; background-color: #f8fafc;">
         <td style="<?= $summaryCellStyle ?>font-weight: bold; background-color: #f8fafc;">
             Consumer Net Payable
-            <span style="font-style:italic;font-weight:normal;font-size:13px;color:#555;">(<?= esc($systemSubtotalText) ?>)</span>
+            <span style="font-style:italic;font-weight:normal;font-size:13px;color:#555;">(Amount After Subsidy + applicable charges)</span>
         </td>
-        <td style="<?= $summaryRightCellStyle ?>font-weight: bold; background-color: #f8fafc;"><strong><?= number_format($summarySystemSubtotal, 2) ?></strong></td>
+        <td style="<?= $summaryRightCellStyle ?>font-weight: bold; background-color: #f8fafc;"><strong><?= number_format($summaryConsumerNetPayable, 2) ?></strong></td>
     </tr>
     <tr>
         <td style="<?= $summaryCellStyle ?>">
