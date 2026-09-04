@@ -313,14 +313,22 @@ $companySettings = $companySettings ?? ($settings ?? []);
 
 // Resolve company logo from settings table (company_logo_path)
 $logoBase64 = null;
+$dbLogoPath = \DB::table('settings')->where('key', 'company_logo_path')->value('value');
+$settingsLogoPath = (!empty($companySettings['company_logo_path']) && is_string($companySettings['company_logo_path'])) ? $companySettings['company_logo_path'] : $dbLogoPath;
+
 if (!empty($companyLogoPath) && file_exists($companyLogoPath)) {
     $logoData = file_get_contents($companyLogoPath);
     $logoBase64 = 'data:image/' . pathinfo($companyLogoPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($logoData);
-} elseif (!empty($companySettings['company_logo_path'])) {
-    $diskPath = storage_path('app/public/' . $companySettings['company_logo_path']);
-    if (file_exists($diskPath)) {
-        $logoData = file_get_contents($diskPath);
-        $logoBase64 = 'data:image/' . pathinfo($diskPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($logoData);
+} elseif (!empty($settingsLogoPath)) {
+    $resolvedLogo = normalize_pdf_image($settingsLogoPath);
+    if ($resolvedLogo && strpos($resolvedLogo, 'data:image') === 0) {
+        $logoBase64 = $resolvedLogo;
+    } else {
+        $diskPath = storage_path('app/public/' . $settingsLogoPath);
+        if (file_exists($diskPath)) {
+            $logoData = file_get_contents($diskPath);
+            $logoBase64 = 'data:image/' . pathinfo($diskPath, PATHINFO_EXTENSION) . ';base64,' . base64_encode($logoData);
+        }
     }
 }
 
@@ -335,10 +343,7 @@ if (!$logoBase64 && !empty($user['company_logo'])) {
     }
 }
 
-// Override with custom logo if provided
-if (!empty($custom_logo_base64)) {
-    $logoBase64 = $custom_logo_base64;
-}
+
 // Resolve company name dynamically from settings table (company_name)
 $_rawCompanyName = (!empty($custom_name)) ? $custom_name : trim((string) (is_object($companySettings) && method_exists($companySettings, 'get')
     ? ($companySettings->get('company_name') ?? '')
