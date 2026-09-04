@@ -468,7 +468,7 @@
                                         </div>
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="checkbox" id="solar_meter_charges_check"
-                                                value="1" @checked((float) old('solar_meter_charges', $estimate->solar_meter_charges) > 0)>
+                                                value="1" @checked((float) old('solar_meter_charges_amount', $estimate->solar_meter_charges_amount) > 0)>
                                             <label class="form-check-label small" for="solar_meter_charges_check">
                                                 Solar Meter Charges
                                             </label>
