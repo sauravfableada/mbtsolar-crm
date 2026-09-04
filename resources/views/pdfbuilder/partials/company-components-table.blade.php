@@ -112,11 +112,6 @@
             <?= $componentRowIndex ?>
         </td>
         <td style="padding:12px 14px; font-size:14px; font-weight:bold; color:#ff0000; border:1px solid #000; text-align:center; vertical-align:middle;">
-            <?php if (!empty($productImagePath)): ?>
-                <div style="text-align: center; margin-bottom: 8px;">
-                    <img src="<?= $productImagePath ?>" alt="<?= esc($component['name'] ?? 'Product') ?>" style="width:60px; height:60px; object-fit:contain; border:1px solid #d4e4d4; padding:4px; background:#fff; display: block; margin: 0 auto;">
-                </div>
-            <?php endif; ?>
             <?= esc($component['name'] ?? '--') ?> <?= $makeWithSpecs !== '—' && $makeWithSpecs !== '' ? ' - ' . esc($makeWithSpecs) : '' ?>
         </td>
     </tr>
