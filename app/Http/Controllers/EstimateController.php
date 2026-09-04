@@ -40,6 +40,21 @@ class EstimateController extends Controller
         $templates = PdfBuilderForm::orderBy('template_name')->get();
         $bomProducts = BomProduct::with('categories')->orderBy('product_name')->get();
         $categories = Category::orderBy('name')->get();
+        $defaultBomProductPrefixes = [
+            'TOPCon Solar Panel',
+            '4 SQ MM DC Wire',
+            '4 SQ MM AC Wire',
+            '2.5 SQ MM Green Earthing Wire',
+            '16 SQ MM Lightning Arrester Wire',
+            'ACDB / DCDB',
+            'Hot-Dip Galvanized Structure Pipe',
+        ];
+        $defaultBomProducts = collect($defaultBomProductPrefixes)
+            ->map(fn (string $prefix) => $bomProducts->first(
+                fn (BomProduct $product) => Str::startsWith($product->product_name, $prefix)
+            ))
+            ->filter()
+            ->values();
 
         if (auth()->user()->isAdmin()) {
             $users = User::orderBy('name')->get();
@@ -54,7 +69,7 @@ class EstimateController extends Controller
         }
         $estimatePriceMode = 'base';
 
-        return view('crm.estimates.create', compact('customers', 'users', 'templates', 'bomProducts', 'categories', 'subsidies', 'gstRate', 'gstTaxes', 'estimatePriceMode'));
+        return view('crm.estimates.create', compact('customers', 'users', 'templates', 'bomProducts', 'defaultBomProducts', 'categories', 'subsidies', 'gstRate', 'gstTaxes', 'estimatePriceMode'));
     }
 
     public function show(Estimate $estimate)

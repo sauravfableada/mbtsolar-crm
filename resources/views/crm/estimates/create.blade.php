@@ -508,6 +508,18 @@
                             <label class="form-label fw-semibold">BOM (Bill Of Material)</label>
                             <div class="bom-section bg-light rounded-3 p-3 border">
                                 <div id="bomContainer">
+                                    @php
+                                        $oldBomServices = old('service');
+                                        $initialBomIds = is_array($oldBomServices)
+                                            ? $oldBomServices
+                                            : ($defaultBomProducts ?? collect())->pluck('id')->all();
+                                        $initialBomIds = count($initialBomIds) > 0 ? $initialBomIds : [null];
+                                    @endphp
+                                    @foreach ($initialBomIds as $bomIndex => $initialBomId)
+                                    @php
+                                        $selectedBom = $bomProducts->firstWhere('id', (int) $initialBomId);
+                                        $selectedMake = old("product_make.$bomIndex", $selectedBom?->categories->first()?->name ?? '');
+                                    @endphp
                                     <div class="bom-row mb-3 p-3 bg-white border rounded shadow-sm">
                                             <div class="bom-row-grid {{ $estimatePriceMode === 'base' ? 'estimate-bom-base-grid' : '' }}">
                                             <div>
@@ -520,6 +532,7 @@
                                                         @if (isset($bomProducts))
                                                             @foreach ($bomProducts as $bom)
                                                                 <option value="{{ $bom->id }}"
+                                                                    @selected((int) $initialBomId === (int) $bom->id)
                                                                     data-name="{{ $bom->product_name }}"
                                                                     data-desc="{{ $bom->description ?? '' }}"
                                                                     data-categories='{{ json_encode($bom->categories->pluck('name')->toArray()) }}'
@@ -542,26 +555,27 @@
                                             </div>
                                             <div>
                                                 <label class="form-label small fw-semibold">Make</label>
-                                                <select name="product_make[]" class="form-select product-make" disabled>
+                                                <select name="product_make[]" class="form-select product-make" data-selected="{{ $selectedMake }}" disabled>
                                                     <option value="">Select Make</option>
                                                 </select>
                                             </div>
                                             <div>
                                                 <label class="form-label small fw-semibold product-qty-label">Qty <span class="text-danger">*</span></label>
                                                 <input type="number" min="0" step="1" name="product_qty[]"
-                                                    value="1" class="form-control" placeholder="Add Quantity">
+                                                    value="{{ old("product_qty.$bomIndex", 1) }}" class="form-control" placeholder="Add Quantity">
                                             </div>
                                             <div class="estimate-bom-money-col {{ $estimatePriceMode === 'base' ? 'd-none' : '' }}">
                                                 <label class="form-label small fw-semibold crm-label-with-icon"><i class="fa-solid fa-money-bill crm-label-icon" aria-hidden="true"></i>Unit Price <span class="text-danger">*</span></label>
                                                 <input type="number" min="0" step="1" name="product_price[]"
-                                                    value="0" class="form-control product-price" placeholder="0">
+                                                    value="{{ old("product_price.$bomIndex", $estimatePriceMode === 'bom' ? ($selectedBom?->price ?? 0) : 0) }}" class="form-control product-price" placeholder="0">
                                             </div>
                                             <div class="estimate-bom-money-col {{ $estimatePriceMode === 'base' ? 'd-none' : '' }}">
                                                 <label class="form-label small fw-semibold">Tax</label>
                                                 <select name="product_tax_rate[]" class="form-select product-tax-rate">
-                                                    <option value="0" data-label="">No Tax</option>
+                                                    <option value="0" data-label="" @selected((float) old("product_tax_rate.$bomIndex", $selectedBom?->tax_rate ?? 0) === 0.0)>No Tax</option>
                                                     @foreach ($bomTaxOptions as $taxOption)
-                                                        <option value="{{ $taxOption['rate'] }}" data-label="{{ $taxOption['label'] }}">
+                                                        <option value="{{ $taxOption['rate'] }}" data-label="{{ $taxOption['label'] }}"
+                                                            @selected((float) old("product_tax_rate.$bomIndex", $selectedBom?->tax_rate ?? 0) === (float) $taxOption['rate'])>
                                                             {{ $taxOption['label'] }} ({{ rtrim(rtrim(number_format($taxOption['rate'], 2), '0'), '.') }}%)
                                                         </option>
                                                     @endforeach
@@ -574,12 +588,13 @@
                                             </div>
                                             <div class="bom-action-cell">
                                                 <button type="button" class="btn btn-outline-danger w-100 delete-bom-row"
-                                                    style="display: none;">
+                                                    style="{{ count($initialBomIds) > 1 ? 'display: block;' : 'display: none;' }}">
                                                     <i class="bi bi-trash"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
+                                    @endforeach
                                 </div>
 
                                 <button type="button" class="btn btn-outline-dark-blue btn-sm" id="add_more_bom">
