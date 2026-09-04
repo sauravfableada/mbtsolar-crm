@@ -126,13 +126,13 @@ class DocumentSummaryPresenter
         $summaryDiscount = isset($estdata->discount) ? (float) $estdata->discount : 0;
         $summarySubsidy = isset($estdata->subsidy_amount) ? (float) $estdata->subsidy_amount : 0;
         $summarySolarStructureCharges = isset($estdata->solar_structure_charges) ? (float) $estdata->solar_structure_charges : 0;
-        $summarySolarMeterCharges = isset($estdata->solar_meter_charges) ? (float) $estdata->solar_meter_charges : 0;
+        $summarySolarMeterCharges = isset($estdata->solar_meter_charges_amount) ? (float) $estdata->solar_meter_charges_amount : 0;
         $summaryAdditionalChargesBreakdown = [];
         $summaryAdditionalChargesTotal = isset($estdata->additional_charges_total) ? (float) $estdata->additional_charges_total : 0;
         if ($summaryAdditionalChargesTotal <= 0 && isset($estdata->other_charges) && is_numeric($estdata->other_charges)) {
             $summaryAdditionalChargesTotal = (float) $estdata->other_charges;
         }
-        if ($summaryAdditionalChargesTotal <= 0 && !empty($estdata->generation_data)) {
+        if (!empty($estdata->generation_data)) {
             $decodedAdditionalCharges = is_array($estdata->generation_data)
                 ? $estdata->generation_data
                 : json_decode((string) $estdata->generation_data, true);
@@ -148,7 +148,9 @@ class DocumentSummaryPresenter
                     }
                     return ['name' => $name, 'price' => $price];
                 }, (array) $decodedAdditionalCharges['additional_charges'])));
-                $summaryAdditionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $summaryAdditionalChargesBreakdown));
+                if (!empty($summaryAdditionalChargesBreakdown)) {
+                    $summaryAdditionalChargesTotal = array_sum(array_map(fn ($charge) => (float) ($charge['price'] ?? 0), $summaryAdditionalChargesBreakdown));
+                }
             }
         }
         $summaryEstimateDescription = trim((string) ($estdata->estimate_description ?? $estdata->description ?? ''));
