@@ -436,7 +436,7 @@ $summaryLendingCost = $summaryTotalPayable;
             <?php endif; ?>
             <strong>Total Payable Amount</strong>
         </td>
-        <td style="<?= $summaryHighlightCellStyle ?>"><strong><?= number_format($summaryConsumerNetPayable, 2) ?></strong></td>
+        <td style="<?= $summaryHighlightCellStyle ?>"><strong><?= number_format($summaryConsumerNetPayable + (empty($isInvoice) ? $summarySubsidy : 0), 2) ?></strong></td>
     </tr>
 </table>
 

@@ -347,7 +347,7 @@
                 @endif
                 <strong>Total Payable Amount</strong>
             </td>
-            <td class="summary-cell summary-highlight"><strong>{{ number_format($summaryConsumerNetPayable ?? 0, 2) }}</strong></td>
+            <td class="summary-cell summary-highlight"><strong>{{ number_format(($summaryConsumerNetPayable ?? 0) + (!empty($addSubsidyToTotalPayable) ? ($summarySubsidy ?? 0) : 0), 2) }}</strong></td>
         </tr>
     </table>
 
