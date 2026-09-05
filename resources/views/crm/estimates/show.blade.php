@@ -317,7 +317,7 @@
                         <iframe src="{{ route('estimates.pdf', $estimate->estimate_id) }}" style="width: 100%; height: 1000px; border: 1px solid #ddd; border-radius: 8px;"></iframe>
                     @else
                     <div class="quotation-box">
-                        @include('crm.partials.document-summary-view', ['documentSummary' => $documentSummary])
+                        @include('crm.partials.document-summary-view', ['documentSummary' => $documentSummary, 'addSubsidyToTotalPayable' => true])
 
                         <!-- Page Break for BOM -->
                         <div class="page-break"></div>
